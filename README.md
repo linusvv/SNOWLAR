@@ -8,9 +8,9 @@
 
 ## Code Repository for the SNOWLAR CGSR1 P5
 The Project is based on ROS2, written in Python. Here are the current working nodes:
-- **tank_motion** - basecontrol.py
-- **joy_steering** - joytobase.py
-- **imu_steering** - imutobase.py
+- **tank_motion** - basecontrol.py (requires four motors)
+- **joy_steering** - joytobase.py (requires joy_linux; `ros2 run joy_linux joy_linux_node`)
+- **imu_steering** - imutobase.py (requires imu)
 - **web_interface** - web_interface.py
 
 And the current test files:
