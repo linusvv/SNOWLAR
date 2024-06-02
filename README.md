@@ -1,7 +1,7 @@
 ![Screenshot 2024-06-02 122437](https://github.com/linusvv/snowlar/assets/86794353/94a05a78-176c-4797-a13c-86c67e2ef37b)
 # [SNOWLAR](https://sites.google.com/view/snowlar/)
 > **Snowlar hilft Eigenheimsbesitzern mit PV-Anlagen, durch automatisierte Schneeentfernung auch im Winter Strom zu generieren.** <br>
-> <sub> made in Germany in Cooperation with [Olive Robotics](https://www.olive-robotics.com/), [MAKERSPACE](https://maker-space.de/), [UnternehmerTUM](https://www.unternehmertum.de/) and [Munich School of Engineering](https://www.ed.tum.de/ed/studium/studienangebot/ingenieurwissenschaften-b-sc/) </sub>
+> <sub> designed in Germany in Cooperation with [Olive Robotics](https://www.olive-robotics.com/), [MAKERSPACE](https://maker-space.de/), [UnternehmerTUM](https://www.unternehmertum.de/), [Munich School of Engineering](https://www.ed.tum.de/ed/studium/studienangebot/ingenieurwissenschaften-b-sc/) and [Würmwerkstatt](https://sites.google.com/view/wuermwerkstatt) </sub>
 
 <br>
 <br>
