@@ -1,0 +1,23 @@
+[0.421s] Invoking command in '/home/snowlar/ros2_ws/src/my_python_pkg': PYTHONPATH=/home/snowlar/ros2_ws/build/my_python_pkg/prefix_override:/home/snowlar/ros2_ws/install/my_python_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/my_python_pkg build --build-base /home/snowlar/ros2_ws/build/my_python_pkg/build install --record /home/snowlar/ros2_ws/build/my_python_pkg/install.log --single-version-externally-managed install_data
+[0.572s] running egg_info
+[0.572s] writing ../../build/my_python_pkg/my_python_pkg.egg-info/PKG-INFO
+[0.572s] writing dependency_links to ../../build/my_python_pkg/my_python_pkg.egg-info/dependency_links.txt
+[0.572s] writing entry points to ../../build/my_python_pkg/my_python_pkg.egg-info/entry_points.txt
+[0.572s] writing requirements to ../../build/my_python_pkg/my_python_pkg.egg-info/requires.txt
+[0.572s] writing top-level names to ../../build/my_python_pkg/my_python_pkg.egg-info/top_level.txt
+[0.574s] reading manifest file '../../build/my_python_pkg/my_python_pkg.egg-info/SOURCES.txt'
+[0.574s] writing manifest file '../../build/my_python_pkg/my_python_pkg.egg-info/SOURCES.txt'
+[0.574s] running build
+[0.574s] running build_py
+[0.574s] running install
+[0.575s] running install_lib
+[0.576s] byte-compiling /home/snowlar/ros2_ws/install/my_python_pkg/lib/python3.10/site-packages/my_python_pkg/joytobase.py to joytobase.cpython-310.pyc
+[0.576s] running install_data
+[0.576s] running install_egg_info
+[0.577s] removing '/home/snowlar/ros2_ws/install/my_python_pkg/lib/python3.10/site-packages/my_python_pkg-0.0.0-py3.10.egg-info' (and everything under it)
+[0.577s] Copying ../../build/my_python_pkg/my_python_pkg.egg-info to /home/snowlar/ros2_ws/install/my_python_pkg/lib/python3.10/site-packages/my_python_pkg-0.0.0-py3.10.egg-info
+[0.578s] running install_scripts
+[0.591s] Installing joy_to_cmd_vel_and_servo script to /home/snowlar/ros2_ws/install/my_python_pkg/lib/my_python_pkg
+[0.591s] Installing main_node script to /home/snowlar/ros2_ws/install/my_python_pkg/lib/my_python_pkg
+[0.592s] writing list of installed files to '/home/snowlar/ros2_ws/build/my_python_pkg/install.log'
+[0.609s] Invoked command in '/home/snowlar/ros2_ws/src/my_python_pkg' returned '0': PYTHONPATH=/home/snowlar/ros2_ws/build/my_python_pkg/prefix_override:/home/snowlar/ros2_ws/install/my_python_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/my_python_pkg build --build-base /home/snowlar/ros2_ws/build/my_python_pkg/build install --record /home/snowlar/ros2_ws/build/my_python_pkg/install.log --single-version-externally-managed install_data

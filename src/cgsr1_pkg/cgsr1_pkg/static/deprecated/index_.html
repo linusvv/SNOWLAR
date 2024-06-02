@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joystick Interface</title>
+    <style>
+        #container {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin: 100px auto; /* Center the joystick */
+        }
+        #joystick {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+        #knob {
+            width: 50px;
+            height: 50px;
+            background-color: darkgrey;
+            border: 1px solid black;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="joystick">
+            <div id="knob"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
+    <script>
+        const container = document.getElementById('container');
+        const knob = document.getElementById('knob');
+
+        const manager = nipplejs.create({
+            zone: container,
+            color: 'darkgrey',
+            size: 100,
+            mode: 'static',
+            position: { left: '50%', top: '50%' },
+            restJoystick: true,
+        });
+
+        manager.on('move', (evt, data) => {
+            const x = data.position.x - 50; // Adjust center to (0,0)
+            const y = data.position.y - 50; // Adjust center to (0,0)
+
+            knob.style.left = `${x}%`;
+            knob.style.top = `${y}%`;
+
+            fetch('/joystick', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ x: x / 100, y: y / 100 }),
+            });
+        });
+
+        manager.on('end', () => {
+            knob.style.left = '50%';
+            knob.style.top = '50%';
+
+            fetch('/joystick', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ x: 0, y: 0 }),
+            });
+        });
+
+        // Mouse event listeners
+        container.addEventListener('mousemove', (event) => {
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left - rect.width / 2;
+            const y = event.clientY - rect.top - rect.height / 2;
+
+            knob.style.left = `${x + rect.width / 2}px`;
+            knob.style.top = `${y + rect.height / 2}px`;
+
+            fetch('/joystick', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ x: x / 100, y: y / 100 }),
+            });
+        });
+
+        container.addEventListener('mouseleave', () => {
+            knob.style.left = '50%';
+            knob.style.top = '50%';
+
+            fetch('/joystick', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ x: 0, y: 0 }),
+            });
+        });
+
+        // Touch event listeners
+        container.addEventListener('touchmove', (event) => {
+            const touch = event.touches[0];
+            const rect = container.getBoundingClientRect();
+            const x = touch.clientX - rect.left - rect.width / 2;
+            const y = touch.clientY - rect.top - rect.height / 2;
+
+            knob.style.left = `${x + rect.width / 2}px`;
+            knob.style.top = `${y + rect.height / 2}px`;
+
+            fetch('/joystick', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ x: x / 100, y: y / 100 }),
+            });
+        });
+
+        container.addEventListener('touchend', () => {
+            knob.style.left = '50%';
+            knob.style.top = '50%';
+
+            fetch('/joystick', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ x: 0, y: 0 }),
+            });
+        });
+    </script>
+</body>
+</html>
+

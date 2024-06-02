@@ -1,0 +1,6 @@
+[console_scripts]
+imu_steering = cgsr1_pkg.imutobase:main
+joy_steering = cgsr1_pkg.joytobase:main
+tank_motion = cgsr1_pkg.basecontrol:main
+web_interface = cgsr1_pkg.web_interface:main
+
