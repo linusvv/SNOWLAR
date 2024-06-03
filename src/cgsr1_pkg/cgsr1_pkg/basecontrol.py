@@ -35,7 +35,7 @@ class MainNode(Node):
 
         self.max_velocity = 6
         
-        self.alpha = 0.1  # Low-pass filter constant (0 < alpha <= 1)
+        self.alpha = 0.06  # Low-pass filter constant (0 < alpha <= 1)
         
         self.thread_main.start()
 
@@ -73,9 +73,9 @@ class MainNode(Node):
         vy = vy * self.max_velocity
 
         # Convert vx, vy to wheel velocities based on your kinematic model
-        if(abs(vx)<0.01 and abs(vy) <0.01):
-            vx = 0.0
-            vy = 0.0
+        if(abs(self.target_velocity_front_left)<0.01 and abs(self.velocity_front_right) <0.01):
+            self.target_velocity_front_left = 0.0
+            self.target_velocity_front_right = 0.0
 
         print(f'This is the x velocity: {vx}')
 
