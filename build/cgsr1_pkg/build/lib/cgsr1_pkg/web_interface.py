@@ -4,12 +4,12 @@ import rclpy
 from geometry_msgs.msg import Twist
 
 # Get the current directory of the script
-INDEX_FILE_PATH = os.path.expanduser("~/snowlar_ws_v1/src/cgsr1_pkg/cgsr1_pkg/static/index.html")
-
+INDEX_FILE_PATH = os.path.expanduser("~/snowlar_ws/snowlar/src/cgsr1_pkg/cgsr1_pkg/static/index_debug.html")
 
 app = Flask(__name__)
 node = None
-publisher = None
+joystick_publisher = None
+winch_publisher = None
 
 @app.route('/')
 def index():
@@ -31,15 +31,40 @@ def joystick():
     print(f"Publishing Twist message: linear.x={x}, linear.y={y}")  # Debug print
     
     twist = Twist()
-    twist.linear.y = x
-    twist.linear.x = y
+    twist.linear.y = x + 0.000000001
+    twist.linear.x = y + 0.000000001
     
-    if publisher:
-        publisher.publish(twist)
-        print("Message published")  # Debug print
+    if joystick_publisher:
+        joystick_publisher.publish(twist)
+        print("Joystick message published")  # Debug print
     else:
-        print("Publisher not initialized")  # Debug print
-        return jsonify({"status": "error", "message": "Publisher not initialized"}), 500
+        print("Joystick publisher not initialized")  # Debug print
+        return jsonify({"status": "error", "message": "Joystick publisher not initialized"}), 500
+    
+    return jsonify({"status": "success", "x": x, "y": y})
+
+@app.route('/winch', methods=['POST'])
+def winch():
+    data = request.get_json()
+    print(f"Received winch data: {data}")  # Debug print
+    
+    x = data.get('x')
+    y = data.get('y')
+
+    twist = Twist()
+    if x is not None:
+        print(f"Publishing Twist message: linear.x={x}")  # Debug print
+        twist.linear.x = x + 0.000000001
+    if y is not None:
+        print(f"Publishing Twist message: linear.y={y}")  # Debug print
+        twist.linear.y = y + 0.000000001
+    
+    if winch_publisher:
+        winch_publisher.publish(twist)
+        print("Winch message published")  # Debug print
+    else:
+        print("Winch publisher not initialized")  # Debug print
+        return jsonify({"status": "error", "message": "Winch publisher not initialized"}), 500
     
     return jsonify({"status": "success", "x": x, "y": y})
 
@@ -48,12 +73,13 @@ def start_web_interface():
     app.run(host='0.0.0.0', port=8080)
 
 def main():
-    global node, publisher
+    global node, joystick_publisher, winch_publisher
     print("Initializing ROS")  # Debug print
     rclpy.init()
     node = rclpy.create_node('web_interface')
-    publisher = node.create_publisher(Twist, 'cmd_vel', 10)
-    print("ROS node and publisher initialized")  # Debug print
+    joystick_publisher = node.create_publisher(Twist, 'cmd_vel', 10)
+    winch_publisher = node.create_publisher(Twist, 'winch', 10)
+    print("ROS node and publishers initialized")  # Debug print
     
     try:
         start_web_interface()
@@ -65,4 +91,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
