@@ -5,6 +5,7 @@ from std_msgs.msg import Float32
 from geometry_msgs.msg import Twist
 import threading
 import time
+import math
 
 class MainNode(Node):
     def __init__(self, config_path, node_name):
@@ -35,7 +36,7 @@ class MainNode(Node):
 
         self.max_velocity = 6
         
-        self.alpha = 0.06  # Low-pass filter constant (0 < alpha <= 1)
+        self.alpha = 0.1  # Low-pass filter constant (0 < alpha <= 1)
         
         self.thread_main.start()
 
@@ -58,11 +59,14 @@ class MainNode(Node):
             time.sleep(1 / self.rate_control_hz)
 
     def low_pass_filter(self, current_velocity, target_velocity):
-        return current_velocity + self.alpha * abs(target_velocity - current_velocity)
+        return current_velocity + self.alpha * (target_velocity - current_velocity)
 
     def publish_velocity(self, publisher, velocity):
         msg = Float32()
-        msg.data = velocity
+        if abs(velocity) < 0.1:
+            msg.data = 0.0
+        else:
+            msg.data = velocity
         publisher.publish(msg)
 
     def callback_cmd_vel(self, msg):
@@ -71,11 +75,6 @@ class MainNode(Node):
         
         vx = vx * self.max_velocity
         vy = vy * self.max_velocity
-
-        # Convert vx, vy to wheel velocities based on your kinematic model
-        if(abs(self.target_velocity_front_left)<0.01 and abs(self.velocity_front_right) <0.01):
-            self.target_velocity_front_left = 0.0
-            self.target_velocity_front_right = 0.0
 
         print(f'This is the x velocity: {vx}')
 
