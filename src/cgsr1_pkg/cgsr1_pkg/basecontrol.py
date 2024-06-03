@@ -63,7 +63,7 @@ class MainNode(Node):
         # Here you would put your formula to convert to individual wheel speeds
         # Placeholder values:
 
-        if(vx<0.01 and vy <0.01):
+        if(abs(vx)<0.01 and abs(vy) <0.01):
             vx = 0
             vy = 0
 
