@@ -63,15 +63,15 @@ class MainNode(Node):
         # Here you would put your formula to convert to individual wheel speeds
         # Placeholder values:
 
-        if(vx<0.01 and vy <0.01):
-            vx = 0
-            vy = 0
+        if(abs(vx)<0.01 and abs(vy) <0.01):
+            vx = 0.0
+            vy = 0.0
+
+        print("This is the x velocity: " + vx)
+        
 
         
-        
-
-        
-        low_pass_value = 0.1
+        low_pass_value = 0.94
         self.velocity_front_left = (self.velocity_front_left * low_pass_value) + (( vx + (-1*vy) ) * (1-low_pass_value));
         self.velocity_front_right = (self.velocity_front_right * low_pass_value) + ((vx + vy ) * (1-low_pass_value));
         self.velocity_rear_left = self.velocity_front_left
