@@ -55,10 +55,10 @@ class MainNode(Node):
         vx = msg.linear.y  # Linear velocity in x-direction
         vy = msg.linear.x  # Linear velocity in y-direction
         
-        vx = vx * self.max_velocity;
-        vy = vy * self.max_velocity;
+        vx = vx * self.max_velocity
+        vy = vy * self.max_velocity
 
-        
+
         # Convert vx, vy, wz to wheel velocities based on your kinematic model
         # Here you would put your formula to convert to individual wheel speeds
         # Placeholder values:
