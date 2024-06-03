@@ -1,0 +1,5 @@
+  File "/home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/web_interface.py", line 60
+    twist.linear.y = y +
+                        ^
+SyntaxError: invalid syntax
+
