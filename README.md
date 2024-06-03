@@ -30,11 +30,11 @@ Initialize Project:
 Execute Code
 7. Open the project folder in a terminal. Source ROS with `source snowlar/install/setup.bash`
 8. Run the individual ROS2 nodes using `ros2 run <package_name> <node_name>`
+9. List active topics `ros2 topic list`
+10. Echo topics: `ros2 topic echo <topic_name>`
+11. Start the web interface by creating a hotspot. Then connect from any other device to the hotspot and call the IP followed by the port (default: IP:8080). Alternatively, start it locally with `localhost:8080`
 
 
 TODO: 
 - pot. enable slow breaking
-9. List active topics `ros2 topic list`
-10. Echo topics: `ros2 topic echo <topic_name>`
-11. Start the web interface by creating a hotspot. Then connect from any other device to the hotspot and call the IP followed by the port (default: IP:8080). Alternatively, start it locally with `localhost:8080`
 
