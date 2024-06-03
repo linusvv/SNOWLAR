@@ -67,7 +67,7 @@ class MainNode(Node):
             vx = 0
             vy = 0
 
-        
+        print("This is the x velocity: "vx)
         
 
         
