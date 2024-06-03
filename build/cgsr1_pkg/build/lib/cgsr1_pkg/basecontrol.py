@@ -71,7 +71,7 @@ class MainNode(Node):
         
 
         
-        low_pass_value = 0.94
+        low_pass_value = 0
         self.velocity_front_left = (self.velocity_front_left * low_pass_value) + (( vx + (-1*vy) ) * (1-low_pass_value));
         self.velocity_front_right = (self.velocity_front_right * low_pass_value) + ((vx + vy ) * (1-low_pass_value));
         self.velocity_rear_left = self.velocity_front_left
