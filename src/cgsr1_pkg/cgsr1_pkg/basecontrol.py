@@ -28,16 +28,27 @@ class MainNode(Node):
         self.velocity_rear_right = 0.0
         self.velocity_rear_left = 0.0
 
+        self.target_velocity_front_right = 0.0
+        self.target_velocity_front_left = 0.0
+        self.target_velocity_rear_right = 0.0
+        self.target_velocity_rear_left = 0.0
+
         self.max_velocity = 6
         
-        self.thread_main.start()
-
+        self.alpha = 0.1  # Low-pass filter constant (0 < alpha <= 1)
         
+        self.thread_main.start()
 
     def thread_main(self):
         time.sleep(1)
         
         while not self.thread_exited:
+            # Apply low-pass filter to smooth velocity changes
+            self.velocity_front_right = self.low_pass_filter(self.velocity_front_right, self.target_velocity_front_right)
+            self.velocity_front_left = self.low_pass_filter(self.velocity_front_left, self.target_velocity_front_left)
+            self.velocity_rear_right = self.low_pass_filter(self.velocity_rear_right, self.target_velocity_rear_right)
+            self.velocity_rear_left = self.low_pass_filter(self.velocity_rear_left, self.target_velocity_rear_left)
+            
             # Publish the velocities for each wheel
             self.publish_velocity(self.pub_front_right, self.velocity_front_right)
             self.publish_velocity(self.pub_front_left, self.velocity_front_left)
@@ -45,6 +56,9 @@ class MainNode(Node):
             self.publish_velocity(self.pub_rear_left, self.velocity_rear_left)
             
             time.sleep(1 / self.rate_control_hz)
+
+    def low_pass_filter(self, current_velocity, target_velocity):
+        return current_velocity + self.alpha * (target_velocity - current_velocity)
 
     def publish_velocity(self, publisher, velocity):
         msg = Float32()
@@ -58,32 +72,22 @@ class MainNode(Node):
         vx = vx * self.max_velocity
         vy = vy * self.max_velocity
 
-
-        # Convert vx, vy, wz to wheel velocities based on your kinematic model
-        # Here you would put your formula to convert to individual wheel speeds
-        # Placeholder values:
-
+        # Convert vx, vy to wheel velocities based on your kinematic model
         if(abs(vx)<0.01 and abs(vy) <0.01):
             vx = 0.0
             vy = 0.0
 
-        print(f'This is the x velocity: {vx}' )
-        
+        print(f'This is the x velocity: {vx}')
 
-        
-        low_pass_value = 0
-        self.velocity_front_left = (self.velocity_front_left * low_pass_value) + (( vx + (-1*vy) ) * (1-low_pass_value));
-        self.velocity_front_right = (self.velocity_front_right * low_pass_value) + ((vx + vy ) * (1-low_pass_value));
-        self.velocity_rear_left = self.velocity_front_left
-        self.velocity_rear_right = self.velocity_front_right
-        
+        self.target_velocity_front_left = vx - vy
+        self.target_velocity_front_right = vx + vy
+        self.target_velocity_rear_left = self.target_velocity_front_left
+        self.target_velocity_rear_right = self.target_velocity_front_right
 
     def __del__(self):
         self.thread_exited = True
         if self.thread_main.is_alive():
             self.thread_main.join()
-
-
 
 def main(args=None):
     rclpy.init(args=args)
