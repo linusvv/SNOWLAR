@@ -64,8 +64,8 @@ class MainNode(Node):
         # Placeholder values:
 
         if(abs(vx)<0.01 and abs(vy) <0.01):
-            vx = 0
-            vy = 0
+            vx = 0.0
+            vy = 0.0
 
         print("This is the x velocity: " + vx)
         
