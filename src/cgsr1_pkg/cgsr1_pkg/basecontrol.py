@@ -27,8 +27,12 @@ class MainNode(Node):
         self.velocity_front_left = 0.0
         self.velocity_rear_right = 0.0
         self.velocity_rear_left = 0.0
+
+        self.max_velocity = 6;
         
         self.thread_main.start()
+
+        
 
     def thread_main(self):
         time.sleep(1)
@@ -51,6 +55,9 @@ class MainNode(Node):
         vx = msg.linear.y  # Linear velocity in x-direction
         vy = msg.linear.x  # Linear velocity in y-direction
         
+        vx = vx * self.max_velocity;
+        vy = vy * self.max_velocity;
+
         
         # Convert vx, vy, wz to wheel velocities based on your kinematic model
         # Here you would put your formula to convert to individual wheel speeds
