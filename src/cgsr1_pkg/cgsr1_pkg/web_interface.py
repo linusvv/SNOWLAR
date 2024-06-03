@@ -31,8 +31,8 @@ def joystick():
     print(f"Publishing Twist message: linear.x={x}, linear.y={y}")  # Debug print
     
     twist = Twist()
-    twist.linear.y = x + 0.000000001
-    twist.linear.x = y + 0.000000001
+    twist.linear.y = x *20 + 0.000000001
+    twist.linear.x = y *20 + 0.000000001
     
     if joystick_publisher:
         joystick_publisher.publish(twist)
@@ -54,10 +54,10 @@ def winch():
     twist = Twist()
     if x is not None:
         print(f"Publishing Twist message: linear.x={x}")  # Debug print
-        twist.linear.x = x + 0.000000001
+        twist.linear.x = x *20 + 0.000000001
     if y is not None:
         print(f"Publishing Twist message: linear.y={y}")  # Debug print
-        twist.linear.y = y + 0.000000001
+        twist.linear.y = y *20 + 0.000000001
     
     if winch_publisher:
         winch_publisher.publish(twist)
