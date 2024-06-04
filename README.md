@@ -40,6 +40,9 @@ Execute Code:
 11. Echo topics: `ros2 topic echo <topic_name>`
 12. Start the web interface by creating a hotspot. Then connect from any other device to the hotspot and call the IP followed by the port (default: IP:8080). Alternatively, start it locally with `localhost:8080`
 
+> [!TIP]
+> If you are new to ROS2 it is strongly recommended to start with the [turtlesim tutorial](https://docs.ros.org/en/humble/Tutorials.html)
+
 
 ### Movement Concept:
 The movement concept is based on 2 individually controlled xy motion systems. The first is the rover, which can drive around using its tracks. The other one is the winch mechanism, which pulls the rover up the roof and moves the wagon at the upper edge of the solar panels left to right on its extrusion by winding in one winch and extending the other. These 2 systems are coupled in software to ensure the safe operation and maneuverability of the rover, without it falling off the roof.
