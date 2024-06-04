@@ -6,10 +6,10 @@
 <br>
 <br>
 
-### !!!This project is still work in progress, so please be cautious when using the information providet here!!!
+### !!!This project is still work in progress, so please be cautious when using the information provided here!!!
 
 ## Code Repository for the SNOWLAR CGSR1 P5
-The Project is based on ROS2, written in Python. Here are the current working nodes:
+The project is based on ROS2 and written in Python. Here are the current working nodes:
 - **tank_motion** - basecontrol.py
 - **joy_steering** - joytobase.py
 - **imu_steering** - imutobase.py
@@ -40,16 +40,16 @@ Execute Code:
 
 
 ### Movement Concept:
-The movement concept is based on 2 individally controlled xy motion systems. The first one is the rover, which can drive around utilizing its tracks. The other one is the winch mechanism, being able to pull the rover up the roof, but also able to move the wagon at the upper edge of the solar panels left to right on its extrusion by winding in one winch and extending the other. These 2 systems are coupled in software to ensure safe operation and maneuverability of the rover, without if falling off the roof.
+The movement concept is based on 2 individually controlled xy motion systems. The first is the rover, which can drive around using its tracks. The other one is the winch mechanism, which pulls the rover up the roof and moves the wagon at the upper edge of the solar panels left to right on its extrusion by winding in one winch and extending the other. These 2 systems are coupled in software to ensure the safe operation and maneuverability of the rover, without it falling off the roof.
 
 ### Hardware:
-The Robot is build using mainly a combination of Olive Robotics electronics, Maker Beam kits and 3D printed Parts.
+The Robot is built mainly using Olive Robotics electronics, Maker Beam kits, and 3D-printed Parts.
 
 The bigger groups of parts are:
-1. The main Frame: It is build from 4 motors as a base in the corners that are connected using Maker Beam extrusions.
-2. The chains: The chains are 3D printed, connected with pieces of 2mm Wire and get their traction by optionally adhering foam rubber with epoxy to them. They are connected to the frame using 3D printed sprockets. (Detailed build instructions link)
-3. The winch: The winch uses 2 motors, connected by extrusions as a base. Attached to this are the 2 3D printed winch reels and deflection roller assemblys. (Detailed build instructions link)
-4. The brush: The mount for the brush is constructed by bending sheet metal and the brush itself has a 3D printed body and foam rubber flaps. (Detailed build instructions link)
-5. The wagon: The wagon runs on a 3030 aluminum extrusion by using V-rollers and is moved left to right by the winch mechanism. (Detailed build instructions link)
+1. The main Frame: It is build from 4 motors as a base in the corners connected using Maker Beam extrusions.
+2. The chains: The chains are 3D printed and connected with pieces of 2mm wire, and they get their traction by optionally adhering foam rubber with epoxy to them. They are connected to the frame using 3D-printed sprockets. (Detailed build instructions link)
+3. The winch: The winch uses 2 motors, connected by extrusions as a base. Attached to this are the 2 3D printed winch reels and deflection roller assemblies. (Detailed build instructions link)
+4. The brush: The mount for the brush is constructed by bending sheet metal and the brush itself has a 3D-printed body and foam rubber flaps. (Detailed build instructions link)
+5. The wagon runs on a 3030 aluminum extrusion using V-rollers and is moved left to right by the winch mechanism. (Detailed build instructions link)
 
    
