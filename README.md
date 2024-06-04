@@ -7,7 +7,7 @@
 <br>
 
 > [!WARNING]  
-> :warning::warning::warning: This project is still work in progress, so please be cautious when using the information provided here :warning::warning::warning:
+>  This project is still work in progress, so please be cautious when using the information provided here
 
 
 ## Code Repository for the SNOWLAR CGSR1 P5
