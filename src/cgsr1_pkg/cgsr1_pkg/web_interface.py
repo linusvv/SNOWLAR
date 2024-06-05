@@ -1,7 +1,8 @@
 import os
 from flask import Flask, request, jsonify, send_file
 import rclpy
-from geometry_msgs.msg import Twist
+from rclpy.node import Node
+from geometry_msgs.msg import Twist, Vector3, Pose
 
 # Get the current directory of the script
 INDEX_FILE_PATH = os.path.expanduser("~/snowlar_ws/snowlar/src/cgsr1_pkg/cgsr1_pkg/static/index_debug.html")
@@ -10,6 +11,28 @@ app = Flask(__name__)
 node = None
 joystick_publisher = None
 winch_publisher = None
+
+# Variables to store the map size and robot position
+current_map_size = {'width': 600.0, 'height': 600.0}
+current_robot_position = {'x': 300.0, 'y': 300.0}
+
+class ROSSubscriberNode(Node):
+    def __init__(self):
+        super().__init__('flask_subscriber_node')
+        
+        # Subscribers for map size and robot position
+        self.create_subscription(Vector3, 'map_topic', self.map_size_callback, 10)
+        self.create_subscription(Pose, 'robot_position_topic', self.robot_position_callback, 10)
+
+    def map_size_callback(self, msg):
+        global current_map_size
+        current_map_size['width'] = msg.x
+        current_map_size['height'] = msg.y
+
+    def robot_position_callback(self, msg):
+        global current_robot_position
+        current_robot_position['x'] = msg.position.x
+        current_robot_position['y'] = msg.position.y
 
 @app.route('/')
 def index():
@@ -68,6 +91,14 @@ def winch():
     
     return jsonify({"status": "success", "x": x, "y": y})
 
+@app.route('/map_data', methods=['GET'])
+def map_data():
+    global current_map_size, current_robot_position
+    return jsonify({
+        'map_size': current_map_size,
+        'robot_position': current_robot_position
+    })
+
 def start_web_interface():
     print("Starting web interface")  # Debug print
     app.run(host='0.0.0.0', port=8080)
@@ -79,6 +110,11 @@ def main():
     node = rclpy.create_node('web_interface')
     joystick_publisher = node.create_publisher(Twist, 'cmd_vel', 10)
     winch_publisher = node.create_publisher(Twist, 'winch', 10)
+
+    # Create and spin ROS subscriber node in a separate thread
+    subscriber_node = ROSSubscriberNode()
+    rclpy.spin(subscriber_node)
+    
     print("ROS node and publishers initialized")  # Debug print
     
     try:

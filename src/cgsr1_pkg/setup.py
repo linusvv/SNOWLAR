@@ -24,6 +24,7 @@ setup(
             'tank_motion = cgsr1_pkg.basecontrol:main',
             'imu_steering = cgsr1_pkg.imutobase:main',
             'web_interface = cgsr1_pkg.web_interface:main',
+            'dummy_values = cgsr1_pkg.simple_publisher:main',
         ],
     },
 )
