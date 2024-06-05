@@ -31,8 +31,8 @@ def joystick():
     print(f"Publishing Twist message: linear.x={x}, linear.y={y}")  # Debug print
     
     twist = Twist()
-    twist.linear.y = -x + 0.000000001
-    twist.linear.x = -y + 0.000000001
+    twist.linear.y = x + 0.000000001
+    twist.linear.x = y + 0.000000001
     
     if joystick_publisher:
         joystick_publisher.publish(twist)
