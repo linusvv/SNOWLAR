@@ -1,1 +1,0 @@
-# Detailed Hardware Description

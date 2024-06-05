@@ -6,12 +6,8 @@
 <br>
 <br>
 
-> [!WARNING]  
->  This project is still work in progress, so please be cautious when using the information provided here
-
-
 ## Code Repository for the SNOWLAR CGSR1 P5
-The project is based on ROS2 and written in Python. Here are the current working nodes:
+The Project is based on ROS2, written in Python. Here are the current working nodes:
 - **tank_motion** - basecontrol.py
 - **joy_steering** - joytobase.py
 - **imu_steering** - imutobase.py
@@ -31,6 +27,17 @@ Initialize Project:
 3. For setting up the individual Olive components: [Olive Docs](https://www.olive-robotics.com/olive-docs)
 4. Create a Network Bridge connecting all the Olive components. For ease of use create a table with the respective part names, part IPs, and part macs. Make sure the ID is set to the same value for each part.
 6. Change the code accordingly by replacing part names in the respective nodes.
+Execute Code
+7. Open the project folder in a terminal. Source ROS with `source snowlar/install/setup.bash`
+8. Run the individual ROS2 nodes using `ros2 run <package_name> <node_name>`
+
+
+TODO: 
+- pot. enable slow breaking
+9. List active topics `ros2 topic list`
+10. Echo topics: `ros2 topic echo <topic_name>`
+11. Start the web interface by creating a hotspot. Then connect from any other device to the hotspot and call the IP followed by the port (default: IP:8080). Alternatively, start it locally with `localhost:8080`
+
 
 Execute Code:
 

@@ -1,1 +1,0 @@
-# Detailed Software Description
