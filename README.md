@@ -15,9 +15,12 @@ The Project is based on ROS2, written in Python. Here are the current working no
 
 And the current test files:
 - **test_flask.py**
+- **dummy_publisher** - dummy_publisher.py
 
 Web Interface Folder: ../static/
-- index.html
+- index.html (old simple Joystick with mouse, touch and arrow-control
+- index_debug.html (gui with controls)
+- index_debug_alt.html (gui with controls and map)
 - ... tbc
 
 ### Run the project:
