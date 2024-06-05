@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joystick and Sliders Control</title>
+    <title>Virtueller Joystick</title>
     <style>
-        body{
-            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        }
-        #header {
+         #header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -17,9 +15,9 @@
             color: white;
         }
         #logo {
-            width: 200px; /* Adjust the width as per your logo size */
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            width: 50px; /* Adjust the width as per your logo size */
             height: auto;
-            font-size: x-large;
         }
         #links {
             display: flex;
@@ -36,220 +34,190 @@
             align-items: center;
             margin-top: 50px;
         }
-        #joystick {
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        #joystick-container {
+            position: relative;
             width: 200px;
             height: 200px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
+            background-color: #ccc;
             border-radius: 50%;
-            position: relative;
-            margin-right: 50px;
+            overflow: hidden;
         }
-        #handle {
-            width: 50px;
-            height: 50px;
-            background-color: #808080;
+
+        #joystick {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: #666;
             border-radius: 50%;
-            position: absolute;
-            top: 75px;
-            left: 75px;
-            cursor: pointer;
-            touch-action: none; /* Prevent touch scrolling */
-        }
-        .sliders-container {
-            display: flex;
-            align-items: center;
-        }
-        .slider {
-            width: 50px;
-            height: 200px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            position: relative;
-            margin: 0 10px;
-        }
-        .slider-handle {
-            width: 50px;
-            height: 50px;
-            background-color: #808080;
-            background-color: #808080;
-            position: absolute;
-            bottom: 0;
-            cursor: pointer;
-            touch-action: none; /* Prevent touch scrolling */
-        }
-        #map-size {
-            margin-top: 20px;
-            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
+
 <body>
-    <div id="header">
-        <div id="logo">ROS2 Control Interface</div>
-        <div id="links">
-            <a href="#">Link 1</a>
-            <a href="#">Link 2</a>
-        </div>
-    </div>
-    <div id="container">
-        <div id="joystick">
-            <div id="handle"></div>
-        </div>
-        <div class="sliders-container">
-            <div id="slider-x" class="slider">
-                <div id="slider-handle-x" class="slider-handle"></div>
-            </div>
-            <div id="slider-y" class="slider">
-                <div id="slider-handle-y" class="slider-handle"></div>
-            </div>
-        </div>
-    </div>
-    <div id="map-size">
-        <p>Map Size: <span id="map-width"></span> x <span id="map-height"></span></p>
-        <p>Robot Position: X: <span id="robot-x"></span>, Y: <span id="robot-y"></span></p>
+    <div id="joystick-container">
+        <div id="joystick"></div>
     </div>
     <script>
-        const handle = document.getElementById('handle');
-        const joystick = document.getElementById('joystick');
-        const sliderHandleX = document.getElementById('slider-handle-x');
-        const sliderHandleY = document.getElementById('slider-handle-y');
+        document.addEventListener('DOMContentLoaded', () => {
+            const joystick = document.getElementById('joystick');
+            const joystickContainer = document.getElementById('joystick-container');
+            const containerRect = joystickContainer.getBoundingClientRect();
+            const maxMove = containerRect.width / 2 - joystick.offsetWidth / 2;
 
-        const joystickRect = joystick.getBoundingClientRect();
-        const joystickCenter = {
-            x: joystickRect.left + joystickRect.width / 2,
-            y: joystickRect.top + joystickRect.height / 2,
-        };
-        const maxDistance = joystickRect.width / 2;
+            let pressedKeys = {};
+            let lastSentData = { x: 0, y: 0 };
+            let isKeyPressActive = false;
 
-        function postJoystickData(x, y) {
-            fetch('/joystick', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ x, y }),
-            })
-            .then(response => response.json())
-            .then(data => console.log('Joystick data sent:', data))
-            .catch((error) => console.error('Error:', error));
-        }
+            const sendJoystickData = (x, y) => {
+            	x += 0.0000000000001;
+            	y += 0.0000000000001;
+                fetch('/joystick', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ x: parseFloat(x), y: parseFloat(y) }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => console.log('Success:', data))
+                .catch((error) => console.error('Error:', error));
+            };
 
-        handle.addEventListener('mousedown', startDrag);
-        handle.addEventListener('touchstart', startDrag);
-
-        function startDrag(event) {
-            event.preventDefault();
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('touchmove', drag);
-            document.addEventListener('mouseup', stopDrag);
-            document.addEventListener('touchend', stopDrag);
-        }
-
-        function drag(event) {
-            event.preventDefault();
-            const clientX = event.clientX || event.touches[0].clientX;
-            const clientY = event.clientY || event.touches[0].clientY;
-
-            const dx = clientX - joystickCenter.x;
-            const dy = clientY - joystickCenter.y;
-            const distance = Math.min(Math.sqrt(dx * dx + dy * dy), maxDistance);
-            const angle = Math.atan2(dy, dx);
-
-            const newX = joystickCenter.x + distance * Math.cos(angle) - handle.offsetWidth / 2;
-            const newY = joystickCenter.y + distance * Math.sin(angle) - handle.offsetHeight / 2;
-
-            handle.style.left = newX + 'px';
-            handle.style.top = newY + 'px';
-
-            const normalizedX = (distance / maxDistance) * Math.cos(angle);
-            const normalizedY = (distance / maxDistance) * Math.sin(angle);
-
-            postJoystickData(normalizedX, normalizedY);
-        }
-
-        function stopDrag(event) {
-            event.preventDefault();
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('touchmove', drag);
-            document.removeEventListener('mouseup', stopDrag);
-            document.removeEventListener('touchend', stopDrag);
-            handle.style.left = '75px';
-            handle.style.top = '75px';
-            postJoystickData(0, 0);  // Return to center
-        }
-
-        sliderHandleX.addEventListener('mousedown', startSliderDrag);
-        sliderHandleX.addEventListener('touchstart', startSliderDrag);
-        sliderHandleY.addEventListener('mousedown', startSliderDrag);
-        sliderHandleY.addEventListener('touchstart', startSliderDrag);
-
-        function startSliderDrag(event) {
-            event.preventDefault();
-            const handle = event.target;
-            document.addEventListener('mousemove', sliderDrag);
-            document.addEventListener('touchmove', sliderDrag);
-            document.addEventListener('mouseup', stopSliderDrag);
-            document.addEventListener('touchend', stopSliderDrag);
-
-            function sliderDrag(event) {
-                event.preventDefault();
-                const sliderRect = handle.parentElement.getBoundingClientRect();
-                const clientY = event.clientY || event.touches[0].clientY;
-
-                let newY = Math.min(Math.max(clientY - sliderRect.top, 0), sliderRect.height - handle.offsetHeight);
-                handle.style.bottom = (sliderRect.height - newY - handle.offsetHeight) + 'px';
-
-                const normalizedY = (newY / (sliderRect.height - handle.offsetHeight)) * 2 - 1;
-
-                if (handle.id === 'slider-handle-x') {
-                    postWinchData('x', normalizedY);
-                } else if (handle.id === 'slider-handle-y') {
-                    postWinchData('y', normalizedY);
+            document.addEventListener('keydown', (event) => {
+                if (!pressedKeys[event.key]) {
+                    pressedKeys[event.key] = true;
+                    if (!isKeyPressActive) {
+                        isKeyPressActive = true;
+                        moveJoystick();
+                    }
                 }
-            }
+            });
 
-            function stopSliderDrag(event) {
+            document.addEventListener('keyup', (event) => {
+                delete pressedKeys[event.key];
+                if (Object.keys(pressedKeys).length === 0) {
+                    isKeyPressActive = false;
+                    resetJoystick();
+                } else {
+                    moveJoystick();
+                }
+            });
+
+            const moveJoystick = () => {
+                if (!isKeyPressActive) return;
+
+                const step = 25;
+                let relativeX = 0;
+                let relativeY = 0;
+
+                if (pressedKeys['ArrowUp'] && pressedKeys['ArrowLeft']) {
+                    relativeY -= step;
+                    relativeX -= step;
+                } else if (pressedKeys['ArrowUp'] && pressedKeys['ArrowRight']) {
+                    relativeY -= step;
+                    relativeX += step;
+                } else if (pressedKeys['ArrowDown'] && pressedKeys['ArrowLeft']) {
+                    relativeY += step;
+                    relativeX -= step;
+                } else if (pressedKeys['ArrowDown'] && pressedKeys['ArrowRight']) {
+                    relativeY += step;
+                    relativeX += step;
+                } else if (pressedKeys['ArrowUp']) {
+                    relativeY -= step;
+                    relativeX += 0;
+                } else if (pressedKeys['ArrowDown']) {
+                    relativeY += step;
+                    relativeX += 0;
+                } else if (pressedKeys['ArrowLeft']) {
+                    relativeX -= step;
+                    relativeY += 0;
+                } else if (pressedKeys['ArrowRight']) {
+                    relativeX += step;
+                    relativeY += 0;
+                }
+
+                // Constrain the joystick movement within the container
+                relativeX = Math.max(-50, Math.min(50, relativeX));
+                relativeY = Math.max(-50, Math.min(50, relativeY));
+
+                const x = parseFloat(((50 + relativeX) / 50 - 1)*2);
+                const y = parseFloat(-((50 + relativeY) / 50 - 1)*2); // Invert Y-axis
+
+                sendJoystickData(x, y);
+
+                joystick.style.top = `${50 + relativeY}%`;
+                joystick.style.left = `${50 + relativeX}%`;
+                joystick.style.transform = 'translate(-50%, -50%)';
+
+                requestAnimationFrame(moveJoystick); // Continue the loop for key press
+            };
+
+            const startDrag = (event) => {
                 event.preventDefault();
-                document.removeEventListener('mousemove', sliderDrag);
-                document.removeEventListener('touchmove', sliderDrag);
-                document.removeEventListener('mouseup', stopSliderDrag);
-                document.removeEventListener('touchend', stopSliderDrag);
-            }
-        }
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchmove', drag);
+                document.addEventListener('touchend', endDrag);
+            };
 
-        function postWinchData(axis, value) {
-            const data = {};
-            data[axis] = value;
-            fetch('/winch', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => console.log('Winch data sent:', data))
-            .catch((error) => console.error('Error:', error));
-        }
+            const endDrag = () => {
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('mouseup', endDrag);
+                document.removeEventListener('touchmove', drag);
+                document.removeEventListener('touchend', endDrag);
+                resetJoystick();
+            };
 
-        // Fetch map size and robot position
-        function fetchMapData() {
-            fetch('/map_data')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('map-width').textContent = data.map_size.width;
-                document.getElementById('map-height').textContent = data.map_size.height;
-                document.getElementById('robot-x').textContent = data.robot_position.x;
-                document.getElementById('robot-y').textContent = data.robot_position.y;
-            })
-            .catch((error) => console.error('Error fetching map data:', error));
-        }
+            const drag = (event) => {
+                event.preventDefault();
+                const touch = event.touches ? event.touches[0] : event;
+                const rect = joystickContainer.getBoundingClientRect();
+                const offsetX = touch.clientX - rect.left - rect.width / 2;
+                const offsetY = touch.clientY - rect.top - rect.height / 2;
+                const distance = Math.min(Math.sqrt(offsetX * offsetX + offsetY * offsetY), maxMove);
+                const angle = Math.atan2(offsetY, offsetX);
 
-        // Fetch data every second
-        setInterval(fetchMapData, 1000);
+                const left = 50 + (distance * Math.cos(angle)) / (rect.width / 2) * 100;
+                const top = 50 + (distance * Math.sin(angle)) / (rect.height / 2) * 100;
+
+                joystick.style.left = `${left}%`;
+                joystick.style.top = `${top}%`;
+                joystick.style.transform = 'translate(-50%, -50%)';
+
+                const relativeX = (left - 50) / 50;
+                const relativeY = (top - 50) / 50;
+                sendJoystickData(relativeX, -relativeY); // Invert Y-axis
+            };
+
+            const resetJoystick = () => {
+                joystick.style.top = '50%';
+                joystick.style.left = '50%';
+                joystick.style.transform = 'translate(-50%, -50%)';
+                sendJoystickData(0, 0);
+            };
+
+            joystick.addEventListener('mousedown', startDrag);
+            joystick.addEventListener('touchstart', startDrag);
+        });
     </script>
 </body>
+
 </html>
 
-            
