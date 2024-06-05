@@ -1,15 +1,19 @@
+# cgsr1_pkg/flask_server_with_ros.py
 import os
 from flask import Flask, request, jsonify, send_file
 import rclpy
+from rclpy.node import Node
 from geometry_msgs.msg import Twist
-import random
-# Get the current directory of the script
+import threading
+from std_msgs.msg import Float32MultiArray, Int32MultiArray
+
 INDEX_FILE_PATH = os.path.expanduser("~/snowlar_ws/snowlar/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt.html")
 
 app = Flask(__name__)
 node = None
 joystick_publisher = None
 winch_publisher = None
+gui_controller_instance = None
 
 @app.route('/')
 def index():
@@ -21,24 +25,19 @@ def index():
 @app.route('/joystick', methods=['POST'])
 def joystick():
     data = request.get_json()
-    print(f"Received joystick data: {data}")  # Debug print
     
     x = data.get('x')
     y = data.get('y')
     if x is None or y is None:
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
-    print(f"Publishing Twist message: linear.x={x}, linear.y={y}")  # Debug print
-    
     twist = Twist()
     twist.linear.y = -x + 0.000000001
     twist.linear.x = -y + 0.000000001
     
     if joystick_publisher:
         joystick_publisher.publish(twist)
-        print("Joystick message published")  # Debug print
     else:
-        print("Joystick publisher not initialized")  # Debug print
         return jsonify({"status": "error", "message": "Joystick publisher not initialized"}), 500
     
     return jsonify({"status": "success", "x": x, "y": y})
@@ -46,62 +45,84 @@ def joystick():
 @app.route('/winch', methods=['POST'])
 def winch():
     data = request.get_json()
-    print(f"Received winch data: {data}")  # Debug print
     
     x = data.get('x')
     y = data.get('y')
 
     twist = Twist()
     if x is not None:
-        print(f"Publishing Twist message: linear.x={x}")  # Debug print
         twist.linear.x = x + 0.000000001
     if y is not None:
-        print(f"Publishing Twist message: linear.y={y}")  # Debug print
         twist.linear.y = y + 0.000000001
     
     if winch_publisher:
         winch_publisher.publish(twist)
-        print("Winch message published")  # Debug print
     else:
-        print("Winch publisher not initialized")  # Debug print
         return jsonify({"status": "error", "message": "Winch publisher not initialized"}), 500
     
     return jsonify({"status": "success", "x": x, "y": y})
+
+class GUIController(Node):
+    def __init__(self):
+        super().__init__('gui_controller')
+        
+        # Initialize with default values
+        self.width = 300
+        self.height = 150
+        self.dot_x = 0
+        self.dot_y = 0
+
+        self.subscription_dimensions = self.create_subscription(
+            Int32MultiArray,
+            '/gui_dimensions',
+            self.dimensions_callback,
+            10
+        )
+
+        self.subscription_position = self.create_subscription(
+            Float32MultiArray,
+            '/gui_position',
+            self.position_callback,
+            10
+        )
+
+    def dimensions_callback(self, msg):
+        self.width, self.height = msg.data
+        self.get_logger().info(f'Received dimensions: width={self.width}, height={self.height}')
+
+    def position_callback(self, msg):
+        self.dot_x, self.dot_y = msg.data
+        self.get_logger().info(f'Received position: x={self.dot_x}, y={self.dot_y}')
+
+def ros2_thread():
+    rclpy.spin(gui_controller_instance)
+    gui_controller_instance.destroy_node()
+    rclpy.shutdown()
+
 @app.route('/rectangle-data')
 def rectangle_data():
-    # Replace these with actual dynamic values as needed
-    width = 300
-    height = 150
-    dot_x = random.randint(0, width - 20)
-    dot_y = random.randint(0, height - 20)
+    global gui_controller_instance
+    
     data = {
-        'width': width,
-        'height': height,
-        'dot_x': dot_x,
-        'dot_y': dot_y
+        'width': gui_controller_instance.width,
+        'height': gui_controller_instance.height,
+        'dot_x': gui_controller_instance.dot_x,
+        'dot_y': gui_controller_instance.dot_y
     }
     return jsonify(data)
 
 def start_web_interface():
-    print("Starting web interface")  # Debug print
     app.run(host='0.0.0.0', port=8080)
 
 def main():
-    global node, joystick_publisher, winch_publisher
-    print("Initializing ROS")  # Debug print
+    global node, joystick_publisher, winch_publisher, gui_controller_instance
     rclpy.init()
     node = rclpy.create_node('web_interface')
     joystick_publisher = node.create_publisher(Twist, 'cmd_vel', 10)
     winch_publisher = node.create_publisher(Twist, 'winch', 10)
-    print("ROS node and publishers initialized")  # Debug print
-    
-    try:
-        start_web_interface()
-    except KeyboardInterrupt:
-        print("Shutting down")  # Debug print
-    finally:
-        rclpy.shutdown()
-        print("ROS shutdown complete")  # Debug print
+    gui_controller_instance = GUIController()
+    threading.Thread(target=ros2_thread, daemon=True).start()
+    start_web_interface()
 
 if __name__ == '__main__':
     main()

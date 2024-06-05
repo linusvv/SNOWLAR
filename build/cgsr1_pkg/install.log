@@ -1,10 +1,12 @@
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/web_interface.py
+/home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/dummy_publisher.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/test_flask.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/imutobase.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/basecontrol.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/joytobase.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__init__.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/web_interface.cpython-310.pyc
+/home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/dummy_publisher.cpython-310.pyc
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/test_flask.cpython-310.pyc
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/imutobase.cpython-310.pyc
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/basecontrol.cpython-310.pyc
@@ -19,6 +21,7 @@
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info/zip-safe
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info/PKG-INFO
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info/SOURCES.txt
+/home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/dummy_publisher
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/imu_steering
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/joy_steering
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/tank_motion

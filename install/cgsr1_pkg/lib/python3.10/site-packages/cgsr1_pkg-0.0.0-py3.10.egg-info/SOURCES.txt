@@ -10,6 +10,7 @@ setup.py
 ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/zip-safe
 cgsr1_pkg/__init__.py
 cgsr1_pkg/basecontrol.py
+cgsr1_pkg/dummy_publisher.py
 cgsr1_pkg/imutobase.py
 cgsr1_pkg/joytobase.py
 cgsr1_pkg/test_flask.py

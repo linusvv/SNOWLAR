@@ -1,4 +1,5 @@
 [console_scripts]
+dummy_publisher = cgsr1_pkg.dummy_publisher:main
 imu_steering = cgsr1_pkg.imutobase:main
 joy_steering = cgsr1_pkg.joytobase:main
 tank_motion = cgsr1_pkg.basecontrol:main
