@@ -2,9 +2,9 @@ import os
 from flask import Flask, request, jsonify, send_file
 import rclpy
 from geometry_msgs.msg import Twist
-
+import random
 # Get the current directory of the script
-INDEX_FILE_PATH = os.path.expanduser("~/snowlar_ws/snowlar/src/cgsr1_pkg/cgsr1_pkg/static/index_debug.html")
+INDEX_FILE_PATH = os.path.expanduser("~/snowlar_ws/snowlar/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt.html")
 
 app = Flask(__name__)
 node = None
@@ -67,6 +67,20 @@ def winch():
         return jsonify({"status": "error", "message": "Winch publisher not initialized"}), 500
     
     return jsonify({"status": "success", "x": x, "y": y})
+@app.route('/rectangle-data')
+def rectangle_data():
+    # Replace these with actual dynamic values as needed
+    width = 300
+    height = 150
+    dot_x = random.randint(0, width - 20)
+    dot_y = random.randint(0, height - 20)
+    data = {
+        'width': width,
+        'height': height,
+        'dot_x': dot_x,
+        'dot_y': dot_y
+    }
+    return jsonify(data)
 
 def start_web_interface():
     print("Starting web interface")  # Debug print
