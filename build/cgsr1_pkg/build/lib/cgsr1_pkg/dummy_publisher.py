@@ -21,7 +21,7 @@ class DummyPublisher(Node):
 
     def publish_dimensions(self):
         msg = Int32MultiArray()
-        msg.data = [1000, 10]  # Example values for width and height
+        msg.data = [300, 150]  # Example values for width and height
         self.publisher_dimensions.publish(msg)
         self.get_logger().info(f'Published dimensions: width=300, height=150')
 
