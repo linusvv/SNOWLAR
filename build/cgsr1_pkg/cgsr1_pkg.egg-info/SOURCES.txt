@@ -15,6 +15,7 @@ cgsr1_pkg/imutobase.py
 cgsr1_pkg/joytobase.py
 cgsr1_pkg/test_flask.py
 cgsr1_pkg/web_interface.py
+cgsr1_pkg/winchcontrol.py
 resource/cgsr1_pkg
 test/test_copyright.py
 test/test_flake8.py
