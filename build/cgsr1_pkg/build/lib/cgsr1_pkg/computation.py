@@ -56,6 +56,28 @@ class MyComputationNode(Node):
         self.publisher_thread = threading.Thread(target=self.publisher_loop)
         self.publisher_thread.start()
 
+        # Set parameters
+        self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('switch', False),
+                ('autonomous', False),
+                ('width', 0),
+                ('height', 0),
+                ('stop', False)
+            ]
+        )
+
+        # Get parameters
+        self.get_logger().info("Waiting for parameters to be set...")
+        self.get_parameters([
+            'switch',
+            'autonomous',
+            'width',
+            'height',
+            'stop'
+        ], self.param_callback)
+
     def manual_control_callback(self, msg):
         global manual_control
         with manual_control_lock:
@@ -84,6 +106,23 @@ class MyComputationNode(Node):
             self.publish_cmd_vel()
             self.publish_winch()
             rate.sleep()
+
+    def print_parameter_changes(self, parameters):
+        for name, parameter in parameters.items():
+            old_value = parameter.old_value
+            new_value = parameter.value
+            if old_value != new_value:
+                self.get_logger().info(f"Parameter '{name}' changed: {old_value} -> {new_value}")
+
+
+    def param_callback(self, future):
+        parameters = future.result()
+        global switch, autonomous, width, height, stop
+        switch = parameters['switch'].value
+        autonomous = parameters['autonomous'].value
+        width = parameters['width'].value
+        height = parameters['height'].value
+        stop = parameters['stop'].value
 
     def publish_gui_status(self):
         gui_status_msg = Twist()

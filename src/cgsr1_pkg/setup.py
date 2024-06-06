@@ -26,6 +26,7 @@ setup(
             'web_interface = cgsr1_pkg.web_interface:main',
             'dummy_publisher = cgsr1_pkg.dummy_publisher:main',
             'winch_motion = cgsr1_pkg.winchcontrol:main',
+            'computation = cgsr1_pkg.computation:main',
         ],
     },
 )
