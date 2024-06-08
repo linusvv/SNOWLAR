@@ -35,12 +35,16 @@ class IMUDirectionNode(Node):
         # Normalize pitch based on the current maximum and minimum pitch
         if self.max_pitch != self.min_pitch:  # Avoid division by zero
             normalized_pitch = (pitch - self.min_pitch) / (self.max_pitch - self.min_pitch)
-            # Scale normalized pitch to the range [-1, 1] and add sign
-            signed_normalized_pitch = 2 * (normalized_pitch - 0.5)
         else:
-            signed_normalized_pitch = 0.0
+            normalized_pitch = 0.0
 
-        self.get_logger().info(f'Signed Normalized Pitch: {signed_normalized_pitch}, Yaw: {yaw}')
+        # Determine the sign based on the roll angle
+        pitch_sign = math.copysign(1, roll)
+
+        # Apply the sign to the normalized pitch
+        signed_normalized_pitch = normalized_pitch * pitch_sign
+
+        self.get_logger().info(f'Signed Normalized Pitch: {signed_normalized_pitch}, Roll: {roll}, Yaw: {yaw}')
         
         # Publish the signed normalized pitch
         driving_direction = Float64()
