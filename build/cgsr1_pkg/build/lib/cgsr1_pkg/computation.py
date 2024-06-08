@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+from rcl_interfaces.msg import SetParametersResult
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32, Bool, Int32
 import threading
@@ -15,6 +16,13 @@ manual_control_lock = threading.Lock()
 edge_distance_lock = threading.Lock()
 imu_data_lock = threading.Lock()
 winch_position_lock = threading.Lock()
+
+# Global variables for parameters
+switch = False
+autonomous = False
+width = 640
+height = 480
+stop = False
 
 class MyComputationNode(Node):
     def __init__(self):
@@ -52,31 +60,34 @@ class MyComputationNode(Node):
             10
         )
 
+        # Parameter listeners
+        self.param_switch = self.declare_parameter('switch', False).value
+        self.param_autonomous = self.declare_parameter('autonomous', False).value
+        self.param_width = self.declare_parameter('width', 640).value
+        self.param_height = self.declare_parameter('height', 480).value
+        self.param_stop = self.declare_parameter('stop', False).value
+
+        self.add_on_set_parameters_callback(self.param_callback)
+
         # Start the publisher thread
         self.publisher_thread = threading.Thread(target=self.publisher_loop)
         self.publisher_thread.start()
+    
+    def param_callback(self, params):
+        global switch, autonomous, width, height, stop
+        for param in params:
+            if param.name == 'switch':
+                switch = param.value
+            elif param.name == 'autonomous':
+                autonomous = param.value
+            elif param.name == 'width':
+                width = param.value
+            elif param.name == 'height':
+                height = param.value
+            elif param.name == 'stop':
+                stop = param.value
 
-        # Set parameters
-        self.declare_parameters(
-            namespace='',
-            parameters=[
-                ('switch', False),
-                ('autonomous', False),
-                ('width', 0),
-                ('height', 0),
-                ('stop', False)
-            ]
-        )
-
-        # Get parameters
-        self.get_logger().info("Waiting for parameters to be set...")
-        self.get_parameters([
-            'switch',
-            'autonomous',
-            'width',
-            'height',
-            'stop'
-        ], self.param_callback)
+        return SetParametersResult(successful=True)
 
     def manual_control_callback(self, msg):
         global manual_control
@@ -106,23 +117,6 @@ class MyComputationNode(Node):
             self.publish_cmd_vel()
             self.publish_winch()
             rate.sleep()
-
-    def print_parameter_changes(self, parameters):
-        for name, parameter in parameters.items():
-            old_value = parameter.old_value
-            new_value = parameter.value
-            if old_value != new_value:
-                self.get_logger().info(f"Parameter '{name}' changed: {old_value} -> {new_value}")
-
-
-    def param_callback(self, future):
-        parameters = future.result()
-        global switch, autonomous, width, height, stop
-        switch = parameters['switch'].value
-        autonomous = parameters['autonomous'].value
-        width = parameters['width'].value
-        height = parameters['height'].value
-        stop = parameters['stop'].value
 
     def publish_gui_status(self):
         gui_status_msg = Twist()
