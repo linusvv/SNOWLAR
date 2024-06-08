@@ -136,15 +136,23 @@ class MyComputationNode(Node):
     def publish_cmd_vel(self):
         cmd_vel_msg = Twist()
         with manual_control_lock:
-            cmd_vel_msg.linear.x = manual_control.linear.x
-            cmd_vel_msg.linear.y = manual_control.linear.y
+            if switch:
+                cmd_vel_msg.linear.x = manual_control.linear.x / 2.0
+                cmd_vel_msg.linear.y = manual_control.linear.y / 2.0
+            else:
+                cmd_vel_msg.linear.x = manual_control.linear.x
+                cmd_vel_msg.linear.y = manual_control.linear.y
         self.publisher_cmd_vel.publish(cmd_vel_msg)
 
     def publish_winch(self):
         winch_msg = Twist()
         with manual_control_lock:
-            winch_msg.linear.x = manual_control.angular.x
-            winch_msg.linear.y = manual_control.angular.y
+            if switch:
+                winch_msg.linear.x = manual_control.linear.x / 2.0
+                winch_msg.linear.y = manual_control.linear.y / 2.0
+            else:
+                winch_msg.linear.x = manual_control.angular.x
+                winch_msg.linear.y = manual_control.angular.y
         self.publisher_winch.publish(winch_msg)
 
 def main(args=None):
