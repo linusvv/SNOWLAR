@@ -3,11 +3,10 @@ from rclpy.node import Node
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float64
 import math
-import sys  # Add this import statement
 
 class IMUDirectionNode(Node):
 
-    def __init__(self, roof_angle):
+    def __init__(self):
         super().__init__('imu_direction_node')
         
         self.subscription = self.create_subscription(
@@ -17,7 +16,8 @@ class IMUDirectionNode(Node):
             10)
         
         self.publisher_ = self.create_publisher(Float64, 'imu/driving_direction', 10)
-        self.max_pitch = -roof_angle  # Maximum pitch is negative of the roof angle
+        self.max_pitch = None  # Initialize the max_pitch as None
+        self.min_pitch = None  # Initialize the min_pitch as None
         
         self.get_logger().info('IMU Direction Node has been started.')
 
@@ -26,14 +26,25 @@ class IMUDirectionNode(Node):
         orientation = msg.orientation
         roll, pitch, yaw = self.quaternion_to_euler(orientation)
 
-        # Correct pitch based on the maximum pitch
-        corrected_pitch = pitch - self.max_pitch
+        # Update the maximum and minimum pitch observed
+        if self.max_pitch is None or pitch > self.max_pitch:
+            self.max_pitch = pitch
+        if self.min_pitch is None or pitch < self.min_pitch:
+            self.min_pitch = pitch
 
-        self.get_logger().info(f'Corrected Pitch: {corrected_pitch}, Yaw: {yaw}')
+        # Normalize pitch based on the current maximum and minimum pitch
+        if self.max_pitch != self.min_pitch:  # Avoid division by zero
+            normalized_pitch = (pitch - self.min_pitch) / (self.max_pitch - self.min_pitch)
+            # Scale normalized pitch to the range [-1, 1] and add sign
+            signed_normalized_pitch = 2 * (normalized_pitch - 0.5)
+        else:
+            signed_normalized_pitch = 0.0
+
+        self.get_logger().info(f'Signed Normalized Pitch: {signed_normalized_pitch}, Yaw: {yaw}')
         
-        # Publish the driving direction (yaw)
+        # Publish the signed normalized pitch
         driving_direction = Float64()
-        driving_direction.data = yaw
+        driving_direction.data = signed_normalized_pitch
         self.publisher_.publish(driving_direction)
 
     def quaternion_to_euler(self, orientation):
@@ -61,15 +72,7 @@ class IMUDirectionNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    
-    # Provide the roof angle as a command line argument
-    if len(sys.argv) != 2:
-        print("Usage: ros2 run imu_direction imu_direction_node <roof_angle>")
-        return
-
-    roof_angle = float(sys.argv[1])
-
-    node = IMUDirectionNode(roof_angle)
+    node = IMUDirectionNode()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
