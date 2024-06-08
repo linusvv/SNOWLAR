@@ -3,10 +3,11 @@ from rclpy.node import Node
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float64
 import math
+import sys  # Add this import statement
 
 class IMUDirectionNode(Node):
 
-    def __init__(self):
+    def __init__(self, roof_angle):
         super().__init__('imu_direction_node')
         
         self.subscription = self.create_subscription(
@@ -16,7 +17,7 @@ class IMUDirectionNode(Node):
             10)
         
         self.publisher_ = self.create_publisher(Float64, 'imu/driving_direction', 10)
-        self.max_pitch = None  # Initialize the max_pitch as None
+        self.max_pitch = -roof_angle  # Maximum pitch is negative of the roof angle
         
         self.get_logger().info('IMU Direction Node has been started.')
 
@@ -25,14 +26,10 @@ class IMUDirectionNode(Node):
         orientation = msg.orientation
         roll, pitch, yaw = self.quaternion_to_euler(orientation)
 
-        # Update the maximum pitch observed
-        if self.max_pitch is None or pitch > self.max_pitch:
-            self.max_pitch = pitch
-
-        # Correct pitch based on the current maximum pitch
+        # Correct pitch based on the maximum pitch
         corrected_pitch = pitch - self.max_pitch
 
-        self.get_logger().info(f'Corrected Pitch: {corrected_pitch/math.pi*180}, Yaw: {yaw}')
+        self.get_logger().info(f'Corrected Pitch: {corrected_pitch}, Yaw: {yaw}')
         
         # Publish the driving direction (yaw)
         driving_direction = Float64()
@@ -64,7 +61,15 @@ class IMUDirectionNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = IMUDirectionNode()
+    
+    # Provide the roof angle as a command line argument
+    if len(sys.argv) != 2:
+        print("Usage: ros2 run imu_direction imu_direction_node <roof_angle>")
+        return
+
+    roof_angle = float(sys.argv[1])
+
+    node = IMUDirectionNode(roof_angle)
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
