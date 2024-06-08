@@ -5,6 +5,7 @@
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/basecontrol.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/joytobase.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__init__.py
+/home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/imucontrol.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/winchcontrol.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/computation.py
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/web_interface.cpython-310.pyc
@@ -14,6 +15,7 @@
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/basecontrol.cpython-310.pyc
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/joytobase.cpython-310.pyc
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/__init__.cpython-310.pyc
+/home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/imucontrol.cpython-310.pyc
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/winchcontrol.cpython-310.pyc
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/computation.cpython-310.pyc
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/share/ament_index/resource_index/packages/cgsr1_pkg
@@ -27,6 +29,7 @@
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info/SOURCES.txt
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/computation
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/dummy_publisher
+/home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/imu_control
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/imu_steering
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/joy_steering
 /home/snowlar/snowlar_ws/snowlar/install/cgsr1_pkg/lib/cgsr1_pkg/tank_motion
