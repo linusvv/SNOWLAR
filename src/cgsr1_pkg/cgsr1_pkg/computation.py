@@ -134,8 +134,8 @@ class MyComputationNode(Node):
         self.publisher_winch_position.publish(winch_position_msg)
 
     def publish_cmd_vel(self):
-        cmd_vel_msg = Twist()
-        with manual_control_lock:
+        cmd_vel_msg = Twist()       #The chain-data is transported via the linear part of manual_control
+        with manual_control_lock:   
             if switch:
                 cmd_vel_msg.linear.x = manual_control.linear.x / 2.0
                 cmd_vel_msg.linear.y = manual_control.linear.y / 2.0
@@ -145,14 +145,17 @@ class MyComputationNode(Node):
         self.publisher_cmd_vel.publish(cmd_vel_msg)
 
     def publish_winch(self):
-        winch_msg = Twist()
-        with manual_control_lock:
+        winch_msg = Twist()         #The winch-data is transported via the angular part of manual_control
+        with manual_control_lock: 
             if switch:
-                winch_msg.linear.x = manual_control.linear.x / 2.0
-                winch_msg.linear.y = manual_control.linear.y / 2.0
+                winch_msg.linear.x = manual_control.angular.x / 2.0
+                winch_msg.linear.y = manual_control.angular.y / 2.0
+                winch_msg.angular.z = imu_data
             else:
                 winch_msg.linear.x = manual_control.angular.x
                 winch_msg.linear.y = manual_control.angular.y
+                winch_msg.angular.z = imu_data
+
         self.publisher_winch.publish(winch_msg)
 
 def main(args=None):
