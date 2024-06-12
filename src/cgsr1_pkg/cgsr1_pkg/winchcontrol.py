@@ -20,7 +20,7 @@ class MainNode(Node):
         self.pub_right = self.create_publisher(Float32, "/olive/servo/wr/goal/velocity", QoSProfile(depth=10))
         self.pub_left = self.create_publisher(Float32, "/olive/servo/wl/goal/velocity", QoSProfile(depth=10))
         
-        # Subscription to cmd_vel
+        # Subscription to winch and base_to_winch
         self.sub_winch = self.create_subscription(Twist, "/winch", self.callback_winch, QoSProfile(depth=10))
         self.sub_base_to_winch = self.create_subsciption(Twist, "/base_to_winch", self.callback_base_to_winch, QoSProfile(depth = 10))
         ##self.sub_lef_vel = self.create_subscription(Twist, "winch", self.callback_cmd_vel, QoSProfile(depth=10))
@@ -52,7 +52,7 @@ class MainNode(Node):
             
             # Publish the velocities for each winch motor
             self.publish_velocity(self.pub_right, self.velocity_right)
-            self.publish_velocity(self.pub_left, -self.velocity_left)
+            self.publish_velocity(self.pub_left, self.velocity_left)
             
             time.sleep(1 / self.rate_control_hz)
 
@@ -67,16 +67,17 @@ class MainNode(Node):
             msg.data = velocity
         publisher.publish(msg)
 
-    def callback_cmd_vel(self, msg):
+    def callback_winch(self, msg):
         vel_Left = msg.angular.x    # manual mode left
         vel_Right = msg.angular.y   # manual mode right
         tempAngle = (msg.angular.z + 1) * math.pi # Angle
 
-
+        
 
         if vel_Left == 0 and vel_Right == 0:
-            self.velocity_left = self.translation_Factor(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight) ##for now, chainLeft and chain Right should be equal
-            self.velocity_right = self.translation_Factor(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
+            if self.velocity_left - self.velocity_right <= 0.01:
+                self.velocity_left = self.translation_Factor(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight) ##for now, chainLeft and chain Right should be equal
+                self.velocity_right = self.translation_Factor(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
 
         else: # manual mode activated
             self.velocity_right = vel_Right
@@ -99,7 +100,7 @@ class MainNode(Node):
     def main(args=None):
         rclpy.init(args=args)
         main_node = MainNode("config/path", "main_node")
-        print("Bots_Bento_Base_Control_v1.0")
+        print("whinch control active")
         rclpy.spin(main_node)
         main_node.destroy_node()
         rclpy.shutdown()

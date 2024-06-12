@@ -103,7 +103,7 @@ class MainNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     main_node = MainNode("config/path", "main_node")
-    print("Bots_Bento_Base_Control_v1.0")
+    print("base control active")
     rclpy.spin(main_node)
     main_node.destroy_node()
     rclpy.shutdown()
