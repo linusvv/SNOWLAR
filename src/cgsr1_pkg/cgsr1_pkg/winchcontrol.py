@@ -21,7 +21,7 @@ class MainNode(Node):
         self.pub_left = self.create_publisher(Float32, "/olive/servo/wl/goal/velocity", QoSProfile(depth=10))
         
         # Subscription to winch and base_to_winch
-        self.sub_winch = self.create_subscription(Twist, "/winch", self.callback_winch, QoSProfile(depth=10))
+        self.sub_winch = self.create_subscription(Twist, "/winch", self.callback_winch, QoSProfile(depth=10)) 
         self.sub_base_to_winch = self.create_subsciption(Twist, "/base_to_winch", self.callback_base_to_winch, QoSProfile(depth = 10))
         ##self.sub_lef_vel = self.create_subscription(Twist, "winch", self.callback_cmd_vel, QoSProfile(depth=10))
 
@@ -68,14 +68,14 @@ class MainNode(Node):
         publisher.publish(msg)
 
     def callback_winch(self, msg):
-        vel_Left = msg.angular.x    # manual mode left
-        vel_Right = msg.angular.y   # manual mode right
+        vel_Left = msg.linear.x    # manual mode left/right
+        vel_Right = msg.linear.y   # manual mode up/down
         tempAngle = (msg.angular.z + 1) * math.pi # Angle
 
         
 
-        if vel_Left == 0 and vel_Right == 0:
-            if self.velocity_left - self.velocity_right <= 0.01:
+        if abs(vel_Left) < 0.01 and abs(vel_Right) < 0.01:
+            if abs(self.chainLeft - self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be equal
                 self.velocity_left = self.translation_Factor(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight) ##for now, chainLeft and chain Right should be equal
                 self.velocity_right = self.translation_Factor(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
 
