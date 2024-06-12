@@ -9,6 +9,7 @@ setup.py
 ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/top_level.txt
 ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/zip-safe
 cgsr1_pkg/__init__.py
+cgsr1_pkg/automation.py
 cgsr1_pkg/basecontrol.py
 cgsr1_pkg/computation.py
 cgsr1_pkg/dummy_publisher.py
