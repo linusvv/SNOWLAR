@@ -22,7 +22,7 @@ class MainNode(Node):
         
         # Subscription to winch and base_to_winch
         self.sub_winch = self.create_subscription(Twist, "/winch", self.callback_winch, QoSProfile(depth=10)) 
-        self.sub_base_to_winch = self.create_subsciption(Twist, "/base_to_winch", self.callback_base_to_winch, QoSProfile(depth = 10))
+        self.sub_base_to_winch = self.create_subscription(Twist, "/base_to_winch", self.callback_base_to_winch, QoSProfile(depth = 10))
         ##self.sub_lef_vel = self.create_subscription(Twist, "winch", self.callback_cmd_vel, QoSProfile(depth=10))
 
 
@@ -76,12 +76,12 @@ class MainNode(Node):
 
         if abs(vel_Left) < 0.01 and abs(vel_Right) < 0.01:
             if abs(self.chainLeft - self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be equal
-                self.velocity_left = self.translation_Factor(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight) ##for now, chainLeft and chain Right should be equal
-                self.velocity_right = self.translation_Factor(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
+                self.velocity_left = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
+                self.velocity_right = self.translation_Factor*(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
 
         else: # manual mode activated
-            self.velocity_right = vel_Right
-            self.velocity_left = vel_Left
+            self.velocity_right = vel_Right * self.max_velocity
+            self.velocity_left = vel_Left * self.max_velocity
 
 
 
@@ -98,11 +98,12 @@ class MainNode(Node):
             self.thread_main.join()
 
 def main(args=None):
-        rclpy.init(args=args)
-        main_node = MainNode("config/path", "main_node")
-        print("whinch control active")
-        rclpy.spin(main_node)
-        main_node.destroy_node()
-        rclpy.shutdown()
+    rclpy.init(args=args)
+    main_node = MainNode("config/path", "main_node")
+    print("whinch control active")
+    rclpy.spin(main_node)
+    main_node.destroy_node()
+    rclpy.shutdown()
+
 if __name__ == '__main__':
         main()
