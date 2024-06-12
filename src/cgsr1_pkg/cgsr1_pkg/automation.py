@@ -60,7 +60,7 @@ class MainNode(Node):
                         self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
 
                         time.sleep(1 / self.rate_control_hz)
-                    while self.angle < (math.pi / 2):      #turning by 90 degrees
+                    while self.angle < (math.pi *3/2):      #turning by 90 degrees
                         self.velocity_x = 1
                         self.velocity_y = 0
 
@@ -76,7 +76,7 @@ class MainNode(Node):
                         self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
                         time.sleep(1 / self.rate_control_hz)
                     self.helper = 0
-                    while self.angle > 0:      #turning back through 90 degrees
+                    while self.angle > math.pi:      #turning back by 90 degrees
                         self.velocity_x = -1
                         self.velocity_y = 0
 
@@ -86,6 +86,10 @@ class MainNode(Node):
                         time.sleep(1 / self.rate_control_hz)
 
                     time.sleep(1 / self.rate_control_hz)
+
+                self.velocity_x = 0
+                self.velocity_y = 0
+                self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
             
             
             
@@ -96,6 +100,9 @@ class MainNode(Node):
         automation_msg = Twist()
         automation_msg.linear.x = vx
         automation_msg.linear.y = vy
+        automation_msg.angular.x = 0
+        automation_msg.angular.y = 0
+        
 
         self.publisher.publish(automation_msg)
 
