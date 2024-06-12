@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joystick and Sliders Control</title>
+    <style>
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+        }
+        #logo {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            width: 50px;
+            height: auto;
+        }
+        #links {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+        }
+        #links a {
+            color: white;
+            text-decoration: none;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        #rectangle-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+        #rectangle {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+        #dot {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .control-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-bottom: 50px;
+        }
+        #joystick-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #joystick {
+            width: 200px;
+            height: 200px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            position: relative;
+            margin-bottom: 50px;
+        }
+        #handle {
+            width: 50px;
+            height: 50px;
+            background-color: #808080;
+            border-radius: 50%;
+            position: absolute;
+            top: 75px;
+            left: 75px;
+            cursor: pointer;
+            touch-action: none;
+        }
+        .sliders-container {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        .slider {
+            width: 50px;
+            height: 200px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            position: relative;
+            margin: 0 10px;
+        }
+        .slider-handle {
+            width: 50px;
+            height: 50px;
+            background-color: #808080;
+            position: absolute;
+            left: 0;
+            top: 75px;
+            cursor: pointer;
+            touch-action: none;
+        }
+        .switches-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+        }
+        .switch {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        .switch input {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div id="logo">
+            <p>snowlar</p>
+        </div>
+        <div id="links">
+            <a href="#">Home</a>
+            <a href="#">Debugging</a>
+            <a href="#">Rules</a>
+            <a href="#">Settings</a>
+        </div>
+    </div>
+
+    <div id="container">
+        <div id="rectangle-container">
+            <div id="rectangle">
+                <div id="dot"></div>
+            </div>
+        </div>
+        <div class="control-container">
+            <div id="joystick-container">
+                <div id="joystick">
+                    <div id="handle" tabindex="0"></div>
+                </div>
+            </div>
+            <div class="sliders-container">
+                <div id="slider1" class="slider">
+                    <div id="slider1-handle" class="slider-handle"></div>
+                </div>
+                <div id="slider2" class="slider">
+                    <div id="slider2-handle" class="slider-handle"></div>
+                </div>
+            </div>
+        </div>
+        <div class="switches-container">
+            <div class="switch">
+                <input type="checkbox" id="switch1">
+                <label for="switch1">Snap Joystick</label>
+            </div>
+            <div class="switch">
+                <input type="checkbox" id="switch2">
+                <label for="switch2">Hide Sliders</label>
+            </div>
+            <div class="switch">
+                <input type="checkbox" id="switch3">
+                <label for="switch3">Switch 3</label>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Joystick Variables
+        const handle = document.getElementById('handle');
+        const joystick = document.getElementById('joystick');
+        let joystickCenter = { x: joystick.offsetWidth / 2, y: joystick.offsetHeight / 2 };
+        let handleCenter = { x: handle.offsetWidth / 2, y: handle.offsetHeight / 2 };
+        let maxDistance = joystick.offsetWidth / 2 - handle.offsetWidth / 2;
+        let draggingJoystick = false;
+        let keysPressed = {};
+        const snapSwitch = document.getElementById('switch1');
+        const hideSlidersSwitch = document.getElementById('switch1');
+
+        // Slider Variables
+        const sliders = [
+            { container: document.getElementById('slider1'), handle: document.getElementById('slider1-handle'), dragging: false },
+            { container: document.getElementById('slider2'), handle: document.getElementById('slider2-handle'), dragging: false }
+        ];
+        const sliderMaxDistance = sliders[0].container.offsetHeight / 2 - sliders[0].handle.offsetHeight / 2;
+
+        // Joystick Event Listeners
+        handle.addEventListener('mousedown', (e) => { draggingJoystick = true; handle.style.backgroundColor = '#ff0000'; });
+        document.addEventListener('mouseup', (e) => { if (draggingJoystick) { draggingJoystick = false; handle.style.backgroundColor = '#808080'; resetHandlePosition(); } });
+        document.addEventListener('mousemove', (e) => { if (draggingJoystick) { moveHandle(e.clientX, e.clientY); } });
+        handle.addEventListener('touchstart', (e) => { draggingJoystick = true; handle.style.backgroundColor = '#ff0000'; });
+        document.addEventListener('touchend', (e) => { if (draggingJoystick) { draggingJoystick = false; handle.style.backgroundColor = '#808080'; resetHandlePosition(); } });
+        document.addEventListener('touchmove', (e) => { if (draggingJoystick) { moveHandle(e.touches[0].clientX, e.touches[0].clientY); } });
+        document.addEventListener('keydown', (e) => { if (document.activeElement === handle) { keysPressed[e.key] = true; updateHandlePositionByKeys(); } });
+        document.addEventListener('keyup', (e) => { if (document.activeElement === handle) { delete keysPressed[e.key]; if (Object.keys(keysPressed).length === 0) { resetHandlePosition(); } else { updateHandlePositionByKeys(); } } });
+
+        // Slider Event Listeners
+        sliders.forEach(slider => {
+            slider.handle.addEventListener('mousedown', (e) => { slider.dragging = true; slider.handle.style.backgroundColor = '#ff0000'; });
+            slider.handle.addEventListener('touchstart', (e) => { slider.dragging = true; slider.handle.style.backgroundColor = '#ff0000'; });
+        });
+        document.addEventListener('mouseup', (e) => {
+            sliders.forEach(slider => {
+                if (slider.dragging) {
+                    slider.dragging = false;
+                    slider.handle.style.backgroundColor = '#808080';
+                    resetSliderHandlePosition(slider);
+                }
+            });
+        });
+        document.addEventListener('touchend', (e) => {
+            sliders.forEach(slider => {
+                if (slider.dragging) {
+                    slider.dragging = false;
+                    slider.handle.style.backgroundColor = '#808080';
+                    resetSliderHandlePosition(slider);
+                }
+            });
+        });
+        document.addEventListener('mousemove', (e) => {
+            sliders.forEach(slider => {
+                if (slider.dragging) {
+                    moveSliderHandle(slider, e.clientY);
+                }
+            });
+        });
+        document.addEventListener('touchmove', (e) => {
+            sliders.forEach(slider => {
+                if (slider.dragging) {
+                    moveSliderHandle(slider, e.touches[0].clientY);
+                }
+            });
+        });
+
+        // Switches Event Listeners
+        snapSwitch.addEventListener('change', () => {
+            sendSwitchData('snap', snapSwitch.checked);
+        });
+
+        hideSlidersSwitch.addEventListener('change', () => {
+            const slidersContainer = document.querySelector('.sliders-container');
+            if (hideSlidersSwitch.checked) {
+                slidersContainer.style.display = 'none';
+            } else {
+                slidersContainer.style.display = 'flex';
+            }
+            sendSwitchData('hideSliders', hideSlidersSwitch.checked);
+        });
+
+        function sendSwitchData(switchName, value) {
+            fetch(`/switch/${switchName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ value })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateHandlePositionByKeys() {
+            let x = 0, y = 0;
+            
+            if (snapSwitch.checked) {
+                if (keysPressed['ArrowUp']) { y -= maxDistance; x = 0; }
+                if (keysPressed['ArrowDown']) { y += maxDistance; x = 0; }
+                if (keysPressed['ArrowLeft']) { x -= maxDistance; y = 0; }
+                if (keysPressed['ArrowRight']) { x += maxDistance; y = 0; }
+            } else {
+                if (keysPressed['ArrowUp']) y -= maxDistance;
+                if (keysPressed['ArrowDown']) y += maxDistance;
+                if (keysPressed['ArrowLeft']) x -= maxDistance;
+                if (keysPressed['ArrowRight']) x += maxDistance;
+            }
+
+            updateHandlePosition(x, y);
+        }
+
+        function moveHandle(clientX, clientY) {
+            let rect = joystick.getBoundingClientRect();
+            let x = clientX - rect.left - joystickCenter.x;
+            let y = clientY - rect.top - joystickCenter.y;
+
+            let distance = Math.sqrt(x * x + y * y);
+
+            if (distance > maxDistance) {
+                let angle = Math.atan2(y, x);
+                x = maxDistance * Math.cos(angle);
+                y = maxDistance * Math.sin(angle);
+            }
+
+            if (snapSwitch.checked) {
+                if (Math.abs(x) > Math.abs(y)) {
+                    y = 0;
+                } else {
+                    x = 0;
+                }
+            }
+
+            updateHandlePosition(x, y);
+        }
+
+        function resetHandlePosition() {
+            updateHandlePosition(0, 0);
+        }
+
+        function updateHandlePosition(x, y) {
+            handle.style.left = `${x + joystickCenter.x - handleCenter.x}px`;
+            handle.style.top = `${y + joystickCenter.y - handleCenter.y}px`;
+            sendJoystickData(x / maxDistance, y / maxDistance);
+        }
+
+        function sendJoystickData(x, y) {
+            fetch('/joystick', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ x, y })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        function moveSliderHandle(slider, clientY) {
+            let rect = slider.container.getBoundingClientRect();
+            let y = clientY - rect.top - slider.container.offsetHeight / 2;
+
+            if (y > sliderMaxDistance) y = sliderMaxDistance;
+            if (y < -sliderMaxDistance) y = -sliderMaxDistance;
+
+            updateSliderHandlePosition(slider, y);
+        }
+
+        function resetSliderHandlePosition(slider) {
+            updateSliderHandlePosition(slider, 0);
+        }
+
+        function updateSliderHandlePosition(slider, y) {
+            slider.handle.style.top = `${y + slider.container.offsetHeight / 2 - slider.handle.offsetHeight / 2}px`;
+            sendSliderData(slider, y / sliderMaxDistance);
+        }
+
+        function sendSliderData(slider, y) {
+            let sliderId = slider.container.id;
+            let data = {};
+            if (sliderId === 'slider1') {
+                data.x = y;
+            } else if (sliderId === 'slider2') {
+                data.y = y;
+            }
+
+            fetch('/winch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        }
+
+        async function fetchRectangleData() {
+            try {
+                const response = await fetch('/rectangle-data');
+                const data = await response.json();
+                updateRectangle(data);
+            } catch (error) {
+                console.error('Error fetching rectangle data:', error);
+            }
+        }
+
+        function updateRectangle(data) {
+            const rectangle = document.getElementById('rectangle');
+            const dot = document.getElementById('dot');
+            rectangle.style.width = `${data.width}px`;
+            rectangle.style.height = `${data.height}px`;
+            dot.style.left = `${data.dot_x}px`;
+            dot.style.top = `${data.dot_y}px`;
+        }
+
+        fetchRectangleData();
+        setInterval(fetchRectangleData, 1000); // Update every second
+    </script>
+</body>
+</html>
