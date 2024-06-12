@@ -97,12 +97,12 @@ class MainNode(Node):
         if self.thread_main.is_alive():
             self.thread_main.join()
 
-    def main(args=None):
+def main(args=None):
         rclpy.init(args=args)
         main_node = MainNode("config/path", "main_node")
         print("whinch control active")
         rclpy.spin(main_node)
         main_node.destroy_node()
         rclpy.shutdown()
-    if __name__ == '__main__':
+if __name__ == '__main__':
         main()
