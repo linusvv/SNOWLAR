@@ -30,7 +30,7 @@ class MyComputationNode(Node):
 
         # Publishers
         self.publisher_gui_status = self.create_publisher(Twist, '/gui_status', 10)
-        self.publisher_winch_position = self.create_publisher(Twist, '/winch_position', 10)
+        self.publisher_winch_position = self.create_publisher(Twist, '/imu/driving_direction', 10)
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
         self.publisher_winch = self.create_publisher(Twist, '/winch', 10)
 
@@ -137,8 +137,8 @@ class MyComputationNode(Node):
         cmd_vel_msg = Twist()       #The chain-data is transported via the linear part of manual_control
         with manual_control_lock:   
             if switch:
-                cmd_vel_msg.linear.x = manual_control.linear.x / 2.0
-                cmd_vel_msg.linear.y = manual_control.linear.y / 2.0
+                cmd_vel_msg.linear.x = manual_control.angular.x / 2.0
+                cmd_vel_msg.linear.y = manual_control.angular.y / 2.0
             else:
                 cmd_vel_msg.linear.x = manual_control.linear.x
                 cmd_vel_msg.linear.y = manual_control.linear.y
@@ -150,11 +150,13 @@ class MyComputationNode(Node):
             if switch:
                 winch_msg.linear.x = manual_control.angular.x / 2.0
                 winch_msg.linear.y = manual_control.angular.y / 2.0
-                winch_msg.angular.z = imu_data
+                with imu_data_lock:
+                    winch_msg.angular.z = imu_data.data  # Extract the float value
             else:
                 winch_msg.linear.x = manual_control.angular.x
                 winch_msg.linear.y = manual_control.angular.y
-                winch_msg.angular.z = imu_data
+                with imu_data_lock:
+                    winch_msg.angular.z = imu_data.data  # Extract the float value
 
         self.publisher_winch.publish(winch_msg)
 

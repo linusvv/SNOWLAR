@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Imu
-from std_msgs.msg import Float64
+from std_msgs.msg import Float32
 import math
 
 class IMUDirectionNode(Node):
@@ -15,7 +15,7 @@ class IMUDirectionNode(Node):
             self.imu_callback,
             10)
         
-        self.publisher_ = self.create_publisher(Float64, 'imu/driving_direction', 10)
+        self.publisher_ = self.create_publisher(Float32, 'imu_data', 10)
         self.max_pitch = None  # Initialize the max_pitch as None
         self.min_pitch = None  # Initialize the min_pitch as None
         
@@ -47,7 +47,7 @@ class IMUDirectionNode(Node):
         self.get_logger().info(f'Signed Normalized Pitch: {signed_normalized_pitch}, Roll: {roll}, Yaw: {yaw}')
         
         # Publish the signed normalized pitch
-        driving_direction = Float64()
+        driving_direction = Float32()
         driving_direction.data = signed_normalized_pitch
         self.publisher_.publish(driving_direction)
 

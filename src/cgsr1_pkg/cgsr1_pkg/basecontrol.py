@@ -25,7 +25,7 @@ class MainNode(Node):
 
         self.thread_main = threading.Thread(target=self.thread_main)
         self.thread_exited = False
-        self.rate_control_hz = 25
+        self.rate_control_hz = 40
         
         self.velocity_front_right = 0.0
         self.velocity_front_left = 0.0

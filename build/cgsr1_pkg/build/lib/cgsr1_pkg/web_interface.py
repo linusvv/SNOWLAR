@@ -7,7 +7,7 @@ from geometry_msgs.msg import Twist
 import threading
 from std_msgs.msg import Float32MultiArray, Int32MultiArray
 
-INDEX_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt.html")
+INDEX_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt_alt.html")
 
 app = Flask(__name__)
 node = None
@@ -31,8 +31,14 @@ def joystick():
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     twist = Twist()
-    twist.linear.x = x + 0.000000001
-    twist.linear.y = y + 0.000000001
+    
+    # Check the switch parameter to determine where to assign the values
+    if gui_controller_instance.param_switch:
+        twist.angular.x = x + 0.000000001
+        twist.angular.y = y + 0.000000001
+    else:
+        twist.linear.x = x + 0.000000001
+        twist.linear.y = y + 0.000000001
     
     if manual_control_publisher:
         manual_control_publisher.publish(twist)
@@ -61,6 +67,23 @@ def winch():
     
     return jsonify({"status": "success", "x": x, "y": y})
 
+@app.route('/switch/<switch_name>', methods=['POST'])
+def switch(switch_name):
+    data = request.get_json()
+    value = data.get('value')
+
+    if value is None:
+        return jsonify({"status": "error", "message": "Invalid input"}), 400
+
+    if switch_name == 'snap':
+        gui_controller_instance.param_switch = value
+    elif switch_name == 'hideSliders':
+        gui_controller_instance.param_autonomous = value
+    else:
+        return jsonify({"status": "error", "message": "Invalid switch name"}), 400
+
+    return jsonify({"status": "success", "switch": switch_name, "value": value})
+
 class GUIController(Node):
     def __init__(self):
         super().__init__('gui_controller')
@@ -84,6 +107,11 @@ class GUIController(Node):
             self.position_callback,
             10
         )
+
+        # Declare parameters
+        self.param_switch = self.declare_parameter('switch', False).value
+        self.param_autonomous = self.declare_parameter('autonomous', False).value
+        self.param_stop = self.declare_parameter('stop', False).value
 
     def dimensions_callback(self, msg):
         self.width, self.height = msg.data
