@@ -7,12 +7,11 @@ from geometry_msgs.msg import Twist
 import threading
 from std_msgs.msg import Float32MultiArray, Int32MultiArray
 
-INDEX_FILE_PATH = os.path.expanduser("~/snowlar_ws/snowlar/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt.html")
+INDEX_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt.html")
 
 app = Flask(__name__)
 node = None
-joystick_publisher = None
-winch_publisher = None
+manual_control_publisher = None
 gui_controller_instance = None
 
 @app.route('/')
@@ -32,11 +31,11 @@ def joystick():
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     twist = Twist()
-    twist.linear.y = -x + 0.000000001
-    twist.linear.x = -y + 0.000000001
+    twist.linear.x = x + 0.000000001
+    twist.linear.y = y + 0.000000001
     
-    if joystick_publisher:
-        joystick_publisher.publish(twist)
+    if manual_control_publisher:
+        manual_control_publisher.publish(twist)
     else:
         return jsonify({"status": "error", "message": "Joystick publisher not initialized"}), 500
     
@@ -51,12 +50,12 @@ def winch():
 
     twist = Twist()
     if x is not None:
-        twist.linear.x = x + 0.000000001
+        twist.angular.x = x + 0.000000001
     if y is not None:
-        twist.linear.y = y + 0.000000001
+        twist.angular.y = y + 0.000000001
     
-    if winch_publisher:
-        winch_publisher.publish(twist)
+    if manual_control_publisher:
+        manual_control_publisher.publish(twist)
     else:
         return jsonify({"status": "error", "message": "Winch publisher not initialized"}), 500
     
@@ -115,11 +114,10 @@ def start_web_interface():
     app.run(host='0.0.0.0', port=8080)
 
 def main():
-    global node, joystick_publisher, winch_publisher, gui_controller_instance
+    global node, manual_control_publisher, gui_controller_instance
     rclpy.init()
     node = rclpy.create_node('web_interface')
-    joystick_publisher = node.create_publisher(Twist, 'cmd_vel', 10)
-    winch_publisher = node.create_publisher(Twist, 'winch', 10)
+    manual_control_publisher = node.create_publisher(Twist, 'manual_control', 10)
     gui_controller_instance = GUIController()
     threading.Thread(target=ros2_thread, daemon=True).start()
     start_web_interface()
