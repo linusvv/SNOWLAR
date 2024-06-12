@@ -7,6 +7,7 @@
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/computation.py
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/winchcontrol.py
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/web_interface.py
+/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/automation.py
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/test_flask.py
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/imucontrol.cpython-310.pyc
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/basecontrol.cpython-310.pyc
@@ -17,6 +18,7 @@
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/computation.cpython-310.pyc
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/winchcontrol.cpython-310.pyc
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/web_interface.cpython-310.pyc
+/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/automation.cpython-310.pyc
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/test_flask.cpython-310.pyc
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/share/ament_index/resource_index/packages/cgsr1_pkg
 /home/snowlar/SNOWLAR/install/cgsr1_pkg/share/cgsr1_pkg/package.xml

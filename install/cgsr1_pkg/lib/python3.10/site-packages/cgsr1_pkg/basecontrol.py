@@ -16,6 +16,9 @@ class MainNode(Node):
         self.pub_front_left = self.create_publisher(Float32, "/olive/servo/mfl/goal/velocity", QoSProfile(depth=10))
         self.pub_rear_right = self.create_publisher(Float32, "/olive/servo/mbr/goal/velocity", QoSProfile(depth=10))
         self.pub_rear_left = self.create_publisher(Float32, "/olive/servo/mbl/goal/velocity", QoSProfile(depth=10))
+
+
+        self.base_to_winch = self.create_publisher(Twist, "/base_to_winch", QoSProfile(depth=10))
         
         # Subscription to cmd_vel
         self.sub_cmd_vel = self.create_subscription(Twist, "cmd_vel", self.callback_cmd_vel, QoSProfile(depth=10))
@@ -55,6 +58,8 @@ class MainNode(Node):
             self.publish_velocity(self.pub_front_left, self.velocity_front_left)
             self.publish_velocity(self.pub_rear_right, self.velocity_rear_right)
             self.publish_velocity(self.pub_rear_left, self.velocity_rear_left)
+
+            self.publish_base_to_winch(self.base_to_winch, self.velocity_front_left, self.velocity_front_right)
             
             time.sleep(1 / self.rate_control_hz)
 
@@ -68,6 +73,13 @@ class MainNode(Node):
         else:
             msg.data = velocity
         publisher.publish(msg)
+
+    def publish_base_to_winch(self, publisher, dataX, dataY):
+        msg = Twist()
+        msg.linear.x = dataX
+        msg.linear.y = dataY
+
+        publisher.publish(msg)   
 
     def callback_cmd_vel(self, msg):
         vx = msg.linear.y  # Linear velocity in x-direction
@@ -91,7 +103,7 @@ class MainNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     main_node = MainNode("config/path", "main_node")
-    print("Bots_Bento_Base_Control_v1.0")
+    print("base control active")
     rclpy.spin(main_node)
     main_node.destroy_node()
     rclpy.shutdown()
