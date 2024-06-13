@@ -177,7 +177,7 @@ class MyComputationNode(Node):
         winch_msg = Twist()         #The winch-data is transported via the angular part of manual_control
         with manual_control_lock:
 
-            self.angle = (imu_data + 1) * math.pi # Angle
+            self.angle = (imu_data + 1.0) * math.pi # Angle
             print(self.angle,"the imu angle is:  %d")
             if abs(self.chainLeft + self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be antiparallel
                 winch_msg.linear.x = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
