@@ -165,11 +165,13 @@ class MyComputationNode(Node):
                     up_down= manual_control.angular.y
                     winch_msg.angular.z = imu_data
                     if abs(right_left) > 0.01:
-                        winch_msg.linear.x = -1 * manual_control.angular.x
-                        winch_msg.linear.y = 1 *manual_control.angular.y
+                        winch_msg.linear.x = -1 * right_left
+                        winch_msg.linear.y = 1 *right_left
                     elif abs(up_down) > 0.01:
-                        winch_msg.linear.x = 1 *manual_control.angular.y
-                        winch_msg.linear.y = 1 *manual_control.angualar.y
+                        winch_msg.linear.x = 1 *up_down
+                        winch_msg.linear.y = 1 *up_down
+                    winch_msg.linear.x = 0
+                    winch_msg.linear.y = 0
                 elif semi_autonomous: 
                     winch_msg.angular.z = imu_data
                 elif autonomous:

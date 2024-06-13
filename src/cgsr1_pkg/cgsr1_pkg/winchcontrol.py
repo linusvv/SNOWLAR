@@ -75,7 +75,7 @@ class MainNode(Node):
         
 
         if abs(vel_Left) < 0.01 and abs(vel_Right) < 0.01:
-            if abs(self.chainLeft - self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be equal
+            if abs(self.chainLeft + self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be equal
                 self.velocity_left = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
                 self.velocity_right = self.translation_Factor*(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
 
