@@ -4,12 +4,15 @@ from rcl_interfaces.msg import SetParametersResult
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32, Bool, Int32
 import threading
+import math
 
 # Global variables for shared data
 manual_control = Twist()
 edge_distance = Twist()
 imu_data = Float32()
 winch_position = Twist()  # Changed to Twist
+
+
 
 # Locks for thread safety
 manual_control_lock = threading.Lock()
@@ -61,6 +64,14 @@ class MyComputationNode(Node):
             self.winch_position_callback,
             10
         )
+        self.sub_base_to_winch = self.create_subscription(Twist, "/base_to_winch", self.callback_base_to_winch, QoSProfile(depth = 10))
+
+        #Variables of Node
+        self.chainLeft = 0.0
+        self.chainRight = 0.0
+        self.angle = 0.0
+        self.translation_Factor = 98/47
+
 
         # Parameter listeners
         self.param_manual_mode = self.declare_parameter('manual_mode', False).value     #name changed
@@ -119,6 +130,15 @@ class MyComputationNode(Node):
         with winch_position_lock:
             winch_position = msg
 
+    def callback_base_to_winch(self, msg):
+
+        self.chainLeft = msg.linear.x       #Velocity left chain update
+        self.chainRight = msg.linear.y      #Velocity right chain update
+    
+
+
+
+
     def publisher_loop(self):
         rate = self.create_rate(10)  # 10 Hz
         while rclpy.ok():
@@ -159,21 +179,27 @@ class MyComputationNode(Node):
                 if manual_mode:
                     winch_msg.linear.x = manual_control.angular.x
                     winch_msg.linear.y = manual_control.angular.y 
-                    winch_msg.angular.z = imu_data
                 elif sync_winch:
                     right_left = manual_control.angular.x
                     up_down= manual_control.angular.y
-                    winch_msg.angular.z = imu_data
                     if abs(right_left) > 0.01:
                         winch_msg.linear.x = -1 * right_left
                         winch_msg.linear.y = 1 *right_left
                     elif abs(up_down) > 0.01:
                         winch_msg.linear.x = 1 *up_down
                         winch_msg.linear.y = 1 *up_down
-                    winch_msg.linear.x = 0
-                    winch_msg.linear.y = 0
+                    else:
+                        winch_msg.linear.x = 0
+                        winch_msg.linear.y = 0
                 elif semi_autonomous: 
-                    winch_msg.angular.z = imu_data
+                    self.angle = (imu_data + 1) * math.pi # Angle
+                    if abs(self.chainLeft + self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be antiparallel
+                        winch_msg.linear.x = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
+                        winch_msg.linear.y = self.translation_Factor*(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
+                    else:
+                        winch_msg.linear.x = 0
+                        winch_msg.linear.y = 0
+
                 elif autonomous:
                     print("not ready")
 
