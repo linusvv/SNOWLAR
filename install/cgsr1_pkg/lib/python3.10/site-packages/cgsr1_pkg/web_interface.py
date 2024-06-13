@@ -112,7 +112,7 @@ class GUIController(Node):
         self.param_manual_mode = self.declare_parameter('manual_mode', False).value
         self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False).value
         self.param_sync_winch = self.declare_parameter('sync_winch', False).value
-        self.param_autonomous = self.declare_parameter('autonomous', False).valu
+        self.param_autonomous = self.declare_parameter('autonomous', False).value
         self.param_stop = self.declare_parameter('stop', False).value
 
     def dimensions_callback(self, msg):
