@@ -189,12 +189,12 @@ class MyComputationNode(Node):
             temp = imu_data
             self.angle = (temp + 1.0) * math.pi # Angle
             print(f'the imu angle is:  {self.angle}')
-            if abs(self.chainLeft + self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be antiparallel
+            if abs(self.chainLeft + self.chainRight) <= 0.001: ##for now, chainLeft and chain Right should be antiparallel
                 winch_msg.linear.x = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
                 winch_msg.linear.y = self.translation_Factor*(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
             else:
-                        winch_msg.linear.x = 0
-                        winch_msg.linear.y = 0
+                winch_msg.linear.x = 0.0
+                winch_msg.linear.y = 0.0
      
             
             if stop == False:  
@@ -205,14 +205,14 @@ class MyComputationNode(Node):
                     right_left = manual_control.angular.x
                     up_down= manual_control.angular.y
                     if abs(right_left) > 0.01:
-                        winch_msg.linear.x = -1 * right_left
-                        winch_msg.linear.y = 1 *right_left
+                        winch_msg.linear.x = -1.0 * right_left
+                        winch_msg.linear.y = 1.0 *right_left
                     elif abs(up_down) > 0.01:
-                        winch_msg.linear.x = 1 *up_down
-                        winch_msg.linear.y = 1 *up_down
+                        winch_msg.linear.x = 1.0 *up_down
+                        winch_msg.linear.y = 1.0 *up_down
                     else:
-                        winch_msg.linear.x = 0
-                        winch_msg.linear.y = 0
+                        winch_msg.linear.x = 0.0
+                        winch_msg.linear.y = 0.0
                 elif semi_autonomous: 
                     self.angle = (imu_data + 1) * math.pi # Angle
                     print(self.angle,"the imu angle is:  %d")
@@ -220,8 +220,8 @@ class MyComputationNode(Node):
                         winch_msg.linear.x = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
                         winch_msg.linear.y = self.translation_Factor*(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
                     else:
-                        winch_msg.linear.x = 0
-                        winch_msg.linear.y = 0
+                        winch_msg.linear.x = 0.0
+                        winch_msg.linear.y = 0.0
 
                 elif autonomous:
                     print("not ready")
