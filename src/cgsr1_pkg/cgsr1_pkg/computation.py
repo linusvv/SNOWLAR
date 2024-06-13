@@ -178,7 +178,7 @@ class MyComputationNode(Node):
         with manual_control_lock:
             temp = imu_data
             self.angle = (temp + 1.0) * math.pi # Angle
-            print(self.angle,"the imu angle is:  %d")
+            print(f,"the imu angle is:  {self.angle}")
             if abs(self.chainLeft + self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be antiparallel
                 winch_msg.linear.x = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
                 winch_msg.linear.y = self.translation_Factor*(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
