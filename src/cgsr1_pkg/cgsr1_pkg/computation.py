@@ -192,7 +192,7 @@ class MyComputationNode(Node):
             
             print(f'the left winch velocity is:  {winch_msg.linear.x}')
             print(f'the right winch velocity is:  {winch_msg.linear.y}')
-            if abs(self.chainLeft + self.chainRight) <= 0.001: ##for now, chainLeft and chain Right should be antiparallel
+            if abs(self.chainLeft - self.chainRight) <= 0.001: ##for now, chainLeft and chain Right should be antiparallel
                 winch_msg.linear.x = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
                 winch_msg.linear.y = self.translation_Factor*(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
             else:
