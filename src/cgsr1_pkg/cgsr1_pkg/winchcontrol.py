@@ -70,18 +70,9 @@ class MainNode(Node):
     def callback_winch(self, msg):
         vel_Left = msg.linear.x    # manual mode left/right
         vel_Right = msg.linear.y   # manual mode up/down
-        tempAngle = (msg.angular.z + 1) * math.pi # Angle
 
-        
-
-        if abs(vel_Left) < 0.01 and abs(vel_Right) < 0.01:
-            if abs(self.chainLeft + self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be equal
-                self.velocity_left = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
-                self.velocity_right = self.translation_Factor*(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
-
-        else: # manual mode activated
-            self.velocity_right = vel_Right * self.max_velocity
-            self.velocity_left = vel_Left * self.max_velocity
+        self.velocity_right = vel_Right * self.max_velocity
+        self.velocity_left = vel_Left * self.max_velocity
 
 
 
