@@ -5,6 +5,7 @@ from rcl_interfaces.msg import SetParametersResult
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32, Bool, Int32
 import threading
+import time
 import math
 
 # Global variables for shared data
@@ -137,7 +138,16 @@ class MyComputationNode(Node):
         self.chainRight = msg.linear.y      #Velocity right chain update
     
 
+    def thread_main(self):
+        time.sleep(1)
+        
+        while not self.thread_exited:
+            self.publish_gui_status()
+            self.publish_winch_position()
+            self.publish_cmd_vel()
+            self.publish_winch()
 
+            time.sleep(1 / 25)
 
 
     def publisher_loop(self):
@@ -147,7 +157,7 @@ class MyComputationNode(Node):
             self.publish_winch_position()
             self.publish_cmd_vel()
             self.publish_winch()
-            rate.sleep()
+            time.sleep(1/25)
 
     def publish_gui_status(self):
         gui_status_msg = Twist()
