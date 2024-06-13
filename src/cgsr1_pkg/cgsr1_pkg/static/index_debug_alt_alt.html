@@ -158,14 +158,22 @@
         <div class="switches-container">
             <div class="switch">
                 <input type="checkbox" id="switch1">
-                <label for="switch1">Snap Joystick</label>
+                <label for="switch1">Manual Mode</label>
             </div>
-            <div class="switch">
+            <div class="switch" id="switch2_div">
                 <input type="checkbox" id="switch2">
-                <label for="switch2">Hide Sliders</label>
+                <label for="switch2">Sync Winches</label>
             </div>
             <div class="switch">
                 <input type="checkbox" id="switch3">
+                <label for="switch3">Semi-Autonomous</label>
+            </div>
+            <div class="switch">
+                <input type="checkbox" id="switch4">
+                <label for="switch3">Switch 3</label>
+            </div>
+            <div class="switch">
+                <input type="checkbox" id="switch5">
                 <label for="switch3">Switch 3</label>
             </div>
         </div>
@@ -180,7 +188,7 @@
         let maxDistance = joystick.offsetWidth / 2 - handle.offsetWidth / 2;
         let draggingJoystick = false;
         let keysPressed = {};
-        const snapSwitch = document.getElementById('switch1');
+        const manual_mode = document.getElementById('switch1');
         const hideSlidersSwitch = document.getElementById('switch1');
 
         // Slider Variables
@@ -239,16 +247,22 @@
         });
 
         // Switches Event Listeners
-        snapSwitch.addEventListener('change', () => {
-            sendSwitchData('snap', snapSwitch.checked);
+        manual_mode.addEventListener('change', () => {
+            sendSwitchData('switch1', manual_mode.checked);
+        });
+        manual_mode.addEventListener('change', () => {
+            sendSwitchData('switch3', manual_mode.checked);
         });
 
         hideSlidersSwitch.addEventListener('change', () => {
             const slidersContainer = document.querySelector('.sliders-container');
+            const sync_switch = document.getElementById('switch2_div');
             if (hideSlidersSwitch.checked) {
-                slidersContainer.style.display = 'none';
-            } else {
                 slidersContainer.style.display = 'flex';
+                sync_switch.style.display = 'flex'
+            } else {
+                slidersContainer.style.display = 'none';
+                sync_switch.style.display = 'none'
             }
             sendSwitchData('hideSliders', hideSlidersSwitch.checked);
         });
@@ -269,17 +283,12 @@
         function updateHandlePositionByKeys() {
             let x = 0, y = 0;
             
-            if (snapSwitch.checked) {
-                if (keysPressed['ArrowUp']) { y -= maxDistance; x = 0; }
-                if (keysPressed['ArrowDown']) { y += maxDistance; x = 0; }
-                if (keysPressed['ArrowLeft']) { x -= maxDistance; y = 0; }
-                if (keysPressed['ArrowRight']) { x += maxDistance; y = 0; }
-            } else {
-                if (keysPressed['ArrowUp']) y -= maxDistance;
-                if (keysPressed['ArrowDown']) y += maxDistance;
-                if (keysPressed['ArrowLeft']) x -= maxDistance;
-                if (keysPressed['ArrowRight']) x += maxDistance;
-            }
+            
+            if (keysPressed['ArrowUp']) { y -= maxDistance; x = 0; }
+            if (keysPressed['ArrowDown']) { y += maxDistance; x = 0; }
+            if (keysPressed['ArrowLeft']) { x -= maxDistance; y = 0; }
+            if (keysPressed['ArrowRight']) { x += maxDistance; y = 0; }
+            
 
             updateHandlePosition(x, y);
         }
@@ -297,7 +306,7 @@
                 y = maxDistance * Math.sin(angle);
             }
 
-            if (snapSwitch.checked) {
+            if (manual_mode.checked) {
                 if (Math.abs(x) > Math.abs(y)) {
                     y = 0;
                 } else {

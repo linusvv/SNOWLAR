@@ -75,10 +75,10 @@ def switch(switch_name):
     if value is None:
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
-    if switch_name == 'snap':
+    if switch_name == 'switch1':
         gui_controller_instance.param_switch = value
-    elif switch_name == 'hideSliders':
-        gui_controller_instance.param_autonomous = value
+    elif switch_name == 'switch2':
+        gui_controller_instance.param_semi_autonomous = value
     else:
         return jsonify({"status": "error", "message": "Invalid switch name"}), 400
 
@@ -110,7 +110,7 @@ class GUIController(Node):
 
         # Declare parameters
         self.param_switch = self.declare_parameter('switch', False).value
-        self.param_autonomous = self.declare_parameter('autonomous', False).value
+        self.param_semi_autonomous = self.declare_parameter('autonomous', False).value
         self.param_stop = self.declare_parameter('stop', False).value
 
     def dimensions_callback(self, msg):

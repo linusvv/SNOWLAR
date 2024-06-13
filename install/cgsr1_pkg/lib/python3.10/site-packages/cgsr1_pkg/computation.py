@@ -137,8 +137,8 @@ class MyComputationNode(Node):
         cmd_vel_msg = Twist()       #The chain-data is transported via the linear part of manual_control
         with manual_control_lock:   
             if switch:
-                cmd_vel_msg.linear.x = manual_control.angular.x / 2.0
-                cmd_vel_msg.linear.y = manual_control.angular.y / 2.0
+                cmd_vel_msg.linear.x = manual_control.angular.x 
+                cmd_vel_msg.linear.y = manual_control.angular.y 
             else:
                 cmd_vel_msg.linear.x = manual_control.linear.x
                 cmd_vel_msg.linear.y = manual_control.linear.y

@@ -27,13 +27,16 @@ def joystick():
     
     x = data.get('x')
     y = data.get('y')
+    
+    
     if x is None or y is None:
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     twist = Twist()
     
     # Check the switch parameter to determine where to assign the values
-    if gui_controller_instance.param_switch:
+    if gui_controller_instance.param_switch == True:
+        print(f"param_switch value: {gui_controller_instance.param_switch}")  # Add this line for debugging
         twist.angular.x = x + 0.000000001
         twist.angular.y = y + 0.000000001
     else:
@@ -59,11 +62,11 @@ def winch():
         twist.angular.x = x + 0.000000001
     if y is not None:
         twist.angular.y = y + 0.000000001
-    
-    if manual_control_publisher:
-        manual_control_publisher.publish(twist)
-    else:
-        return jsonify({"status": "error", "message": "Winch publisher not initialized"}), 500
+    if x or y is not None:
+        if manual_control_publisher:
+            manual_control_publisher.publish(twist)
+        else:
+            return jsonify({"status": "error", "message": "Winch publisher not initialized"}), 500
     
     return jsonify({"status": "success", "x": x, "y": y})
 
