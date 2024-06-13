@@ -27,16 +27,13 @@ def joystick():
     
     x = data.get('x')
     y = data.get('y')
-    
-    
     if x is None or y is None:
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     twist = Twist()
     
     # Check the switch parameter to determine where to assign the values
-    if gui_controller_instance.param_switch == True:
-        print(f"param_switch value: {gui_controller_instance.param_switch}")  # Add this line for debugging
+    if gui_controller_instance.param_manual_mode:
         twist.angular.x = x + 0.000000001
         twist.angular.y = y + 0.000000001
     else:
@@ -62,11 +59,11 @@ def winch():
         twist.angular.x = x + 0.000000001
     if y is not None:
         twist.angular.y = y + 0.000000001
-    if x or y is not None:
-        if manual_control_publisher:
-            manual_control_publisher.publish(twist)
-        else:
-            return jsonify({"status": "error", "message": "Winch publisher not initialized"}), 500
+    
+    if manual_control_publisher:
+        manual_control_publisher.publish(twist)
+    else:
+        return jsonify({"status": "error", "message": "Winch publisher not initialized"}), 500
     
     return jsonify({"status": "success", "x": x, "y": y})
 
@@ -78,10 +75,10 @@ def switch(switch_name):
     if value is None:
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
-    if switch_name == 'snap':
-        gui_controller_instance.param_switch = value
-    elif switch_name == 'hideSliders':
-        gui_controller_instance.param_autonomous = value
+    if switch_name == 'switch1':
+        gui_controller_instance.param_manual_mode = value
+    elif switch_name == 'switch2':
+        gui_controller_instance.param_semi_autonomous = value
     else:
         return jsonify({"status": "error", "message": "Invalid switch name"}), 400
 
@@ -112,8 +109,10 @@ class GUIController(Node):
         )
 
         # Declare parameters
-        self.param_switch = self.declare_parameter('switch', False).value
-        self.param_autonomous = self.declare_parameter('autonomous', False).value
+        self.param_manual_mode = self.declare_parameter('manual_mode', False).value
+        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False).value
+        self.param_sync_winch = self.declare_parameter('sync_winch', False).value
+        self.param_autonomous = self.declare_parameter('autonomous', False).valu
         self.param_stop = self.declare_parameter('stop', False).value
 
     def dimensions_callback(self, msg):

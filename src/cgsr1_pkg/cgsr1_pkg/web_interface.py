@@ -33,7 +33,7 @@ def joystick():
     twist = Twist()
     
     # Check the switch parameter to determine where to assign the values
-    if gui_controller_instance.param_switch:
+    if gui_controller_instance.param_manual_mode:
         twist.angular.x = x + 0.000000001
         twist.angular.y = y + 0.000000001
     else:
@@ -76,7 +76,7 @@ def switch(switch_name):
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     if switch_name == 'switch1':
-        gui_controller_instance.param_switch = value
+        gui_controller_instance.param_manual_mode = value
     elif switch_name == 'switch2':
         gui_controller_instance.param_semi_autonomous = value
     else:
@@ -109,8 +109,10 @@ class GUIController(Node):
         )
 
         # Declare parameters
-        self.param_switch = self.declare_parameter('switch', False).value
-        self.param_semi_autonomous = self.declare_parameter('autonomous', False).value
+        self.param_manual_mode = self.declare_parameter('manual_mode', False).value
+        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False).value
+        self.param_sync_winch = self.declare_parameter('sync_winch', False).value
+        self.param_autonomous = self.declare_parameter('autonomous', False).valu
         self.param_stop = self.declare_parameter('stop', False).value
 
     def dimensions_callback(self, msg):

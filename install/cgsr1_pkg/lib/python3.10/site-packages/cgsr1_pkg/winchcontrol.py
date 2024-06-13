@@ -11,10 +11,6 @@ class MainNode(Node):
     def __init__(self, config_path, node_name):
         super().__init__(node_name)
 
-        self.angle = 0.0
-        self.chainRight = 0.0
-        self.chainLeft = 0.0
-        self.translation_Factor = 98/47 #translation factor between big chain wheels and winch wheels
         
         # Publishers for each winch motor
         self.pub_right = self.create_publisher(Float32, "/olive/servo/wr/goal/velocity", QoSProfile(depth=10))
@@ -28,7 +24,7 @@ class MainNode(Node):
 
         self.thread_main = threading.Thread(target=self.thread_main)
         self.thread_exited = False
-        self.rate_control_hz = 40
+        self.rate_control_hz = 25
         
         self.velocity_right = 0.0
         self.velocity_left = 0.0
@@ -70,18 +66,9 @@ class MainNode(Node):
     def callback_winch(self, msg):
         vel_Left = msg.linear.x    # manual mode left/right
         vel_Right = msg.linear.y   # manual mode up/down
-        tempAngle = (msg.angular.z + 1) * math.pi # Angle
 
-        
-
-        if abs(vel_Left) < 0.01 and abs(vel_Right) < 0.01:
-            if abs(self.chainLeft - self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be equal
-                self.velocity_left = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainRight)
-                self.velocity_right = self.translation_Factor*(math.cos(self.angle)* self.chainRight + math.sin(self.angle)  * self.chainRight)
-
-        else: # manual mode activated
-            self.velocity_right = vel_Right * self.max_velocity
-            self.velocity_left = vel_Left * self.max_velocity
+        self.target_velocity_right = vel_Right * self.max_velocity
+        self.target_velocity_left = vel_Left * self.max_velocity
 
 
 
