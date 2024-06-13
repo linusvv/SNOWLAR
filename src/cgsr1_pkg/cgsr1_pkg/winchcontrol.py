@@ -67,8 +67,8 @@ class MainNode(Node):
         vel_Left = msg.linear.x    # manual mode left/right
         vel_Right = msg.linear.y   # manual mode up/down
 
-        self.velocity_right = vel_Right * self.max_velocity
-        self.velocity_left = vel_Left * self.max_velocity
+        self.target_velocity_right = vel_Right * self.max_velocity
+        self.target_velocity_left = vel_Left * self.max_velocity
 
 
 
