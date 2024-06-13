@@ -150,14 +150,6 @@ class MyComputationNode(Node):
             time.sleep(1 / 25)
 
 
-    def publisher_loop(self):
-        rate = self.create_rate(10)  # 10 Hz
-        while rclpy.ok():
-            self.publish_gui_status()
-            self.publish_winch_position()
-            self.publish_cmd_vel()
-            self.publish_winch()
-            time.sleep(1/25)
 
     def publish_gui_status(self):
         gui_status_msg = Twist()
