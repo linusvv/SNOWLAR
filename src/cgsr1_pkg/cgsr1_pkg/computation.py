@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import QoSProfile
 from rcl_interfaces.msg import SetParametersResult
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32, Bool, Int32
@@ -166,7 +167,7 @@ class MyComputationNode(Node):
     def publish_cmd_vel(self):
         cmd_vel_msg = Twist()       #The chain-data is transported via the linear part of manual_control
         with manual_control_lock:   
-            if stop:
+            if stop == False:
                 cmd_vel_msg.linear.x = manual_control.linear.x / 2.0
                 cmd_vel_msg.linear.y = manual_control.linear.y / 2.0
             
