@@ -11,10 +11,6 @@ class MainNode(Node):
     def __init__(self, config_path, node_name):
         super().__init__(node_name)
 
-        self.angle = 0.0
-        self.chainRight = 0.0
-        self.chainLeft = 0.0
-        self.translation_Factor = 98/47 #translation factor between big chain wheels and winch wheels
         
         # Publishers for each winch motor
         self.pub_right = self.create_publisher(Float32, "/olive/servo/wr/goal/velocity", QoSProfile(depth=10))
