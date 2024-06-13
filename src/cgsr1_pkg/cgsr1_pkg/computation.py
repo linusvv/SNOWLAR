@@ -10,7 +10,7 @@ import math
 # Global variables for shared data
 manual_control = Twist()
 edge_distance = Twist()
-imu_data = Float32()
+imu_data = 0.0
 winch_position = Twist()  # Changed to Twist
 
 
@@ -124,7 +124,7 @@ class MyComputationNode(Node):
     def imu_data_callback(self, msg):
         global imu_data
         with imu_data_lock:
-            imu_data = msg
+            imu_data = msg.data
 
     def winch_position_callback(self, msg):
         global winch_position
