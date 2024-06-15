@@ -139,13 +139,25 @@ class MyComputationNode(Node):
     
 
     def publisher_loop(self):
-        rate = self.create_rate(10)  # 10 Hz
+        rate = 25
+        t = 0
+        initialisation = False
         while rclpy.ok():
+            if(initialisation == False):
+                while t<3.0:
+                    self.publish_cmd_vel(1)
+                    time.sleep(1/rate)
+                    t = t+ 1/rate
+                while t>0.0:
+                    self.publish_cmd_vel(-1)
+                    time.sleep(1/rate)
+                    t = t- 1/rate
+                initialisation = True
             self.publish_gui_status()
             self.publish_winch_position()
-            self.publish_cmd_vel()
+            self.publish_cmd_vel(0)
             self.publish_winch()
-            time.sleep(1/25)
+            time.sleep(1/rate)
 
     def publish_gui_status(self):
         gui_status_msg = Twist()
@@ -162,10 +174,13 @@ class MyComputationNode(Node):
             winch_position_msg.linear.y = manual_control.linear.y
         self.publisher_winch_position.publish(winch_position_msg)
 
-    def publish_cmd_vel(self):
+    def publish_cmd_vel(self, initiate):
         cmd_vel_msg = Twist()       #The chain-data is transported via the linear part of manual_control
-        with manual_control_lock:   
-            if stop == False:
+        with manual_control_lock: 
+            if initiate != 0:
+                cmd_vel_msg.angular.x = initiate
+
+            elif stop == False:
                 cmd_vel_msg.linear.x = manual_control.linear.x / 2.0
                 cmd_vel_msg.linear.y = manual_control.linear.y / 2.0
             
@@ -183,9 +198,9 @@ class MyComputationNode(Node):
             print(f'the left chain velocity is:  {self.chainLeft}')
             print(f'the right chain velocity is:  {self.chainRight}')
 
-            if abs(self.chainLeft + self.chainRight) <= 0.1: ##for now, chainLeft and chain Right should be parallel
-                winch_msg.linear.x = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle)* self.chainLeft)
-                winch_msg.linear.y = -1*self.translation_Factor*(math.cos(self.angle)* self.chainLeft + (-1)*math.sin(self.angle)* self.chainLeft)
+            if abs(self.chainLeft - self.chainRight) <= 0.1: ##for now, chainLeft and chain Right should be parallel
+                winch_msg.linear.x = self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
+                winch_msg.linear.y = -1*self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
             else:
                 winch_msg.linear.x = 0.0
                 winch_msg.linear.y = 0.0
