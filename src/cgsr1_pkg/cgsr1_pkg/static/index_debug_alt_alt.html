@@ -9,24 +9,28 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 0px;
+            padding-left: 20px;
+            padding-right: 20px;
             background-color: #333;
             color: white;
             transition: background-color 0.3s;
+            border-radius: 5px;
         }
         #header:hover {
             background-color: #555;
         }
         #logo {
             font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-            width: 50px;
-            height: auto;
+            width: auto;
+            font-size: x-large;
         }
         #links {
             font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
             display: flex;
             justify-content: flex-end;
             gap: 20px;
+            
         }
         #links a {
             color: white;
@@ -36,13 +40,16 @@
         }
         #links a:hover {
             background-color: #555;
+            border-radius: 5px;
         }
         #links a:active {
             background-color: #222;
+            border-radius: 5px;
         }
         #current_page, #current_page a {
             background-color: #555;
             color: white;
+            border-radius: 5px;
         }
         @keyframes fade-in {
             from {
@@ -133,6 +140,27 @@
             cursor: pointer;
             touch-action: none;
         }
+        .sliderh {
+            width: 200px;
+            height: 50px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            position: relative;
+            margin: 0 10px;
+            
+        }
+
+        .slider-handleh {
+            width: 50px;
+            height: 50px;
+            background-color: #808080;
+            position: absolute;
+            left: 75px;
+            top: 0px;
+            cursor: pointer;
+            touch-action: none;
+        }
+
         .switches-container {
             font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
             display: flex;
@@ -140,6 +168,7 @@
             width: auto;
             background-color: #dcdcdc;
             padding: 10px;
+            border-radius: 5px;
         }
         .switch {
             display: flex;
@@ -162,11 +191,10 @@
             color: white;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
             font-size: 16px;
         }
 
-        .button input{
+        .button button{
             background-color: #333;
             color: white;
             border: none;
@@ -175,10 +203,11 @@
             font-size: 16px;
             transition: background-color 0.3s;
         }
-        .button input:hover{
+        .button button:hover{
             background-color: #555;
+            cursor: pointer;
         }
-        .button input:active{
+        .button button:active{
             background-color: #222;
         }
         
@@ -249,11 +278,10 @@
 <body>
     <div id="header">
         <div id="logo">
-            <p>snowlar</p>
+            <p>SNOWLAR</p>
         </div>
         <div id="links">
             <a href="#">Home</a>
-            <a href="#">Debugging</a>
             <a href="#" id="current_page">Manual Control</a>
             <a href="#">Settings</a>
         </div>
@@ -277,6 +305,9 @@
                 </div>
                 <div id="slider2" class="slider">
                     <div id="slider2-handle" class="slider-handle"></div>
+                </div>
+                <div id="sliderh" class="sliderh">
+                    <div id="sliderh-handle" class="slider-handleh"></div>
                 </div>
             </div>
         </div>
@@ -308,17 +339,28 @@
         let maxDistance = joystick.offsetWidth / 2 - handle.offsetWidth / 2;
         let draggingJoystick = false;
         let keysPressed = {};
-        const snapSwitch = document.getElementById('switch1');
-        const hideSlidersSwitch = document.getElementById('switch1');
-        
+
+        const manual_mode = document.getElementById('switch1');
+        const sync_mode = document.getElementById('switch2');
 
         // Slider Variables
         const sliders = [
-            { container: document.getElementById('slider1'), handle: document.getElementById('slider1-handle'), dragging: false },
-            { container: document.getElementById('slider2'), handle: document.getElementById('slider2-handle'), dragging: false }
+        { container: document.getElementById('slider1'), handle: document.getElementById('slider1-handle'), dragging: false },
+        { container: document.getElementById('slider2'), handle: document.getElementById('slider2-handle'), dragging: false }
         ];
+
         const sliderMaxDistance = sliders[0].container.offsetHeight / 2 - sliders[0].handle.offsetHeight / 2;
 
+        const sliderh = {
+        container: document.getElementById('sliderh'),
+        handle: document.getElementById('sliderh-handle'),
+        dragging: false
+        };
+
+        const sliderhMaxDistance = sliderh.container.offsetWidth / 2 - sliderh.handle.offsetWidth / 2;
+        onload = () => {
+            sliderh.container.style.display = 'none';
+        }
         // Joystick Event Listeners
         handle.addEventListener('mousedown', (e) => { draggingJoystick = true; handle.style.backgroundColor = 'rgb(66, 217, 255)'; });
         document.addEventListener('mouseup', (e) => { if (draggingJoystick) { draggingJoystick = false; handle.style.backgroundColor = '#808080'; resetHandlePosition(); } });
@@ -331,213 +373,275 @@
 
         // Slider Event Listeners
         sliders.forEach(slider => {
-            slider.handle.addEventListener('mousedown', (e) => { slider.dragging = true; slider.handle.style.backgroundColor = 'rgb(66, 217, 255)'; });
-            slider.handle.addEventListener('touchstart', (e) => { slider.dragging = true; slider.handle.style.backgroundColor = 'rgb(66, 217, 255)'; });
+        slider.handle.addEventListener('mousedown', (e) => { slider.dragging = true; slider.handle.style.backgroundColor = 'rgb(66, 217, 255)'; });
+        slider.handle.addEventListener('touchstart', (e) => { slider.dragging = true; slider.handle.style.backgroundColor = 'rgb(66, 217, 255)'; });
         });
+
+        sliderh.handle.addEventListener('mousedown', (e) => { sliderh.dragging = true; sliderh.handle.style.backgroundColor = 'rgb(66, 217, 255)'; });
+        sliderh.handle.addEventListener('touchstart', (e) => { sliderh.dragging = true; sliderh.handle.style.backgroundColor = 'rgb(66, 217, 255)'; });
+
         document.addEventListener('mouseup', (e) => {
-            sliders.forEach(slider => {
-                if (slider.dragging) {
-                    slider.dragging = false;
-                    slider.handle.style.backgroundColor = '#808080';
-                    resetSliderHandlePosition(slider);
-                }
-            });
+        sliders.forEach(slider => {
+            if (slider.dragging) {
+            slider.dragging = false;
+            slider.handle.style.backgroundColor = '#808080';
+            resetSliderHandlePosition(slider);
+            }
         });
+        if (sliderh.dragging) {
+            sliderh.dragging = false;
+            sliderh.handle.style.backgroundColor = '#808080';
+            resetSliderHandlePositionh(sliderh);
+        }
+        });
+
         document.addEventListener('touchend', (e) => {
-            sliders.forEach(slider => {
-                if (slider.dragging) {
-                    slider.dragging = false;
-                    slider.handle.style.backgroundColor = '#808080';
-                    resetSliderHandlePosition(slider);
-                }
-            });
+        sliders.forEach(slider => {
+            if (slider.dragging) {
+            slider.dragging = false;
+            slider.handle.style.backgroundColor = '#808080';
+            resetSliderHandlePosition(slider);
+            }
         });
+        if (sliderh.dragging) {
+            sliderh.dragging = false;
+            sliderh.handle.style.backgroundColor = '#808080';
+            resetSliderHandlePositionh(sliderh);
+        }
+        });
+
         document.addEventListener('mousemove', (e) => {
-            sliders.forEach(slider => {
-                if (slider.dragging) {
-                    moveSliderHandle(slider, e.clientY);
-                }
-            });
+        sliders.forEach(slider => {
+            if (slider.dragging) {
+            moveSliderHandle(slider, e.clientY);
+            }
         });
+        if (sliderh.dragging) {
+            moveSliderHandleh(sliderh, e.clientX);
+        }
+        });
+
         document.addEventListener('touchmove', (e) => {
-            sliders.forEach(slider => {
-                if (slider.dragging) {
-                    moveSliderHandle(slider, e.touches[0].clientY);
-                }
-            });
+        sliders.forEach(slider => {
+            if (slider.dragging) {
+            moveSliderHandle(slider, e.touches[0].clientY);
+            }
+        });
+        if (sliderh.dragging) {
+            moveSliderHandleh(sliderh, e.touches[0].clientX);
+        }
         });
 
         // Switches Event Listeners
-        snapSwitch.addEventListener('change', () => {
-            sendSwitchData('snap', snapSwitch.checked);
-        });
-
-        hideSlidersSwitch.addEventListener('change', () => {
-            const slidersContainer = document.querySelector('.sliders-container');
-            const switch2 = document.getElementById('switch2');
-            if (hideSlidersSwitch.checked) {
+        manual_mode.addEventListener('change', () => {
+        const slidersContainer = document.querySelector('.sliders-container');
+        const switch2_container = document.getElementById('switch2_container');
+        const slider2 = document.getElementById('slider2');
+        const sliderh = document.getElementById('sliderh');
+            if (manual_mode.checked) {
                 slidersContainer.style.display = 'none';
                 switch2_container.style.display = 'none';
-                
+                slider2.style.display = 'flex';
+                sliderh.style.display = 'none';
             } else {
                 slidersContainer.style.display = 'flex';
                 switch2_container.style.display = 'flex';
+                sync_mode.checked = false;
+                sendSwitchData('sync_mode', false);
             }
-            sendSwitchData('hideSliders', hideSlidersSwitch.checked);
+            sendSwitchData('manual_mode', manual_mode.checked);
         });
 
+        sync_mode.addEventListener('change', () => {
+        const slider2 = document.getElementById('slider2');
+        const sliderh = document.getElementById('sliderh');
+            if (sync_mode.checked) {
+                slider2.style.display = 'none';
+                sliderh.style.display = 'flex';
+            } else {
+                slider2.style.display = 'flex';
+                sliderh.style.display = 'none';
+            }
+        sendSwitchData('sync_mode', sync_mode.checked);
+        });
+
+
+
         document.querySelector('form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const response = await fetch('/calibrate', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            document.getElementById('result').textContent = result.message;
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const response = await fetch('/calibrate', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        document.getElementById('result').textContent = result.message;
         });
 
         function sendSwitchData(switchName, value) {
-            fetch(`/switch/${switchName}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ value })
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+        fetch(`/switch/${switchName}`, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ value })
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
         }
 
         function updateHandlePositionByKeys() {
-            let x = 0, y = 0;
-            
-            if (snapSwitch.checked) {
-                if (keysPressed['ArrowUp']) { y -= maxDistance; x = 0; }
-                if (keysPressed['ArrowDown']) { y += maxDistance; x = 0; }
-                if (keysPressed['ArrowLeft']) { x -= maxDistance; y = 0; }
-                if (keysPressed['ArrowRight']) { x += maxDistance; y = 0; }
-            } else {
-                if (keysPressed['ArrowUp']) y -= maxDistance;
-                if (keysPressed['ArrowDown']) y += maxDistance;
-                if (keysPressed['ArrowLeft']) x -= maxDistance;
-                if (keysPressed['ArrowRight']) x += maxDistance;
-            }
-
-            updateHandlePosition(x, y);
+        let x = 0, y = 0;
+        if (manual_mode.checked) {
+            if (keysPressed['ArrowUp']) { y -= maxDistance; x = 0; }
+            if (keysPressed['ArrowDown']) { y += maxDistance; x = 0; }
+            if (keysPressed['ArrowLeft']) { x -= maxDistance; y = 0; }
+            if (keysPressed['ArrowRight']) { x += maxDistance; y = 0; }
+        } else {
+            if (keysPressed['ArrowUp']) y -= maxDistance;
+            if (keysPressed['ArrowDown']) y += maxDistance;
+            if (keysPressed['ArrowLeft']) x -= maxDistance;
+            if (keysPressed['ArrowRight']) x += maxDistance;
+        }
+        updateHandlePosition(x, y);
         }
 
         function moveHandle(clientX, clientY) {
-            let rect = joystick.getBoundingClientRect();
-            let x = clientX - rect.left - joystickCenter.x;
-            let y = clientY - rect.top - joystickCenter.y;
-
-            let distance = Math.sqrt(x * x + y * y);
-
-            if (distance > maxDistance) {
-                let angle = Math.atan2(y, x);
-                x = maxDistance * Math.cos(angle);
-                y = maxDistance * Math.sin(angle);
+        let rect = joystick.getBoundingClientRect();
+        let x = clientX - rect.left - joystickCenter.x;
+        let y = clientY - rect.top - joystickCenter.y;
+        let distance = Math.sqrt(x * x + y * y);
+        if (distance > maxDistance) {
+            let angle = Math.atan2(y, x);
+            x = maxDistance * Math.cos(angle);
+            y = maxDistance * Math.sin(angle);
+        }
+        if (manual_mode.checked) {
+            if (Math.abs(x) > Math.abs(y)) {
+            y = 0;
+            } else {
+            x = 0;
             }
-
-            if (snapSwitch.checked) {
-                if (Math.abs(x) > Math.abs(y)) {
-                    y = 0;
-                } else {
-                    x = 0;
-                }
-            }
-
-            updateHandlePosition(x, y);
+        }
+        updateHandlePosition(x, y);
         }
 
         function resetHandlePosition() {
-            updateHandlePosition(0, 0);
+        updateHandlePosition(0, 0);
         }
 
         function updateHandlePosition(x, y) {
-            handle.style.left = `${x + joystickCenter.x - handleCenter.x}px`;
-            handle.style.top = `${y + joystickCenter.y - handleCenter.y}px`;
-            sendJoystickData(x / maxDistance, y / maxDistance);
+        handle.style.left = `${x + joystickCenter.x - handleCenter.x}px`;
+        handle.style.top = `${y + joystickCenter.y - handleCenter.y}px`;
+        sendJoystickData(x / maxDistance, y / maxDistance);
         }
 
-
-
         function sendJoystickData(x, y) {
-            fetch('/joystick', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ x, y })
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+        fetch('/joystick', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ x, y })
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
         }
 
         function moveSliderHandle(slider, clientY) {
-            let rect = slider.container.getBoundingClientRect();
-            let y = clientY - rect.top - slider.container.offsetHeight / 2;
+        let rect = slider.container.getBoundingClientRect();
+        let y = clientY - rect.top - slider.container.offsetHeight / 2;
+        if (y > sliderMaxDistance) y = sliderMaxDistance;
+        if (y < -sliderMaxDistance) y = -sliderMaxDistance;
+        updateSliderHandlePosition(slider, y);
+        }
 
-            if (y > sliderMaxDistance) y = sliderMaxDistance;
-            if (y < -sliderMaxDistance) y = -sliderMaxDistance;
-
-            updateSliderHandlePosition(slider, y);
+        function moveSliderHandleh(slider, clientX) {
+        let rect = slider.container.getBoundingClientRect();
+        let x = clientX - rect.left - slider.container.offsetWidth / 2;
+        if (x > sliderhMaxDistance) x = sliderhMaxDistance;
+        if (x < -sliderhMaxDistance) x = -sliderhMaxDistance;
+        updateSliderHandlePositionh(slider, x);
         }
 
         function resetSliderHandlePosition(slider) {
-            updateSliderHandlePosition(slider, 0);
+        updateSliderHandlePosition(slider, 0);
+        }
+
+        function resetSliderHandlePositionh(slider) {
+        updateSliderHandlePositionh(slider, 0);
         }
 
         function updateSliderHandlePosition(slider, y) {
-            slider.handle.style.top = `${y + slider.container.offsetHeight / 2 - slider.handle.offsetHeight / 2}px`;
-            sendSliderData(slider, y / sliderMaxDistance);
+        slider.handle.style.top = `${y + slider.container.offsetHeight / 2 - slider.handle.offsetHeight / 2}px`;
+        sendSliderData(slider, y / sliderMaxDistance);
+        }
+
+        function updateSliderHandlePositionh(slider, x) {
+        slider.handle.style.left = `${x + slider.container.offsetWidth / 2 - slider.handle.offsetWidth / 2}px`;
+        sendSliderDatah(slider, x / sliderhMaxDistance);
         }
 
         function sendSliderData(slider, y) {
-            let sliderId = slider.container.id;
-            let data = {};
-            if (sliderId === 'slider1') {
-                data.x = y;
-            } else if (sliderId === 'slider2') {
-                data.y = y;
-            }
+        let sliderId = slider.container.id;
+        let data = {};
+        if (sliderId === 'slider1') {
+            data.x = y;
+        } else if (sliderId === 'slider2') {
+            data.y = y;
+        }
+        fetch('/winch', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+        }
 
-            fetch('/winch', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+        function sendSliderDatah(slider, x) {
+        let sliderId = slider.container.id;
+        let data = {};
+        data.y = x;
+        fetch('/winch', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
         }
 
         async function fetchRectangleData() {
-            try {
-                const response = await fetch('/rectangle-data');
-                const data = await response.json();
-                updateRectangle(data);
-            } catch (error) {
-                console.error('Error fetching rectangle data:', error);
-            }
+        try {
+            const response = await fetch('/rectangle-data');
+            const data = await response.json();
+            updateRectangle(data);
+        } catch (error) {
+            console.error('Error fetching rectangle data:', error);
+        }
         }
 
         function updateRectangle(data) {
-            const rectangle = document.getElementById('rectangle');
-            const dot = document.getElementById('dot');
-            rectangle.style.width = `${data.width}px`;
-            rectangle.style.height = `${data.height}px`;
-            dot.style.left = `${data.dot_x}px`;
-            dot.style.top = `${data.dot_y}px`;
+        const rectangle = document.getElementById('rectangle');
+        const dot = document.getElementById('dot');
+        rectangle.style.width = `${data.width}px`;
+        rectangle.style.height = `${data.height}px`;
+        dot.style.left = `${data.dot_x}px`;
+        dot.style.top = `${data.dot_y}px`;
         }
 
         fetchRectangleData();
         setInterval(fetchRectangleData, 1000); // Update every second
+
     </script>
 </body>
 </html>
