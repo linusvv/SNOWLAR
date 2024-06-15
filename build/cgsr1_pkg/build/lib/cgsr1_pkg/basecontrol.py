@@ -37,7 +37,7 @@ class MainNode(Node):
         self.target_velocity_rear_right = 0.0
         self.target_velocity_rear_left = 0.0
 
-        self.max_velocity = 5
+        self.max_velocity = 3
         
         self.alpha = 0.1  # Low-pass filter constant (0 < alpha <= 1)
         
