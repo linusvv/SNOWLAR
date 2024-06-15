@@ -6,6 +6,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 import threading
 from std_msgs.msg import Float32MultiArray, Int32MultiArray
+from std_srvs.srv import SetBool
 
 INDEX_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt_alt.html")
 
@@ -84,6 +85,14 @@ def switch(switch_name):
 
     return jsonify({"status": "success", "switch": switch_name, "value": value})
 
+@app.route('/calibrate', methods=['POST'])
+def calibrate():
+    start_calibration = request.form.get('start_calibration', 'true').lower() == 'true'
+    response = ros_client.send_request(start_calibration)
+    result = {'success': response.success, 'message': response.message}
+    return jsonify(result)
+
+
 class GUIController(Node):
     def __init__(self):
         super().__init__('gui_controller')
@@ -114,6 +123,16 @@ class GUIController(Node):
         self.param_sync_winch = self.declare_parameter('sync_winch', False).value
         self.param_autonomous = self.declare_parameter('autonomous', False).value
         self.param_stop = self.declare_parameter('stop', False).value
+
+        self.client = self.create_client(SetBool, 'calibrate_motor')
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('service not available, waiting again...')
+    def send_request(self, start_calibration):
+        req = SetBool.Request()
+        req.data = start_calibration
+        self.future = self.client.call_async(req)
+        rclpy.spin_until_future_complete(self, self.future)
+        return self.future.result()
 
     def dimensions_callback(self, msg):
         self.width, self.height = msg.data
