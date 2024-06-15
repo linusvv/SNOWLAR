@@ -1,4 +1,5 @@
 [console_scripts]
+automation = cgsr1_pkg.automation:main
 computation = cgsr1_pkg.computation:main
 dummy_publisher = cgsr1_pkg.dummy_publisher:main
 imu_control = cgsr1_pkg.imucontrol:main

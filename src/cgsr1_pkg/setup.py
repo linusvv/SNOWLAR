@@ -28,6 +28,7 @@ setup(
             'winch_motion = cgsr1_pkg.winchcontrol:main',
             'computation = cgsr1_pkg.computation:main',
             'imu_control = cgsr1_pkg.imucontrol:main',
+            'automation = cgsr1_pkg.automation:main',
         ],
     },
 )

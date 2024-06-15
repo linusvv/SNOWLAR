@@ -7,7 +7,7 @@ from geometry_msgs.msg import Twist
 import threading
 from std_msgs.msg import Float32MultiArray, Int32MultiArray
 
-INDEX_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt_alt.html")
+INDEX_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt.html")
 
 app = Flask(__name__)
 node = None
