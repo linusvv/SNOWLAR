@@ -17,7 +17,7 @@ class MainNode(Node):
         self.pub_rear_right = self.create_publisher(Float32, "/olive/servo/mbr/goal/velocity", QoSProfile(depth=10))
         self.pub_rear_left = self.create_publisher(Float32, "/olive/servo/mbl/goal/velocity", QoSProfile(depth=10))
 
-        self.pub_mimu = self.create_publisher(Float32, "/olive/servo/mimu/goal/velocity", QoSProfile(depth=10))
+        #self.pub_mimu = self.create_publisher(Float32, "/olive/servo/mimu/goal/velocity", QoSProfile(depth=10))
 
 
         self.base_to_winch = self.create_publisher(Twist, "/base_to_winch", QoSProfile(depth=10))
@@ -60,7 +60,7 @@ class MainNode(Node):
             self.publish_velocity(self.pub_front_left, self.velocity_front_left)
             self.publish_velocity(self.pub_rear_right, self.velocity_rear_right)
             self.publish_velocity(self.pub_rear_left, self.velocity_rear_left)
-            self.publish_velocity(self.pub_mimu, self.velocity_mimu)
+            #self.publish_velocity(self.pub_mimu, self.velocity_mimu)
 
             self.publish_base_to_winch(self.base_to_winch, self.velocity_front_left, self.velocity_front_right)
             
@@ -98,7 +98,7 @@ class MainNode(Node):
         self.target_velocity_rear_left = self.target_velocity_front_left
         self.target_velocity_rear_right = self.target_velocity_front_right
 
-        self.velocity_mimu = msg.angular.x
+        #self.velocity_mimu = msg.angular.x
 
     def __del__(self):
         self.thread_exited = True
