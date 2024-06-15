@@ -103,8 +103,8 @@ class MainNode(Node):
         automation_msg = Twist()
         automation_msg.linear.x = vx
         automation_msg.linear.y = vy
-        automation_msg.angular.x = 0
-        automation_msg.angular.y = 0
+        automation_msg.angular.x = 0.0
+        automation_msg.angular.y = 0.0
 
 
         self.publisher.publish(automation_msg)
