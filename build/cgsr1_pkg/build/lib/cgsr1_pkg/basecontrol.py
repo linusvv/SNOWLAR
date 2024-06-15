@@ -82,8 +82,8 @@ class MainNode(Node):
         publisher.publish(msg)   
 
     def callback_cmd_vel(self, msg):
-        vx = msg.linear.y  # Linear velocity in x-direction
-        vy = msg.linear.x  # Linear velocity in y-direction
+        vx = msg.linear.x  # Linear velocity in x-direction
+        vy = msg.linear.y  # Linear velocity in y-direction
         
         vx = vx * self.max_velocity
         vy = vy * self.max_velocity
