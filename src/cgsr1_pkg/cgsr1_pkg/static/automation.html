@@ -228,7 +228,7 @@
             -o-transition: ease .3s;
         }
         .toggle-label {
-        margin-top: 180px;
+        margin-top: 240px;
         width: 100px;
         height: 48px;
         cursor: pointer;
@@ -280,7 +280,7 @@
         }
 
         .toggle-label .circle:checked {
-        background: #f43f5e;
+        background: rgb(66, 217, 255);
         left: calc(100% - 50px);
         }
 
@@ -348,16 +348,12 @@
     </div>
 
     <div id="container">
-        <div id="rectangle-container">
-            <div id="rectangle">
-                <div id="dot"></div>
-            </div>
-        </div>
+        
         <h1>CGSR1- Automation</h1>
         
         <div id="toggle-container">
             <label for="toggle" class="toggle-label">
-                <input class="circle" id="toggle" name="toggle" type="checkbox" />
+                <input class="circle" id="toggle" name="toggle" type="checkbox" onchange="toggleAutomation()" />
             </label>
         </div>
         <div class="automation">
@@ -376,8 +372,12 @@
                         <input type="checkbox" id="switch1" class="cm-toggle">
                         <label for="switch1">Show Map</label>
                     </div>
-                </div>
-            
+                </div>  
+        </div>
+        <div id="rectangle-container">
+            <div id="rectangle">
+                <div id="dot"></div>
+            </div>
         </div>
         <div id="result"></div>
     </div>
@@ -415,6 +415,17 @@
         .then(data => console.log(data))
         .catch(error => console.error('Error:', error));
         }
+
+        document.getElementById('toggle').addEventListener('change', () => {
+            const automationStatus = document.getElementById('toggle').checked;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/start_automation');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({ status: automationStatus }));
+        });
+
+        
 
         async function fetchRectangleData() {
         try {

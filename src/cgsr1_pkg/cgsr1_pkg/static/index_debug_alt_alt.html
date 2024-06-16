@@ -187,7 +187,6 @@
             align-items: center;
             margin-top: 50px;
             padding: 10px 20px;
-            background-color: #dcdcdc;
             color: white;
             border: none;
             border-radius: 5px;
@@ -209,6 +208,16 @@
         }
         .button button:active{
             background-color: #222;
+        }
+
+        #stop {
+            background-color: #f44336;
+        }
+        #stop:hover {
+            background-color: #d32f2f;
+        }
+        #stop:active {
+            background-color: #b71c1c;
         }
         
 
@@ -321,9 +330,14 @@
                 <label for="switch2">Sync Winches</label>
             </div>
         </div>
-        <form action="/calibrate" method="post" class="button">
-            <button type="submit" name="start_calibration" value="true">Start Calibration</button>
-        </form>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <form action="/calibrate" method="post" class="button">
+                <button type="submit" name="start_calibration" value="true">Start Calibration</button>
+            </form>
+            <form action="/stop" method="post" class="button">
+                <button type="submit" name="stop" value="true" id="stop">Emergency Stop</button>
+            </form>
+        </div>
         <div id="result"></div>
     </div>
 
@@ -358,9 +372,20 @@
         };
 
         const sliderhMaxDistance = sliderh.container.offsetWidth / 2 - sliderh.handle.offsetWidth / 2;
-        onload = () => {
+        window.onload = () => {
             sliderh.container.style.display = 'none';
+            sendSwitchData('manual_mode', true);
         }
+
+        window.onbeforeunload = () => {
+            sendSwitchData('manual_mode', false);
+            sendSwitchData('sync_mode', false);
+            sendSwitchData('semi_autonomous', false);
+        }
+
+        
+
+
         // Joystick Event Listeners
         handle.addEventListener('mousedown', (e) => { draggingJoystick = true; handle.style.backgroundColor = 'rgb(66, 217, 255)'; });
         document.addEventListener('mouseup', (e) => { if (draggingJoystick) { draggingJoystick = false; handle.style.backgroundColor = '#808080'; resetHandlePosition(); } });
@@ -443,11 +468,13 @@
                 switch2_container.style.display = 'none';
                 slider2.style.display = 'flex';
                 sliderh.style.display = 'none';
+                sendSwitchData('semi_autonomous', false);
             } else {
                 slidersContainer.style.display = 'flex';
                 switch2_container.style.display = 'flex';
                 sync_mode.checked = false;
                 sendSwitchData('sync_mode', false);
+                sendSwitchData('semi_autonomous', true);
             }
             sendSwitchData('manual_mode', manual_mode.checked);
         });
@@ -467,6 +494,9 @@
 
 
 
+        // When the form is submitted, prevent the default form submission behavior
+        // and send a POST request to '/calibrate' with the form data.
+        // Then, display an alert with the response message.
         document.querySelector('form').addEventListener('submit', async function(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -475,10 +505,21 @@
             body: formData
         });
         const result = await response.json();
-        document.getElementById('result').textContent = result.message;
+        alert(result.message);
+        return false;
         });
 
+        document.getElementById('stop').addEventListener('click', function(event) {
+                    event.preventDefault();
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/stop', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.send('stop=true');
+        });
+
+
         function sendSwitchData(switchName, value) {
+        // Send a POST request to '/switch/{switchName}' with the switch's value.
         fetch(`/switch/${switchName}`, {
             method: 'POST',
             headers: {
@@ -487,8 +528,8 @@
             body: JSON.stringify({ value })
         })
         .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error('Error:', error));
+        .then(data => console.log(data)) // Log the response data to the console.
+        .catch(error => console.error('Error:', error)); // Log any errors to the console.
         }
 
         function updateHandlePositionByKeys() {

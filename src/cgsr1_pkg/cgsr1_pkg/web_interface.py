@@ -1,4 +1,3 @@
-# cgsr1_pkg/flask_server_with_ros.py
 import os
 from flask import Flask, request, jsonify, send_file
 import rclpy
@@ -8,7 +7,9 @@ import threading
 from std_msgs.msg import Float32MultiArray, Int32MultiArray
 from std_srvs.srv import SetBool
 
-INDEX_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt.html")
+HOME_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt.html")
+MANUAL_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/manual_control.html")
+SETTINGS_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/settings.html")
 
 app = Flask(__name__)
 node = None
@@ -17,23 +18,32 @@ gui_controller_instance = None
 
 @app.route('/')
 def index():
-    if os.path.exists(INDEX_FILE_PATH):
-        return send_file(INDEX_FILE_PATH)
+    if os.path.exists(HOME_FILE_PATH):
+        return send_file(HOME_FILE_PATH)
     else:
         return "index.html not found", 404
+
+@app.route('/home')
+def home():
+    return send_file(HOME_FILE_PATH)
+
+@app.route('/manual_control')
+def manual_control():
+    return send_file(MANUAL_FILE_PATH)
+
+@app.route('/settings')
+def settings():
+    return send_file(SETTINGS_FILE_PATH)
 
 @app.route('/joystick', methods=['POST'])
 def joystick():
     data = request.get_json()
-    
     x = data.get('x')
     y = data.get('y')
     if x is None or y is None:
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     twist = Twist()
-    
-    # Check the switch parameter to determine where to assign the values
     if gui_controller_instance.param_manual_mode:
         twist.angular.x = x + 0.000000001
         twist.angular.y = y + 0.000000001
@@ -51,7 +61,6 @@ def joystick():
 @app.route('/winch', methods=['POST'])
 def winch():
     data = request.get_json()
-    
     x = data.get('x')
     y = data.get('y')
 
@@ -76,9 +85,11 @@ def switch(switch_name):
     if value is None:
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
-    if switch_name == 'switch1':
+    if switch_name == 'manual_mode':
         gui_controller_instance.param_manual_mode = value
-    elif switch_name == 'switch2':
+    elif switch_name == 'sync_mode':
+        gui_controller_instance.param_sync_winch = value
+    elif switch_name == 'semi_autonomous':
         gui_controller_instance.param_semi_autonomous = value
     else:
         return jsonify({"status": "error", "message": "Invalid switch name"}), 400
@@ -88,16 +99,68 @@ def switch(switch_name):
 @app.route('/calibrate', methods=['POST'])
 def calibrate():
     start_calibration = request.form.get('start_calibration', 'true').lower() == 'true'
-    response = ros_client.send_request(start_calibration)
+    response = gui_controller_instance.send_request(start_calibration)
     result = {'success': response.success, 'message': response.message}
     return jsonify(result)
 
+@app.route('/stop', methods=['POST'])
+def stop():
+    stop_val = request.form.get('stop', 'true').lower() == 'true'
+    gui_controller_instance.param_stop = not gui_controller_instance.param_stop if stop_val else False
+    return jsonify({"status": "success", "stop": stop_val})
+
+
+
+@app.route('/rectangle-data')
+def rectangle_data():
+    global gui_controller_instance
+    data = {
+        'width': gui_controller_instance.width,
+        'height': gui_controller_instance.height,
+        'dot_x': gui_controller_instance.dot_x,
+        'dot_y': gui_controller_instance.dot_y
+    }
+    return jsonify(data)
+
+@app.route('/update_settings', methods=['POST'])
+def update_settings():
+    data = request.get_json()
+    width = data.get('width')
+    height = data.get('height')
+
+    if width is None or height is None:
+        return jsonify({"status": "error", "message": "Invalid input"}), 400
+
+    gui_controller_instance.width = width
+    gui_controller_instance.height = height
+
+    # Publish the updated size into the ROS2 params
+    gui_controller_instance.set_parameters([
+        rclpy.parameter.Parameter('width', rclpy.Parameter.Type.INTEGER, width),
+        rclpy.parameter.Parameter('height', rclpy.Parameter.Type.INTEGER, height)
+    ])
+
+    return jsonify({"status": "success", "width": width, "height": height})
+
+@app.route('/start_automation', methods=['POST'])
+def start_automation():
+    data = request.get_json()
+    automation_status = data.get('status')
+
+    if automation_status is None:
+        return jsonify({"status": "error", "message": "Invalid input"}), 400
+
+    # Publish the boolean into the param autonomous
+    gui_controller_instance.set_parameters([
+        rclpy.parameter.Parameter('autonomous', rclpy.Parameter.Type.BOOL, automation_status)
+    ])
+
+    return jsonify({"status": "success", "automation_status": automation_status})
 
 class GUIController(Node):
     def __init__(self):
         super().__init__('gui_controller')
         
-        # Initialize with default values
         self.width = 300
         self.height = 150
         self.dot_x = 0
@@ -117,7 +180,6 @@ class GUIController(Node):
             10
         )
 
-        # Declare parameters
         self.param_manual_mode = self.declare_parameter('manual_mode', False).value
         self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False).value
         self.param_sync_winch = self.declare_parameter('sync_winch', False).value
@@ -127,6 +189,7 @@ class GUIController(Node):
         self.client = self.create_client(SetBool, 'calibrate_motor')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
+    
     def send_request(self, start_calibration):
         req = SetBool.Request()
         req.data = start_calibration
@@ -146,18 +209,6 @@ def ros2_thread():
     rclpy.spin(gui_controller_instance)
     gui_controller_instance.destroy_node()
     rclpy.shutdown()
-
-@app.route('/rectangle-data')
-def rectangle_data():
-    global gui_controller_instance
-    
-    data = {
-        'width': gui_controller_instance.width,
-        'height': gui_controller_instance.height,
-        'dot_x': gui_controller_instance.dot_x,
-        'dot_y': gui_controller_instance.dot_y
-    }
-    return jsonify(data)
 
 def start_web_interface():
     app.run(host='0.0.0.0', port=8080)
