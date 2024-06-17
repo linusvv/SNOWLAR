@@ -54,7 +54,7 @@ class MainNode(Node):
             self.velocity_y = self.calculate_steering_adjustment()
 
             
-            self.publish_cmd_vel_automated(self.pub_cmd_vel_automated,self.velocity_x, self.velocity_y)
+            self.publish_cmd_vel_automated(self.velocity_x, self.velocity_y)
 
             
             time.sleep(1 / self.rate_control_hz)
