@@ -42,6 +42,7 @@ class MainNode(Node):
         self.velocity_x = 0.0
         self.velocity_y = 0.0
         self.tolerance = 0.1
+        self.max_velocity = 3.0
 
 
         self.thread_main.start()
