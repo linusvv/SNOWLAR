@@ -1,0 +1,35 @@
+[0.581s] Invoking command in '/home/snowlar/SNOWLAR/src/cgsr1_pkg': PYTHONPATH=/home/snowlar/SNOWLAR/build/cgsr1_pkg/prefix_override:/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/cgsr1_pkg build --build-base /home/snowlar/SNOWLAR/build/cgsr1_pkg/build install --record /home/snowlar/SNOWLAR/build/cgsr1_pkg/install.log --single-version-externally-managed install_data
+[0.816s] running egg_info
+[0.817s] writing ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/PKG-INFO
+[0.817s] writing dependency_links to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/dependency_links.txt
+[0.817s] writing entry points to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/entry_points.txt
+[0.817s] writing requirements to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/requires.txt
+[0.817s] writing top-level names to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/top_level.txt
+[0.819s] reading manifest file '../../build/cgsr1_pkg/cgsr1_pkg.egg-info/SOURCES.txt'
+[0.820s] writing manifest file '../../build/cgsr1_pkg/cgsr1_pkg.egg-info/SOURCES.txt'
+[0.820s] running build
+[0.820s] running build_py
+[0.821s] copying cgsr1_pkg/calibration_node.py -> /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg
+[0.821s] running install
+[0.822s] running install_lib
+[0.823s] copying /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg/calibration_node.py -> /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg
+[0.824s] byte-compiling /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/calibration_node.py to calibration_node.cpython-310.pyc
+[0.826s] running install_data
+[0.826s] running install_egg_info
+[0.828s] removing '/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info' (and everything under it)
+[0.828s] Copying ../../build/cgsr1_pkg/cgsr1_pkg.egg-info to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info
+[0.829s] running install_scripts
+[0.850s] Installing automation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.850s] Installing calibration script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.850s] Installing computation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.850s] Installing dummy_publisher script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.850s] Installing imu_control script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.850s] Installing imu_steering script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.851s] Installing joy_steering script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.851s] Installing straight_motion script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.851s] Installing tank_motion script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.851s] Installing web_interface script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.851s] Installing winch_feedback script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.851s] Installing winch_motion script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[0.852s] writing list of installed files to '/home/snowlar/SNOWLAR/build/cgsr1_pkg/install.log'
+[0.872s] Invoked command in '/home/snowlar/SNOWLAR/src/cgsr1_pkg' returned '0': PYTHONPATH=/home/snowlar/SNOWLAR/build/cgsr1_pkg/prefix_override:/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/cgsr1_pkg build --build-base /home/snowlar/SNOWLAR/build/cgsr1_pkg/build install --record /home/snowlar/SNOWLAR/build/cgsr1_pkg/install.log --single-version-externally-managed install_data

@@ -10,12 +10,16 @@ import time
 imu_data_lock = threading.Lock()
 imu_data = 0.0
 
+
+
 class MotorCalibrationNode(Node):
+
+    
     def __init__(self):
         super().__init__('motor_calibration_node')
         self.pub_calib = self.create_publisher(Float32, "/olive/servo/calib/goal/position", QoSProfile(depth=10))
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.subscription_calibrate = self.create_subscription(Twist, '/calibrate_motor', self.calibrate_motor_callback)    #statt nächster Zeile
+        self.subscription_calibrate = self.create_subscription(Twist, '/calibrate_motor', self.calibrate_motor_callback, QoSProfile(depth=10) )    #statt nächster Zeile
         #self.srv = self.create_service(SetBool, 'calibrate_motor', self.calibrate_motor_callback)
         self.subscription_imu_data = self.create_subscription(
             Float32,
@@ -24,8 +28,17 @@ class MotorCalibrationNode(Node):
             10
         )
 
+        self.temp = 0
+    def once():
+        if self.temp == 0:
+            return 1
+            self.temp = 1
+        else:
+            return 0
+        
+
     def calibrate_motor_callback(self, msg):
-        if msg.linear.x:
+        if self.once():
             self.get_logger().info('Calibration started...')
             
             # Rotate to -10 degrees
