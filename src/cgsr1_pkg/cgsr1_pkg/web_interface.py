@@ -44,7 +44,7 @@ def joystick():
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     twist = Twist()
-    if gui_controller_instance.param_manual_mode:
+    if gui_controller_instance.publisher_manual_mode:
         twist.angular.x = x + 0.000000001
         twist.angular.y = y + 0.000000001
     else:
@@ -86,10 +86,13 @@ def switch(switch_name):
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     if switch_name == 'manual_mode':
+        print('recieved manual mode')
         gui_controller_instance.publish_manual_mode(value)
     elif switch_name == 'sync_mode':
+        print('recieved sync mode')
         gui_controller_instance.publish_sync_winch(value)
     elif switch_name == 'semi_autonomous':
+        print('recieved auto mode')
         gui_controller_instance.publish_semi_autonomous(value)
     else:
         return jsonify({"status": "error", "message": "Invalid switch name"}), 400
@@ -106,7 +109,7 @@ def calibrate():
 @app.route('/stop', methods=['POST'])
 def stop():
     stop_val = request.form.get('stop', 'true').lower() == 'true'
-    gui_controller_instance.publish_stop(not gui_controller_instance.param_stop if stop_val else False)
+    gui_controller_instance.publish_stop(not gui_controller_instance.publisher_stop if stop_val else False)
     return jsonify({"status": "success", "stop": stop_val})
 
 @app.route('/rectangle-data')
@@ -183,12 +186,7 @@ class GUIController(Node):
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
 
-    def update_parameters(self):
-        self.param_manual_mode = self.get_parameter('manual_mode').get_parameter_value().bool_value
-        self.param_semi_autonomous = self.get_parameter('semi_autonomous').get_parameter_value().bool_value
-        self.param_sync_winch = self.get_parameter('sync_winch').get_parameter_value().bool_value
-        self.param_autonomous = self.get_parameter('autonomous').get_parameter_value().bool_value
-        self.param_stop = self.get_parameter('stop').get_parameter_value().bool_value
+
 
     def send_request(self, start_calibration):
         req = SetBool.Request()
@@ -200,6 +198,7 @@ class GUIController(Node):
     def publish_manual_mode(self, value):
         msg = Bool()
         msg.data = value
+        print('publishing manual_mode')
         self.publisher_manual_mode.publish(msg)
 
     def publish_sync_winch(self, value):
