@@ -76,38 +76,55 @@ class MyComputationNode(Node):
 
 
         # Parameter listeners
-        self.param_manual_mode = self.declare_parameter('manual_mode', False).value     #name changed
-        self.param_sync_winch = self.declare_parameter('sync_winch', False).value     #name changed
-        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False).value     #name changed
-        self.param_autonomous = self.declare_parameter('autonomous', False).value       #name changed
+        self.param_manual_mode = self.declare_parameter('manual_mode', False)     #name changed
+        self.param_sync_winch = self.declare_parameter('sync_winch', False)     #name changed
+        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False)     #name changed
+        self.param_autonomous = self.declare_parameter('autonomous', False)       #name changed
 
 
-        self.param_width = self.declare_parameter('width', 640).value
-        self.param_height = self.declare_parameter('height', 480).value
-        self.param_stop = self.declare_parameter('stop', False).value
+        self.param_width = self.declare_parameter('width', 640)
+        self.param_height = self.declare_parameter('height', 480)
+        self.param_stop = self.declare_parameter('stop', False)
+        self.get_parameters()
 
         self.add_on_set_parameters_callback(self.param_callback)
 
         # Start the publisher thread
         self.publisher_thread = threading.Thread(target=self.publisher_loop)
         self.publisher_thread.start()
+
+    def get_parameters(self):
+        self.get_logger().info("Getting parameters...")
+        self.param_manual_mode = self.get_parameter('manual_mode')
+        self.param_sync_winch = self.get_parameter('sync_winch')
+        self.param_semi_autonomous = self.get_parameter('semi_autonomous')
+        self.param_autonomous = self.get_parameter('autonomous')
+        self.param_width = self.get_parameter('width')
+        self.param_height = self.get_parameter('height')
+        self.param_stop = self.get_parameter('stop')
     
     def param_callback(self, params):
-        global manual_mode,sync_winch,semi_autonomous, autonomous, width, height, stop
         for param in params:
             if param.name == 'manual_mode':
+                global manual_mode
                 manual_mode = param.value
             elif param.name == 'sync_winch':
+                global sync_winch
                 sync_winch = param.value
             elif param.name == 'semi_autonomous':
+                global semi_autonomous
                 semi_autonomous = param.value
             elif param.name == 'autonomous':
+                global autonomous
                 autonomous = param.value
             elif param.name == 'width':
+                global width
                 width = param.value
             elif param.name == 'height':
+                global height
                 height = param.value
             elif param.name == 'stop':
+                global stop
                 stop = param.value
 
         return SetParametersResult(successful=True)
@@ -143,19 +160,10 @@ class MyComputationNode(Node):
         t = 0
         initialisation = False
         while rclpy.ok():
-            if(initialisation == False):
-                while t<3.0:
-                    self.publish_cmd_vel(1)
-                    time.sleep(1/rate)
-                    t = t+ 1/rate
-                while t>0.0:
-                    self.publish_cmd_vel(-1)
-                    time.sleep(1/rate)
-                    t = t- 1/rate
-                initialisation = True
+          
             self.publish_gui_status()
             self.publish_winch_position()
-            self.publish_cmd_vel(0)
+            self.publish_cmd_vel()
             self.publish_winch()
             time.sleep(1/rate)
 
@@ -174,13 +182,10 @@ class MyComputationNode(Node):
             winch_position_msg.linear.y = manual_control.linear.y
         self.publisher_winch_position.publish(winch_position_msg)
 
-    def publish_cmd_vel(self, initiate):
+    def publish_cmd_vel(self):
         cmd_vel_msg = Twist()       #The chain-data is transported via the linear part of manual_control
         with manual_control_lock: 
-            if initiate != 0:
-                cmd_vel_msg.angular.x = initiate
-
-            elif stop == False:
+            if stop == False:
                 cmd_vel_msg.linear.x = manual_control.linear.x / 2.0
                 cmd_vel_msg.linear.y = manual_control.linear.y / 2.0
             
@@ -191,12 +196,8 @@ class MyComputationNode(Node):
         with manual_control_lock:
             temp = imu_data
             self.angle = (temp + 1.0) * math.pi # Angle
-            print(f'the imu angle is:  {self.angle}')
-            
-            print(f'the left winch velocity is:  {winch_msg.linear.x}')
-            print(f'the right winch velocity is:  {winch_msg.linear.y}')
-            print(f'the left chain velocity is:  {self.chainLeft}')
-            print(f'the right chain velocity is:  {self.chainRight}')
+            print(f'manual_mode  {manual_mode}')
+
 
             if abs(self.chainLeft - self.chainRight) <= 0.1: ##for now, chainLeft and chain Right should be parallel
                 winch_msg.linear.x = -1*self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
