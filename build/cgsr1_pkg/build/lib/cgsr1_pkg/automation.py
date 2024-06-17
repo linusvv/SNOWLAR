@@ -60,7 +60,7 @@ class MainNode(Node):
             else:
                 while self.current_x < self.max_X and self.start:          # while not reached end of x-direction
                     while self.current_y < self.max_Y and self.start:      #while not reached end of y-direction
-                        self.publish_drive_straight((-1.0*self.driveSpeed),0.0)
+                        self.publish_drive_straight((-1.0)*self.driveSpeed, 0.0)
                         self.velocity_x = self.straight_x_vel                 #move down the y direction
                         self.velocity_y = self.straight_y_vel
 
