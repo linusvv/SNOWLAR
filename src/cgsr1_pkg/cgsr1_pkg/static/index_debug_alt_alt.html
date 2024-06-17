@@ -463,18 +463,18 @@
         const switch2_container = document.getElementById('switch2_container');
         const slider2 = document.getElementById('slider2');
         const sliderh = document.getElementById('sliderh');
-            if (manual_mode.checked) {
+            if (!manual_mode.checked) {
                 slidersContainer.style.display = 'none';
                 switch2_container.style.display = 'none';
                 slider2.style.display = 'flex';
                 sliderh.style.display = 'none';
-                sendSwitchData('semi_autonomous', false);
+                sendSwitchData('semi_autonomous', true);
             } else {
                 slidersContainer.style.display = 'flex';
                 switch2_container.style.display = 'flex';
                 sync_mode.checked = false;
                 sendSwitchData('sync_mode', false);
-                sendSwitchData('semi_autonomous', true);
+                sendSwitchData('semi_autonomous', false);
             }
             sendSwitchData('manual_mode', manual_mode.checked);
         });
