@@ -151,10 +151,6 @@ class MainNode(Node):
 
 
 
-    def __del__(self):
-        self.thread_exited = True
-        if self.thread_main.is_alive():
-            self.thread_main.join()
 
 def main(args=None):
         rclpy.init(args=args)
