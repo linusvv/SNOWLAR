@@ -153,7 +153,7 @@ class MyComputationNode(Node):
         with winch_position_lock:
             winch_position = msg
     
-    def automation_callback(self,msg):
+    def callback_automation(self,msg):
         global automation_control
         automation_control = msg
 
