@@ -213,18 +213,7 @@ class MyComputationNode(Node):
     def publish_winch(self):
         winch_msg = Twist()         #The winch-data is transported via the angular part of manual_control
         with manual_control_lock:
-            temp = imu_data
-            self.angle = (temp + 1.0) * math.pi # Angle
-            print(f'manual_mode  {manual_mode}')
-
-
-            if abs(self.chainLeft - self.chainRight) <= 0.1: ##for now, chainLeft and chain Right should be parallel
-                winch_msg.linear.x = -1.0*self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
-                winch_msg.linear.y = self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
-            else:
-                self.publish_start(1)
-                winch_msg.linear.x = 0.0
-                winch_msg.linear.y = 0.0
+            
      
             
             if stop == False:  
