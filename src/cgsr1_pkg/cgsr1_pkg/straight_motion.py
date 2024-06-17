@@ -94,7 +94,7 @@ class MainNode(Node):
 
     def calculate_steering_adjustment(self):
         angle_error = self.target_imu_angle - self.current_imu_angle
-        k_p = 0.1  # Proportional gain for steering adjustment
+        k_p = 10  # Proportional gain for steering adjustment
         steering_adjustment = k_p * angle_error
         return steering_adjustment
 
