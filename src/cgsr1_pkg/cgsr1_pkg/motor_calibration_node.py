@@ -1,9 +1,9 @@
-# motor_calibration_node.py
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
 from std_srvs.srv import SetBool
 from std_msgs.msg import Float32
+from geometry_msgs.msg import Twist
 import threading
 import time
 
@@ -14,6 +14,7 @@ class MotorCalibrationNode(Node):
     def __init__(self):
         super().__init__('motor_calibration_node')
         self.pub_calib = self.create_publisher(Float32, "/olive/servo/calib/goal/position", QoSProfile(depth=10))
+        self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
         self.srv = self.create_service(SetBool, 'calibrate_motor', self.calibrate_motor_callback)
         self.subscription_imu_data = self.create_subscription(
             Float32,
@@ -34,8 +35,14 @@ class MotorCalibrationNode(Node):
             self.publish_motor_position(190.0)
             time.sleep(1)  # Adjust sleep time as necessary
             
-            # Rotate back slowly until IMU data is less than 0.001
-            self.rotate_back_slowly()
+            # Rotate back to zero position
+            self.publish_motor_position(0.0)
+            time.sleep(1)  # Adjust sleep time as necessary
+
+            self.get_logger().info('IMU Calibration completed.')
+
+            # Calibrate wheels
+            self.calibrate_wheels()
 
             self.get_logger().info('Calibration completed.')
             response.success = True
@@ -57,20 +64,53 @@ class MotorCalibrationNode(Node):
         self.pub_calib.publish(msg)
         self.get_logger().info(f'Motor position set to: {position}')
 
-    def rotate_back_slowly(self):
-        global imu_data
-        position = 190.0
-        step = -0.1  # Small step for slow rotation
+    def calibrate_wheels(self):
+        self.get_logger().info('Starting wheel calibration...')
 
-        while position > -10:
+        rate = self.create_rate(50)  # 50 Hz
+
+        # Rotate left until IMU data rises
+        twist_msg = Twist()
+        twist_msg.linear.y = 0.5  # Adjust speed as necessary
+
+        with imu_data_lock:
+            previous_imu_data = imu_data
+        
+        while True:
             with imu_data_lock:
-                if imu_data < 0.001:
-                    self.get_logger().info('IMU data is less than 0.001. Stopping...')
-                    break
+                current_imu_data = imu_data
+
+            if current_imu_data > previous_imu_data:
+                break
+
+            previous_imu_data = current_imu_data
+            self.publisher_cmd_vel.publish(twist_msg)
+            rate.sleep()
+        
+        # Rotate right until IMU data reaches minimum
+        twist_msg.linear.y = -0.5  # Adjust speed as necessary
+
+        min_imu_data = current_imu_data
+
+        while True:
+            self.publisher_cmd_vel.publish(twist_msg)
+            rate.sleep()
             
-            position += step
-            self.publish_motor_position(position)
-            time.sleep(0.1)  # Adjust sleep time for slower or faster rotation
+            with imu_data_lock:
+                current_imu_data = imu_data
+
+            if current_imu_data < min_imu_data:
+                min_imu_data = current_imu_data
+            elif current_imu_data > min_imu_data:
+                break
+        
+        # Stop rover
+        twist_msg.linear.y = 0.0
+        for _ in range(10):  # Publish stop command for a short duration to ensure rover stops
+            self.publisher_cmd_vel.publish(twist_msg)
+            rate.sleep()
+
+        self.get_logger().info('Wheel calibration completed.')
 
 def main(args=None):
     rclpy.init(args=args)
