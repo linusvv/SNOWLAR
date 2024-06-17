@@ -143,19 +143,10 @@ class MyComputationNode(Node):
         t = 0
         initialisation = False
         while rclpy.ok():
-            if(initialisation == False):
-                while t<3.0:
-                    self.publish_cmd_vel(1)
-                    time.sleep(1/rate)
-                    t = t+ 1/rate
-                while t>0.0:
-                    self.publish_cmd_vel(-1)
-                    time.sleep(1/rate)
-                    t = t- 1/rate
-                initialisation = True
+          
             self.publish_gui_status()
             self.publish_winch_position()
-            self.publish_cmd_vel(0)
+            self.publish_cmd_vel()
             self.publish_winch()
             time.sleep(1/rate)
 
@@ -174,13 +165,10 @@ class MyComputationNode(Node):
             winch_position_msg.linear.y = manual_control.linear.y
         self.publisher_winch_position.publish(winch_position_msg)
 
-    def publish_cmd_vel(self, initiate):
+    def publish_cmd_vel(self):
         cmd_vel_msg = Twist()       #The chain-data is transported via the linear part of manual_control
         with manual_control_lock: 
-            if initiate != 0:
-                cmd_vel_msg.angular.x = initiate
-
-            elif stop == False:
+            if stop == False:
                 cmd_vel_msg.linear.x = manual_control.linear.x / 2.0
                 cmd_vel_msg.linear.y = manual_control.linear.y / 2.0
             
