@@ -35,6 +35,11 @@ setup(
             'computation = cgsr1_pkg.computation:main',
             'imu_control = cgsr1_pkg.imucontrol:main',
             'calibration = cgsr1_pkg.motor_calibration_node:main',
+            'automation = cgsr1_pkg.automation:main',
+            'straight_motion = cgsr1_pkg.straight_motion:main',
+            'calibration = cgsr1_pkg.motor_calibration_node:main',
+            'winch_feedback = cgsr1_pkg.winch_feedback:main',
+
         ],
     },
 )
