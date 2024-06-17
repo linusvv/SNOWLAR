@@ -67,7 +67,7 @@ class MyComputationNode(Node):
             10
         )
         self.sub_base_to_winch = self.create_subscription(Twist, "/base_to_winch", self.callback_base_to_winch, QoSProfile(depth=10))
-        self.sub_automation = self.create_subscription(Twist, "/automation", self.callback_automation, QoSProfile(depth=10))
+        self.sub_automation = self.create_subscription(Twist, "/automation", self.automation_callback, QoSProfile(depth=10))
 
         # Subscribers for parameter topics
         self.subscription_manual_mode = self.create_subscription(Bool, 'manual_mode', self.manual_mode_callback, 10)
@@ -243,7 +243,6 @@ class MyComputationNode(Node):
                     else:
                         winch_msg.linear.x = 0.0
                         winch_msg.linear.y = 0.0
-
         self.publisher_winch.publish(winch_msg)
 
 def main(args=None):
