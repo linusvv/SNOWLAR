@@ -183,7 +183,7 @@ class MyComputationNode(Node):
                 cmd_vel_msg.linear.x = manual_control.linear.x
                 cmd_vel_msg.linear.y = manual_control.linear.y
             if autonomous:
-                self.publish_start(1)
+                self.publish_start(1.0)
                 cmd_vel_msg.linear.x = automation_control.linear.x
                 cmd_vel_msg.linear.y = automation_control.linear.y
         self.publisher_cmd_vel.publish(cmd_vel_msg)
@@ -204,7 +204,6 @@ class MyComputationNode(Node):
                 winch_msg.linear.x = -1.0 * self.translation_Factor * (math.cos(self.angle) * self.chainLeft)
                 winch_msg.linear.y = self.translation_Factor * (math.cos(self.angle) * self.chainLeft)
             else:
-                self.publish_start(1)
                 winch_msg.linear.x = 0.0
                 winch_msg.linear.y = 0.0
 

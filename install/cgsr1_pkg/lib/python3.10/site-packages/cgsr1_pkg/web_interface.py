@@ -2,11 +2,10 @@ import os
 from flask import Flask, request, jsonify, send_file
 import rclpy
 from rclpy.node import Node
-from rclpy.parameter import Parameter
+from std_srvs.srv import SetBool
 import threading
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32MultiArray, Int32MultiArray
-from std_srvs.srv import SetBool
+from std_msgs.msg import Bool, Int32, Float32MultiArray, Int32MultiArray
 
 MANUAL_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt_alt.html")
 HOME_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/automation.html")
@@ -45,7 +44,7 @@ def joystick():
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     twist = Twist()
-    if gui_controller_instance.param_manual_mode:
+    if gui_controller_instance.publisher_manual_mode:
         twist.angular.x = x + 0.000000001
         twist.angular.y = y + 0.000000001
     else:
@@ -87,11 +86,14 @@ def switch(switch_name):
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     if switch_name == 'manual_mode':
-        gui_controller_instance.set_parameter('manual_mode', value)
+        print('recieved manual mode')
+        gui_controller_instance.publish_manual_mode(value)
     elif switch_name == 'sync_mode':
-        gui_controller_instance.set_parameter('sync_winch', value)
+        print('recieved sync mode')
+        gui_controller_instance.publish_sync_winch(value)
     elif switch_name == 'semi_autonomous':
-        gui_controller_instance.set_parameter('semi_autonomous', value)
+        print('recieved auto mode')
+        gui_controller_instance.publish_semi_autonomous(value)
     else:
         return jsonify({"status": "error", "message": "Invalid switch name"}), 400
 
@@ -107,7 +109,7 @@ def calibrate():
 @app.route('/stop', methods=['POST'])
 def stop():
     stop_val = request.form.get('stop', 'true').lower() == 'true'
-    gui_controller_instance.set_parameter('stop', not gui_controller_instance.param_stop if stop_val else False)
+    gui_controller_instance.publish_stop(not gui_controller_instance.publisher_stop if stop_val else False)
     return jsonify({"status": "success", "stop": stop_val})
 
 @app.route('/rectangle-data')
@@ -130,8 +132,8 @@ def update_settings():
     if width is None or height is None:
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
-    gui_controller_instance.set_parameter('width', width)
-    gui_controller_instance.set_parameter('height', height)
+    gui_controller_instance.publish_width(width)
+    gui_controller_instance.publish_height(height)
 
     return jsonify({"status": "success", "width": width, "height": height})
 
@@ -143,7 +145,7 @@ def start_automation():
     if automation_status is None:
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
-    gui_controller_instance.set_parameter('autonomous', automation_status)
+    gui_controller_instance.publish_autonomous(automation_status)
 
     return jsonify({"status": "success", "automation_status": automation_status})
 
@@ -170,22 +172,21 @@ class GUIController(Node):
             10
         )
 
-        self.param_manual_mode = self.declare_parameter('manual_mode', False)
-        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False)
-        self.param_sync_winch = self.declare_parameter('sync_winch', False)
-        self.param_autonomous = self.declare_parameter('autonomous', False)
-        self.param_stop = self.declare_parameter('stop', False)
+        # Publishers for the parameters
+        self.publisher_manual_mode = self.create_publisher(Bool, 'manual_mode', 10)
+        self.publisher_sync_winch = self.create_publisher(Bool, 'sync_winch', 10)
+        self.publisher_semi_autonomous = self.create_publisher(Bool, 'semi_autonomous', 10)
+        self.publisher_autonomous = self.create_publisher(Bool, 'autonomous', 10)
+        self.publisher_stop = self.create_publisher(Bool, 'stop', 10)
+        self.publisher_width = self.create_publisher(Int32, 'width', 10)
+        self.publisher_height = self.create_publisher(Int32, 'height', 10)
+
 
         self.client = self.create_client(SetBool, 'calibrate_motor')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
 
-    def update_parameters(self):
-        self.param_manual_mode = self.get_parameter('manual_mode').get_parameter_value().bool_value
-        self.param_semi_autonomous = self.get_parameter('semi_autonomous').get_parameter_value().bool_value
-        self.param_sync_winch = self.get_parameter('sync_winch').get_parameter_value().bool_value
-        self.param_autonomous = self.get_parameter('autonomous').get_parameter_value().bool_value
-        self.param_stop = self.get_parameter('stop').get_parameter_value().bool_value
+
 
     def send_request(self, start_calibration):
         req = SetBool.Request()
@@ -194,10 +195,41 @@ class GUIController(Node):
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
 
-    def set_parameter(self, name, value):
-        param = Parameter(name, Parameter.Type.BOOL if isinstance(value, bool) else Parameter.Type.INTEGER, value)
-        self.set_parameters([param])
-        return {'status': 'success'}
+    def publish_manual_mode(self, value):
+        msg = Bool()
+        msg.data = value
+        print('publishing manual_mode')
+        self.publisher_manual_mode.publish(msg)
+
+    def publish_sync_winch(self, value):
+        msg = Bool()
+        msg.data = value
+        self.publisher_sync_winch.publish(msg)
+
+    def publish_semi_autonomous(self, value):
+        msg = Bool()
+        msg.data = value
+        self.publisher_semi_autonomous.publish(msg)
+
+    def publish_autonomous(self, value):
+        msg = Bool()
+        msg.data = value
+        self.publisher_autonomous.publish(msg)
+
+    def publish_stop(self, value):
+        msg = Bool()
+        msg.data = value
+        self.publisher_stop.publish(msg)
+
+    def publish_width(self, value):
+        msg = Int32()
+        msg.data = value
+        self.publisher_width.publish(msg)
+
+    def publish_height(self, value):
+        msg = Int32()
+        msg.data = value
+        self.publisher_height.publish(msg)
 
     def dimensions_callback(self, msg):
         self.width, self.height = msg.data
@@ -206,25 +238,24 @@ class GUIController(Node):
 
     def position_callback(self, msg):
         self.dot_x, self.dot_y = msg.data
-        self.get_logger().info(f'Received position: x={self.dot_x}, y={self.dot_y}')
+        self.get_logger().info(f'Received position: dot_x={self.dot_x}, dot_y={self.dot_y}')
         self.update_parameters()
 
-def ros2_thread():
+def ros_thread(gui_controller_instance):
     rclpy.spin(gui_controller_instance)
     gui_controller_instance.destroy_node()
     rclpy.shutdown()
 
-def start_web_interface():
-    app.run(host='0.0.0.0', port=8080)
-
-def main():
-    global node, manual_control_publisher, gui_controller_instance
+def main(args=None):
     rclpy.init()
     node = rclpy.create_node('web_interface')
     manual_control_publisher = node.create_publisher(Twist, 'manual_control', 10)
     gui_controller_instance = GUIController()
-    threading.Thread(target=ros2_thread, daemon=True).start()
-    start_web_interface()
+    threading.Thread(target=ros_thread, args=(gui_controller_instance,), daemon=True).start()
+    manual_control_publisher = gui_controller_instance.create_publisher(Twist, 'joystick_topic', 10)
+    app.run(host='0.0.0.0', port=5000)
+    rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
