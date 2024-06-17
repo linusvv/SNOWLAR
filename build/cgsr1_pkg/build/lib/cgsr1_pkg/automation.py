@@ -107,7 +107,7 @@ class MainNode(Node):
         automation_msg.angular.y = 0.0
 
 
-        self.publisher.publish(automation_msg)
+        self.pub_automation.publish(automation_msg)
 
 
 
