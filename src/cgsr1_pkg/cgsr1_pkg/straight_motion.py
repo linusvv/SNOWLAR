@@ -88,6 +88,13 @@ class MainNode(Node):
         vx = vx * self.max_velocity
         self.velocity_x = vx
 
+    def publish_cmd_vel_automated(self, vx,vy):
+        msg = Twist()
+        msg.linear.x = vx
+        msg.linear.y = vy
+
+        self.pub_cmd_vel_automated.publish(msg)
+
 
 def main(args=None):
     rclpy.init(args=args)

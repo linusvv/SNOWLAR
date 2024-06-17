@@ -60,7 +60,7 @@ class MainNode(Node):
             else:
                 while self.current_x < self.max_X and self.start:          # while not reached end of x-direction
                     while self.current_y < self.max_Y and self.start:      #while not reached end of y-direction
-                        self.publish_drive_straight(-1*self.driveSpeed,0)
+                        self.publish_drive_straight(-1.0*self.driveSpeed,0.0)
                         self.velocity_x = self.straight_x_vel                 #move down the y direction
                         self.velocity_y = self.straight_y_vel
 
@@ -72,7 +72,7 @@ class MainNode(Node):
                         time.sleep(1 / self.rate_control_hz)
 
                     while self.current_y > 0.0 and self.start:               #reached end, we drive back up
-                        self.publish_drive_straight(self.driveSpeed,1)
+                        self.publish_drive_straight(self.driveSpeed,1.0)
                         self.velocity_x = self.straight_x_vel
                         self.velocity_y = self.straight_y_vel
                         self.current_y = self.current_y - self.movement_factor
@@ -83,7 +83,7 @@ class MainNode(Node):
                         time.sleep(1 / self.rate_control_hz)
                     while self.angle > (math.pi * -3/2) and self.start:      #turning by 90 degrees
                         self.velocity_x = 0.0
-                        self.velocity_y = -1*self.rotationSpeed
+                        self.velocity_y = -1.0*self.rotationSpeed
 
                         # Publish the automation data
                         self.publish_automation( self.velocity_x, self.velocity_y)
