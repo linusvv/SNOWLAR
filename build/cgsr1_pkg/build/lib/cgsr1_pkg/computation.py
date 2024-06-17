@@ -198,7 +198,7 @@ class MyComputationNode(Node):
                 cmd_vel_msg.linear.x = manual_control.linear.x
                 cmd_vel_msg.linear.y = manual_control.linear.y 
             if autonomous:
-                self.publish_start(1)
+                self.publish_start(1.0)
                 cmd_vel_msg.linear.x = automation_control.linear.x 
                 cmd_vel_msg.linear.y = automation_control.linear.y
         
