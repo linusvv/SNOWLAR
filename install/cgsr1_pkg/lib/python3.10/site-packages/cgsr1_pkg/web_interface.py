@@ -44,12 +44,9 @@ def joystick():
         return jsonify({"status": "error", "message": "Invalid input"}), 400
 
     twist = Twist()
-    if gui_controller_instance.publisher_manual_mode:
-        twist.angular.x = x + 0.000000001
-        twist.angular.y = y + 0.000000001
-    else:
-        twist.linear.x = x + 0.000000001
-        twist.linear.y = y + 0.000000001
+
+    twist.linear.x = y + 0.000000001
+    twist.linear.y = x + 0.000000001
     
     if manual_control_publisher:
         manual_control_publisher.publish(twist)
@@ -87,13 +84,16 @@ def switch(switch_name):
 
     if switch_name == 'manual_mode':
         print('recieved manual mode')
-        gui_controller_instance.publish_manual_mode(value)
+        gui_controller_instance.publish_manual_mode( value)
     elif switch_name == 'sync_mode':
         print('recieved sync mode')
         gui_controller_instance.publish_sync_winch(value)
     elif switch_name == 'semi_autonomous':
         print('recieved auto mode')
         gui_controller_instance.publish_semi_autonomous(value)
+    elif switch_name == 'autonomous':
+        print('recieved autoauto mode')
+        gui_controller_instance.publish_autonomous(value)
     else:
         return jsonify({"status": "error", "message": "Invalid switch name"}), 400
 
@@ -237,12 +237,10 @@ class GUIController(Node):
     def dimensions_callback(self, msg):
         self.width, self.height = msg.data
         self.get_logger().info(f'Received dimensions: width={self.width}, height={self.height}')
-        self.update_parameters()
 
     def position_callback(self, msg):
         self.dot_x, self.dot_y = msg.data
         self.get_logger().info(f'Received position: dot_x={self.dot_x}, dot_y={self.dot_y}')
-        self.update_parameters()
 
 def ros_thread(gui_controller_instance):
     rclpy.spin(gui_controller_instance)
@@ -250,13 +248,12 @@ def ros_thread(gui_controller_instance):
     rclpy.shutdown()
 
 def main(args=None):
-    global gui_controller_instance  # Ensure we use the global instance
+    global node, manual_control_publisher, gui_controller_instance  # Ensure we use the global instance
     rclpy.init()
     node = rclpy.create_node('web_interface')
     manual_control_publisher = node.create_publisher(Twist, 'manual_control', 10)
     gui_controller_instance = GUIController()
     threading.Thread(target=ros_thread, args=(gui_controller_instance,), daemon=True).start()
-    manual_control_publisher = gui_controller_instance.create_publisher(Twist, 'joystick_topic', 10)
     app.run(host='0.0.0.0', port=5000)
     rclpy.shutdown()
 
