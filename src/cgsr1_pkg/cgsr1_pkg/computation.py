@@ -80,10 +80,10 @@ class MyComputationNode(Node):
 
 
         # Parameter listeners
-        self.param_manual_mode = self.declare_parameter('manual_mode', False).value     #name changed
-        self.param_sync_winch = self.declare_parameter('sync_winch', False).value     #name changed
-        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False).value     #name changed
-        self.param_autonomous = self.declare_parameter('autonomous', False).value       #name changed
+        self.param_manual_mode = self.declare_parameter('manual_mode', False).value         
+        self.param_sync_winch = self.declare_parameter('sync_winch', False).value           
+        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False).value 
+        self.param_autonomous = self.declare_parameter('autonomous', False).value           
 
 
         self.param_width = self.declare_parameter('width', 640).value
