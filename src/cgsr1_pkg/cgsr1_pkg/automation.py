@@ -14,7 +14,7 @@ class MainNode(Node):
 
         #Global varibles:
 
-        self.run = 0.0      #says if automation should start or not
+        self.start = 0.0      #says if automation should start or not
 
         self.velocity_x = 0.0  #actually means turning 
         self.velocity_y = 0.0  #actuall means driving forward
@@ -147,7 +147,7 @@ class MainNode(Node):
         self.angle = tempAngle
 
     def callback_start(self, msg):
-         self.run = msg.linear.x
+         self.start = msg.linear.x
 
 
 
