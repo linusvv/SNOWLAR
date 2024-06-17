@@ -171,7 +171,7 @@ class MyComputationNode(Node):
         cmd_vel_msg = Twist()  # The chain-data is transported via the linear part of manual_control
         if not stop:
             if manual_mode or semi_autonomous or sync_winch:
-                cmd_vel_msg.linear.x = -1*manual_control.linear.x
+                cmd_vel_msg.linear.x = manual_control.linear.x
                 cmd_vel_msg.linear.y = manual_control.linear.y
             if autonomous:
                 self.publish_start(1.0)
