@@ -246,7 +246,7 @@ def ros_thread(gui_controller_instance):
     gui_controller_instance.destroy_node()
     rclpy.shutdown()
 
-if __name__ == "__main__":
+def main(args=None):
     rclpy.init()
     node = rclpy.create_node('web_interface')
     manual_control_publisher = node.create_publisher(Twist, 'manual_control', 10)
@@ -255,3 +255,7 @@ if __name__ == "__main__":
     manual_control_publisher = gui_controller_instance.create_publisher(Twist, 'joystick_topic', 10)
     app.run(host='0.0.0.0', port=5000)
     rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
