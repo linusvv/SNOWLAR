@@ -181,6 +181,7 @@ class MyComputationNode(Node):
                 cmd_vel_msg.linear.x = manual_control.linear.x
                 cmd_vel_msg.linear.y = manual_control.linear.y 
             if autonomous:
+                self.publish_start(1)
                 cmd_vel_msg.linear.x = automation_control.linear.x 
                 cmd_vel_msg.linear.y = automation_control.linear.y
         
@@ -198,10 +199,6 @@ class MyComputationNode(Node):
             temp = imu_data
             self.angle = (temp + 1.0) * math.pi # Angle
             
-
-
-
-
 
             if abs(self.chainLeft - self.chainRight) <= 0.1: ##for now, chainLeft and chain Right should be parallel
                 winch_msg.linear.x = -1.0*self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
