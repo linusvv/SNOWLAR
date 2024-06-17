@@ -42,7 +42,7 @@ class MyComputationNode(Node):
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
         self.publisher_winch = self.create_publisher(Twist, '/winch', 10)
 
-        self.publisher_start = self.creat_publisher(Twist, '/start_automation', 10)
+        self.publisher_start = self.create_publisher(Twist, '/start_automation', 10)
 
         # Subscribers
         self.subscription_manual_control = self.create_subscription(

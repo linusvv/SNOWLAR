@@ -13,6 +13,9 @@ class MainNode(Node):
 
 
         #Global varibles:
+
+        self.run = 0.0      #says if automation should start or not
+
         self.velocity_x = 0.0  #actually means turning 
         self.velocity_y = 0.0  #actuall means driving forward
         self.current_x = 0.0   #position in x direction
@@ -26,12 +29,20 @@ class MainNode(Node):
         self.driveSpeed = 0.4
         self.rotationSpeed = 0.8
 
+        self.target_angle = 0.0 # always in the -1 to 1 system!!!
+        self.straight_x_vel = 0.0
+        self.straight_y_vel = 0.0
+
+
         
         # Publisher
         self.pub_automation = self.create_publisher(Twist, "/automation", QoSProfile(depth=10))
+        self.pub_automation = self.create_publisher(Twist, "/cmd_vel_straight", QoSProfile(depth=10))
 
         #Subsciber
         self.sub_winch = self.create_subscription(Twist, "/winch", self.callback_winch, QoSProfile(depth=10))
+        self.sub_cmd_vel_straight = self.create_subscription(Twist, "/cmd_vel_automated", self.callback_vel_automated, QoSProfile(depth=10))
+        self.sub_starter = self.create_subscription(Twist, "/start_automation", self.callback_start, QoSProfile(depth=10))
         
         self.thread_main = threading.Thread(target=self.thread_main)
         self.thread_exited = False
@@ -43,63 +54,78 @@ class MainNode(Node):
         time.sleep(1)
         
         while not self.thread_exited:
-            while self.current_x < self.max_X:          # while not reached end of x-direction
-                while self.current_y < self.max_Y:      #while not reached end of y-direction
-                    self.velocity_x = -1*self.driveSpeed                 #move down the y direction
-                    self.velocity_y = 0.0
-                    self.current_y = self.current_y + self.movement_factor
+            if self.start == 0:
+                 time.sleep(1/self.rate_control_hz)
 
-                    # Publish the automation data
-                    self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
+            else:
+                while self.current_x < self.max_X and self.start:          # while not reached end of x-direction
+                    while self.current_y < self.max_Y and self.start:      #while not reached end of y-direction
+                        self.publish_drive_straight(-1*self.driveSpeed,0)
+                        self.velocity_x = self.straight_x_vel                 #move down the y direction
+                        self.velocity_y = self.straight_y_vel
+
+                        self.current_y = self.current_y + self.movement_factor
+
+                        # Publish the automation data
+                        self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
+
+                        time.sleep(1 / self.rate_control_hz)
+
+                    while self.current_y > 0.0 and self.start:               #reached end, we drive back up
+                        self.publish_drive_straight(self.driveSpeed,1)
+                        self.velocity_x = self.straight_x_vel
+                        self.velocity_y = self.straight_y_vel
+                        self.current_y = self.current_y - self.movement_factor
+
+                        # Publish the automation data
+                        self.publish_automation( self.velocity_x, self.velocity_y)
+
+                        time.sleep(1 / self.rate_control_hz)
+                    while self.angle > (math.pi * -3/2) and self.start:      #turning by 90 degrees
+                        self.velocity_x = 0.0
+                        self.velocity_y = -1*self.rotationSpeed
+
+                        # Publish the automation data
+                        self.publish_automation( self.velocity_x, self.velocity_y)
+
+                        time.sleep(1 / self.rate_control_hz)
+                    while self.helper < self.movement_factor*25.0*6.0 and self.start:   #drives in x direction by 30 cm (at least we hope)
+                        self.publish_drive_straight(-1*self.driveSpeed,-0.5)
+                        self.velocity_x = self.straight_x_vel
+                        self.velocity_y = self.straight_y_vel
+                        self.helper = self.helper + self.movement_factor
+                        self.current_x = self.current_x + self.movement_factor  #update current x value
+                        self.publish_automation( self.velocity_x, self.velocity_y)
+                        time.sleep(1 / self.rate_control_hz)
+                    self.helper = 0.0
+                    while self.angle < math.pi and self.start:    #turning back by 90 degrees
+                        self.velocity_x = 0.0
+                        self.velocity_y = 1*self.rotationSpeed
+
+                        # Publish the automation data
+                        self.publish_automation( self.velocity_x, self.velocity_y)
+
+                        time.sleep(1 / self.rate_control_hz)
 
                     time.sleep(1 / self.rate_control_hz)
-
-                while self.current_y > 0.0:               #reached end, we drive back up
-                    self.velocity_x = 1*self.driveSpeed
-                    self.velocity_y = 0.0
-                    self.current_y = self.current_y - self.movement_factor
-
-                    # Publish the automation data
-                    self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
-
-                    time.sleep(1 / self.rate_control_hz)
-                while self.angle > (math.pi * -3/2):      #turning by 90 degrees
-                    self.velocity_x = 0.0
-                    self.velocity_y = -1*self.rotationSpeed
-
-                    # Publish the automation data
-                    self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
-
-                    time.sleep(1 / self.rate_control_hz)
-                while self.helper < self.movement_factor*25.0*6.0:   #drives in x direction by 30 cm (at least we hope)
-                    self.velocity_x = 1*self.driveSpeed
-                    self.velocity_y = 0.0
-                    self.helper = self.helper + self.movement_factor
-                    self.current_x = self.current_x + self.movement_factor  #update current x value
-                    self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
-                    time.sleep(1 / self.rate_control_hz)
-                self.helper = 0.0
-                while self.angle < math.pi:    #turning back by 90 degrees
-                    self.velocity_x = 0.0
-                    self.velocity_y = 1*self.rotationSpeed
-
-                    # Publish the automation data
-                    self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
-
-                    time.sleep(1 / self.rate_control_hz)
-
-                time.sleep(1 / self.rate_control_hz)
 
             self.velocity_x = 0.0
             self.velocity_y = 0.0
-            self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
+            print("Path ended! Hurray :)")
+
+            self.publish_automation( self.velocity_x, self.velocity_y)
         
             
             
+    def publish_drive_straight(self, vx , angle):
+        straight_msg = Twist()
+        straight_msg.linear.x = vx
+        straight_msg.linear.y = angle
 
+        self.publish_drive_straight(straight_msg)
     
 
-    def publish_automation(self, publisher, vx,vy):
+    def publish_automation(self, vx,vy):
         automation_msg = Twist()
         automation_msg.linear.x = vx
         automation_msg.linear.y = vy
@@ -109,7 +135,9 @@ class MainNode(Node):
 
         self.pub_automation.publish(automation_msg)
 
-
+    def callback_self_automated(self, msg):
+         self.straight_x_vel = msg.linear.x
+         self.straight_y_vel = msg.linear.y
 
     def callback_winch(self, msg):
         vel_Left = msg.angular.x    # manual mode left
@@ -117,6 +145,9 @@ class MainNode(Node):
         tempAngle = (msg.angular.z + 1.0) * math.pi # Angle
 
         self.angle = tempAngle
+
+    def callback_start(self, msg):
+         self.run = msg.linear.x
 
 
 
