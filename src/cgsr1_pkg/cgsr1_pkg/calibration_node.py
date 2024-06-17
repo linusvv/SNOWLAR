@@ -15,7 +15,7 @@ class MotorCalibrationNode(Node):
         super().__init__('motor_calibration_node')
         self.pub_calib = self.create_publisher(Float32, "/olive/servo/calib/goal/position", QoSProfile(depth=10))
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.subscription_calibrate = self.create_subscription(Twist, '/calibrate_motor', self.calibrate_motor_callback)    #statt nächster Zeile
+        self.subscription_calibrate = self.create_subscription(Twist, '/calibrate_motor', self.calibrate_motor_callback, QoSProfile(depth=10) )    #statt nächster Zeile
         #self.srv = self.create_service(SetBool, 'calibrate_motor', self.calibrate_motor_callback)
         self.subscription_imu_data = self.create_subscription(
             Float32,

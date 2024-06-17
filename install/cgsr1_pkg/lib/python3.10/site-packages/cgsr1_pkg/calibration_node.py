@@ -15,7 +15,8 @@ class MotorCalibrationNode(Node):
         super().__init__('motor_calibration_node')
         self.pub_calib = self.create_publisher(Float32, "/olive/servo/calib/goal/position", QoSProfile(depth=10))
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.srv = self.create_service(SetBool, 'calibrate_motor', self.calibrate_motor_callback)
+        self.subscription_calibrate = self.create_subscription(Twist, '/calibrate_motor', self.calibrate_motor_callback)    #statt nächster Zeile
+        #self.srv = self.create_service(SetBool, 'calibrate_motor', self.calibrate_motor_callback)
         self.subscription_imu_data = self.create_subscription(
             Float32,
             '/imu_data',
@@ -23,8 +24,8 @@ class MotorCalibrationNode(Node):
             10
         )
 
-    def calibrate_motor_callback(self, request, response):
-        if request.data:
+    def calibrate_motor_callback(self, msg):
+        if msg.linear.x:
             self.get_logger().info('Calibration started...')
             
             # Rotate to -10 degrees
@@ -45,14 +46,7 @@ class MotorCalibrationNode(Node):
             self.calibrate_wheels()
 
             self.get_logger().info('Calibration completed.')
-            response.success = True
-            response.message = 'Calibration successful'
-        else:
-            self.get_logger().info('Calibration not started. Received false request.')
-            response.success = False
-            response.message = 'Calibration not started'
-        return response
-
+            
     def imu_data_callback(self, msg):
         global imu_data
         with imu_data_lock:
@@ -67,7 +61,7 @@ class MotorCalibrationNode(Node):
     def calibrate_wheels(self):
         self.get_logger().info('Starting wheel calibration...')
 
-        rate = self.create_rate(50)  # 50 Hz
+        rate = self.create_rate(25)  # 25 Hz
 
         # Rotate left until IMU data rises
         twist_msg = Twist()
