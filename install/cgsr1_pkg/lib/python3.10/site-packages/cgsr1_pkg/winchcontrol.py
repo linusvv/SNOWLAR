@@ -24,7 +24,7 @@ class MainNode(Node):
 
         self.thread_main = threading.Thread(target=self.thread_main)
         self.thread_exited = False
-        self.rate_control_hz = 25
+        self.rate_control_hz = 25.0
         
         self.velocity_right = 0.0
         self.velocity_left = 0.0
@@ -32,7 +32,7 @@ class MainNode(Node):
         self.target_velocity_right = 0.0
         self.target_velocity_left = 0.0
 
-        self.max_velocity = 5
+        self.max_velocity = 3.0
         
         self.alpha = 0.1  # Low-pass filter constant (0 < alpha <= 1)
         

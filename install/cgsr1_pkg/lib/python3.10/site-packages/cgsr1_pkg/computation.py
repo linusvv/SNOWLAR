@@ -13,6 +13,7 @@ manual_control = Twist()
 edge_distance = Twist()
 imu_data = 0.0
 winch_position = Twist()  # Changed to Twist
+automation_control = Twist()
 
 
 
@@ -41,6 +42,8 @@ class MyComputationNode(Node):
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
         self.publisher_winch = self.create_publisher(Twist, '/winch', 10)
 
+        self.publisher_start = self.create_publisher(Twist, '/start_automation', 10)
+
         # Subscribers
         self.subscription_manual_control = self.create_subscription(
             Twist,
@@ -67,6 +70,7 @@ class MyComputationNode(Node):
             10
         )
         self.sub_base_to_winch = self.create_subscription(Twist, "/base_to_winch", self.callback_base_to_winch, QoSProfile(depth = 10))
+        self.sub_automation = self.create_subscription(Twist, "/automation", self.callback_automation, QoSProfile(depth = 10))
 
         #Variables of Node
         self.chainLeft = 0.0
@@ -76,10 +80,10 @@ class MyComputationNode(Node):
 
 
         # Parameter listeners
-        self.param_manual_mode = self.declare_parameter('manual_mode', False)     #name changed
-        self.param_sync_winch = self.declare_parameter('sync_winch', False)     #name changed
-        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False)     #name changed
-        self.param_autonomous = self.declare_parameter('autonomous', False)       #name changed
+        self.param_manual_mode = self.declare_parameter('manual_mode', False).value         
+        self.param_sync_winch = self.declare_parameter('sync_winch', False).value           
+        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False).value 
+        self.param_autonomous = self.declare_parameter('autonomous', False).value           
 
 
         self.param_width = self.declare_parameter('width', 640)
@@ -148,6 +152,10 @@ class MyComputationNode(Node):
         global winch_position
         with winch_position_lock:
             winch_position = msg
+    
+    def callback_automation(self,msg):
+        global automation_control
+        automation_control = msg
 
     def callback_base_to_winch(self, msg):
 
@@ -184,12 +192,23 @@ class MyComputationNode(Node):
 
     def publish_cmd_vel(self):
         cmd_vel_msg = Twist()       #The chain-data is transported via the linear part of manual_control
-        with manual_control_lock: 
-            if stop == False:
-                cmd_vel_msg.linear.x = manual_control.linear.x / 2.0
-                cmd_vel_msg.linear.y = manual_control.linear.y / 2.0
-            
+         
+        if stop == False:
+            if manual_mode: 
+                cmd_vel_msg.linear.x = manual_control.linear.x
+                cmd_vel_msg.linear.y = manual_control.linear.y 
+            if autonomous:
+                self.publish_start(1.0)
+                cmd_vel_msg.linear.x = automation_control.linear.x 
+                cmd_vel_msg.linear.y = automation_control.linear.y
+        
         self.publisher_cmd_vel.publish(cmd_vel_msg)
+
+    def publish_start(self, i):
+        msg = Twist()
+        msg.linear.x = i
+
+        self.publisher_start.publish(msg)
 
     def publish_winch(self):
         winch_msg = Twist()         #The winch-data is transported via the angular part of manual_control
@@ -200,9 +219,10 @@ class MyComputationNode(Node):
 
 
             if abs(self.chainLeft - self.chainRight) <= 0.1: ##for now, chainLeft and chain Right should be parallel
-                winch_msg.linear.x = -1*self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
+                winch_msg.linear.x = -1.0*self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
                 winch_msg.linear.y = self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
             else:
+                self.publish_start(1)
                 winch_msg.linear.x = 0.0
                 winch_msg.linear.y = 0.0
      
@@ -226,15 +246,24 @@ class MyComputationNode(Node):
                 elif semi_autonomous: 
                     self.angle = (imu_data + 1.0) * math.pi # Angle
                     print(self.angle,"the imu angle is:  %d")
-                    if abs(self.chainLeft - self.chainRight) <= 0.01: ##for now, chainLeft and chain Right should be antiparallel ->chainLeft = velocity from now on
-                        winch_msg.linear.x = self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle) * -1 * self.chainLeft)
-                        winch_msg.linear.y = -1*self.translation_Factor*(math.cos(self.angle)* self.chainLeft + math.sin(self.angle)  * self.chainLeft)
+                    if abs(self.chainLeft - self.chainRight) <= 0.1: ##for now, chainLeft and chain Right should be parallel
+                        winch_msg.linear.x = -1.0*self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
+                        winch_msg.linear.y = self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
                     else:
                         winch_msg.linear.x = 0.0
                         winch_msg.linear.y = 0.0
+            
 
                 elif autonomous:
-                    print("not ready")
+                    print("autonomous mode")
+                    self.angle = (imu_data + 1.0) * math.pi # Angle
+                    print(self.angle,"the imu angle is:  %d")
+                    if abs(self.chainLeft - self.chainRight) <= 0.1: ##for now, chainLeft and chain Right should be parallel
+                        winch_msg.linear.x = -1.0*self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
+                        winch_msg.linear.y = self.translation_Factor*(math.cos(self.angle)* self.chainLeft)
+                    else:
+                        winch_msg.linear.x = 0.0
+                        winch_msg.linear.y = 0.0
 
         self.publisher_winch.publish(winch_msg)
 
