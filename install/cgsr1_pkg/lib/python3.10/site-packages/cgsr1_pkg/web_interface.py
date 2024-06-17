@@ -114,14 +114,17 @@ def stop():
 
 @app.route('/rectangle-data')
 def rectangle_data():
-    global gui_controller_instance
-    data = {
-        'width': gui_controller_instance.width,
-        'height': gui_controller_instance.height,
-        'dot_x': gui_controller_instance.dot_x,
-        'dot_y': gui_controller_instance.dot_y
-    }
-    return jsonify(data)
+    global gui_controller_instance  # Ensure we use the global instance
+    if gui_controller_instance:
+        data = {
+            'width': gui_controller_instance.width,
+            'height': gui_controller_instance.height,
+            'dot_x': gui_controller_instance.dot_x,
+            'dot_y': gui_controller_instance.dot_y
+        }
+        return jsonify(data)
+    else:
+        return jsonify({"status": "error", "message": "GUIController instance not available"}), 500
 
 @app.route('/update_settings', methods=['POST'])
 def update_settings():
@@ -247,6 +250,7 @@ def ros_thread(gui_controller_instance):
     rclpy.shutdown()
 
 def main(args=None):
+    global gui_controller_instance  # Ensure we use the global instance
     rclpy.init()
     node = rclpy.create_node('web_interface')
     manual_control_publisher = node.create_publisher(Twist, 'manual_control', 10)
@@ -255,7 +259,6 @@ def main(args=None):
     manual_control_publisher = gui_controller_instance.create_publisher(Twist, 'joystick_topic', 10)
     app.run(host='0.0.0.0', port=5000)
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()
