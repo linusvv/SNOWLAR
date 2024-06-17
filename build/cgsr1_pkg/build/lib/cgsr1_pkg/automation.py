@@ -135,7 +135,7 @@ class MainNode(Node):
 
         self.pub_automation.publish(automation_msg)
 
-    def callback_self_automated(self, msg):
+    def callback_vel_automated(self, msg):
          self.straight_x_vel = msg.linear.x
          self.straight_y_vel = msg.linear.y
 
