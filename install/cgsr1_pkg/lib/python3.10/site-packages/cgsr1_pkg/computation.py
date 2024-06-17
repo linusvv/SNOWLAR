@@ -42,7 +42,7 @@ class MyComputationNode(Node):
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
         self.publisher_winch = self.create_publisher(Twist, '/winch', 10)
 
-        self.publisher_start = self.creat_publisher(Twist, '/start_automation', 10)
+        self.publisher_start = self.create_publisher(Twist, '/start_automation', 10)
 
         # Subscribers
         self.subscription_manual_control = self.create_subscription(
@@ -80,10 +80,10 @@ class MyComputationNode(Node):
 
 
         # Parameter listeners
-        self.param_manual_mode = self.declare_parameter('manual_mode', False)     #name changed
-        self.param_sync_winch = self.declare_parameter('sync_winch', False)     #name changed
-        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False)     #name changed
-        self.param_autonomous = self.declare_parameter('autonomous', False)       #name changed
+        self.param_manual_mode = self.declare_parameter('manual_mode', False).value         
+        self.param_sync_winch = self.declare_parameter('sync_winch', False).value           
+        self.param_semi_autonomous = self.declare_parameter('semi_autonomous', False).value 
+        self.param_autonomous = self.declare_parameter('autonomous', False).value           
 
 
         self.param_width = self.declare_parameter('width', 640)
