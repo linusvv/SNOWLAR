@@ -87,7 +87,7 @@ def switch(switch_name):
 
     if switch_name == 'manual_mode':
         print('recieved manual mode')
-        gui_controller_instance.publish_manual_mode(value)
+        gui_controller_instance.publish_manual_mode( value)
     elif switch_name == 'sync_mode':
         print('recieved sync mode')
         gui_controller_instance.publish_sync_winch(value)
