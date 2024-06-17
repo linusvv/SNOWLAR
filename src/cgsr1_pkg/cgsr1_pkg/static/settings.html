@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joystick and Sliders Control</title>
+    <style>
+        h1 {
+
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: xx-large;
+            margin: 0px;
+            margin-top: 30px;
+
+        }
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0px;
+            padding-left: 20px;
+            padding-right: 20px;
+            background-color: #333;
+            color: white;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+        }
+        #header:hover {
+            background-color: #555;
+        }
+        #logo {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            width: auto;
+            font-size: x-large;
+        }
+        #links {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+            
+        }
+        #links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
+        }
+        #links a:hover {
+            background-color: #555;
+            border-radius: 5px;
+        }
+        #links a:active {
+            background-color: #222;
+            border-radius: 5px;
+        }
+        #current_page, #current_page a {
+            background-color: #555;
+            color: white;
+            border-radius: 5px;
+        }
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        #header {
+            animation: fade-in 0.5s ease-in-out;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        
+        .switches-container {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            display: flex;
+            justify-content: space-around;
+            width: auto;
+            background-color: #dcdcdc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .switch {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        .switch input {
+            margin-right: 10px;
+            margin-bottom: 7px;
+
+        }
+
+        .automation{
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: large;
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 0px;
+            background-color: #dcdcdc;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            padding: 20px;
+            height: 380px;
+            
+        }
+
+        .automation p{
+            font-size: medium;
+            font-weight: 200;
+            text-align: left;
+
+
+
+        }
+        .button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 50px;
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .button button{
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .button button:hover{
+            background-color: #555;
+            cursor: pointer;
+        }
+        .button button:active{
+            background-color: #222;
+        }
+        
+
+        /* Toggle Button */
+        .cm-toggle {
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            border: 0;
+            outline: 0;
+            cursor: pointer;
+            margin: 10px;
+            margin-bottom: 5px !important;
+        }
+
+
+        /* To create surface of toggle button */
+        .cm-toggle:after {
+            content: '';
+            width: 60px;
+            height: 28px;
+            display: inline-block;
+            background: rgba(196, 195, 195, 0.55);
+            border-radius: 18px;
+            clear: both;
+        }
+
+
+        /* Contents before checkbox to create toggle handle */
+        .cm-toggle:before {
+            content: '';
+            width: 32px;
+            height: 32px;
+            display: block;
+            position: absolute;
+            left: 0;
+            top: -3px;
+            border-radius: 50%;
+            background: rgb(255, 255, 255);
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+        }
+
+
+        /* Shift the handle to left on check event */
+        .cm-toggle:checked:before {
+            left: 32px;
+            box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.6);
+        }
+        /* Background color when toggle button will be active */
+        .cm-toggle:checked:after {
+            background: rgb(66, 217, 255);
+        }
+        /* Transition for smoothness */
+        .cm-toggle,
+        .cm-toggle:before,
+        .cm-toggle:after,
+        .cm-toggle:checked:before,
+        .cm-toggle:checked:after {
+            transition: ease .3s;
+            -webkit-transition: ease .3s;
+            -moz-transition: ease .3s;
+            -o-transition: ease .3s;
+        }
+
+        .login-box {
+        position: relative;
+        top: 50%;
+        left: 50%;
+        width: 420px;
+        padding: 20px;
+        padding-left: 40px;
+        padding-right: 40px;
+        margin: 20px auto;
+        margin-top: 130px;
+        transform: translate(-50%, -55%);
+        background: rgba(74, 74, 74, 0.9);
+        box-sizing: border-box;
+        border-radius: 5px;
+        }
+
+        .login-box p:first-child {
+        margin: 0 0 30px;
+        padding: 0;
+        color: #fff;
+        text-align: center;
+        font-size: large;
+        font-weight: bold;
+        letter-spacing: 1px;
+        }
+
+        .login-box .user-box {
+        position: relative;
+        width: 40%;
+        }
+
+        .login-box .user-box input {
+        width: 100%;
+        padding: 10px 0;
+        font-size: normal;
+        color: #fff;
+        margin-bottom: 30px;
+        border: none;
+        border-bottom: 1px solid #fff;
+        outline: none;
+        background: transparent;
+        }
+
+        .login-box .user-box label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 10px 0;
+        font-size: 16px;
+        color: #fff;
+        pointer-events: none;
+        transition: .5s;
+        }
+
+        .login-box .user-box input:focus ~ label,
+        .login-box .user-box input:valid ~ label {
+        top: -20px;
+        left: 0;
+        color: #fff;
+        font-size: 12px;
+        }
+
+        .login-box form a {
+        position: relative;
+        display: inline-block;
+        padding: 10px 20px;
+        font-weight: bold;
+        color: #fff;
+        font-size: normal;
+        text-decoration: none;
+        text-transform: uppercase;
+        overflow: hidden;
+        transition: .5s;
+        margin-top: 40px;
+        letter-spacing: 3px
+        }
+
+        .login-box a:hover {
+        background: #fff;
+        color: #272727;
+        border-radius: 5px;
+        }
+
+        .login-box a span {
+        position: absolute;
+        display: block;
+        }
+
+        .login-box a span:nth-child(1) {
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #fff);
+        animation: btn-anim1 1.5s linear infinite;
+        }
+
+        @keyframes btn-anim1 {
+        0% {
+            left: -100%;
+        }
+
+        50%,100% {
+            left: 100%;
+        }
+        }
+
+        .login-box a span:nth-child(2) {
+        top: -100%;
+        right: 0;
+        width: 2px;
+        height: 100%;
+        background: linear-gradient(180deg, transparent, #fff);
+        animation: btn-anim2 1.5s linear infinite;
+        animation-delay: .375s
+        }
+
+        @keyframes btn-anim2 {
+        0% {
+            top: -100%;
+        }
+
+        50%,100% {
+            top: 100%;
+        }
+        }
+
+        .login-box a span:nth-child(3) {
+        bottom: 0;
+        right: -100%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(270deg, transparent, #fff);
+        animation: btn-anim3 1.5s linear infinite;
+        animation-delay: .75s
+        }
+
+        @keyframes btn-anim3 {
+        0% {
+            right: -100%;
+        }
+
+        50%,100% {
+            right: 100%;
+        }
+        }
+
+        .login-box a span:nth-child(4) {
+        bottom: -100%;
+        left: 0;
+        width: 2px;
+        height: 100%;
+        background: linear-gradient(360deg, transparent, #fff);
+        animation: btn-anim4 1.5s linear infinite;
+        animation-delay: 1.125s
+        }
+
+        @keyframes btn-anim4 {
+        0% {
+            bottom: -100%;
+        }
+
+        50%,100% {
+            bottom: 100%;
+        }
+        }
+
+        .login-box p:last-child {
+        color: #aaa;
+        font-size: 14px;
+        }
+
+        .login-box a.a2 {
+        color: #fff;
+        text-decoration: none;
+        }
+
+        .login-box a.a2:hover {
+        background: transparent;
+        color: #aaa;
+        border-radius: 5px;
+        }
+            
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div id="logo">
+            <p>SNOWLAR</p>
+        </div>
+        <div id="links">
+            <a href="/home">Home</a>
+            <a href="/manual_control">Manual Control</a>
+            <a href="#" id="current_page">Settings</a>
+        </div>
+    </div>
+
+    <div id="container">
+        
+        <h1>CGSR1- Settings</h1>
+        
+        <div class="automation">
+            
+            <br>
+            <h3>Settings for the Automation of the Rover:</h3>
+            <p style="text-align: center;">Please set these parameters before starting the automation</p>
+            <br>
+            <div class="set">
+                <div class="login-box">
+                    <p>Size of your Solar Array</p>
+                    <form>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div class="user-box">
+                                <input required="" name="" type="number">
+                                <label>width</label>
+                              </div>
+                              <div class="user-box">
+                                <input required="" name="" type="number">
+                                <label>height</label>
+                              </div>
+                        </div>
+                      
+
+                      <a href="#">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        Submit
+                      </a>
+                    </form>
+                  </div>
+            
+
+
+        </div>
+        <div id="rectangle-container">
+            <div id="rectangle">
+                <div id="dot"></div>
+            </div>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    
+    <script>
+    document.getElementById('submitButton').addEventListener('click', () => {
+        const width = parseInt(document.getElementById('widthInput').value);
+        const height = parseInt(document.getElementById('heightInput').value);
+        console.log(`Width: ${width}, Height: ${height}`);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/update_settings');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({ width, height }));
+    });
+    </script>
+</body>
+</html>
