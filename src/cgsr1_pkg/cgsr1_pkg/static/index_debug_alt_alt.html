@@ -285,6 +285,7 @@
     </style>
 </head>
 <body>
+
     <div id="header">
         <div id="logo">
             <p>SNOWLAR</p>
@@ -377,11 +378,20 @@
             sendSwitchData('manual_mode', true);
         }
 
-        window.onbeforeunload = () => {
-            sendSwitchData('manual_mode', false);
-            sendSwitchData('sync_mode', false);
-            sendSwitchData('semi_autonomous', false);
-        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('#links a');
+            links.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    window.location.href = link.getAttribute('href');
+                    sendSwitchData('manual_mode', false);
+                    sendSwitchData('sync_mode', false);
+                    sendSwitchData('semi_autonomous', false);
+
+                });
+            });
+        });
 
         
 
