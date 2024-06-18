@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Bool
 from geometry_msgs.msg import Twist
 import threading
 import time
@@ -40,10 +40,12 @@ class MainNode(Node):
         self.pub_automation = self.create_publisher(Twist, "/cmd_vel_straight", QoSProfile(depth=10))
 
         #Subsciber
-        self.sub_winch = self.create_subscription(Twist, "/winch", self.callback_winch, QoSProfile(depth=10))
+        self.sub_imu_data = self.create_subscription(Float32, "/imu_data", self.callback_imu_data, QoSProfile(depth=10))
         self.sub_cmd_vel_straight = self.create_subscription(Twist, "/cmd_vel_automated", self.callback_vel_automated, QoSProfile(depth=10))
-        self.sub_starter = self.create_subscription(Twist, "/start_automation", self.callback_start, QoSProfile(depth=10))
+        self.subscription_autonomous = self.create_subscription(Bool, 'autonomous', self.autonomous_callback, 10)
         
+
+
         self.thread_main = threading.Thread(target=self.thread_main)
         self.thread_exited = False
         self.rate_control_hz = 25.0
@@ -81,7 +83,7 @@ class MainNode(Node):
                         self.publish_automation( self.velocity_x, self.velocity_y)
 
                         time.sleep(1 / self.rate_control_hz)
-                    while self.angle > (math.pi * -3/2) and self.start:      #turning by 90 degrees
+                    while self.angle > (-0.5) and self.start:      #turning by 90 degrees TODO fix angle
                         self.velocity_x = 0.0
                         self.velocity_y = -1.0*self.rotationSpeed
 
@@ -98,7 +100,7 @@ class MainNode(Node):
                         self.publish_automation( self.velocity_x, self.velocity_y)
                         time.sleep(1 / self.rate_control_hz)
                     self.helper = 0.0
-                    while self.angle < math.pi and self.start:    #turning back by 90 degrees
+                    while self.angle < 0 and self.start:    #turning back by 90 degrees TODO fix angle
                         self.velocity_x = 0.0
                         self.velocity_y = 1*self.rotationSpeed
 
@@ -139,16 +141,11 @@ class MainNode(Node):
          self.straight_x_vel = msg.linear.x
          self.straight_y_vel = msg.linear.y
 
-    def callback_winch(self, msg):
-        vel_Left = msg.angular.x    # manual mode left
-        vel_Right = msg.angular.y   # manual mode right
-        tempAngle = (msg.angular.z + 1.0) * math.pi # Angle
+    def callback_imu_data(self, msg):
+        self.angle = msg.data
 
-        self.angle = tempAngle
-
-    def callback_start(self, msg):
-         self.start = msg.linear.x
-
+    def autonomous_callback(self, msg):
+        self.start = msg.data
 
 
 
