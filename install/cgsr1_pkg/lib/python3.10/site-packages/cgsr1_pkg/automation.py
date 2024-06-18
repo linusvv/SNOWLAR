@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Bool
 from geometry_msgs.msg import Twist
 import threading
 import time
@@ -19,7 +19,7 @@ class MainNode(Node):
         self.velocity_x = 0.0  #actually means turning 
         self.velocity_y = 0.0  #actuall means driving forward
         self.current_x = 0.0   #position in x direction
-        self.current_y = 0.0  # position in y direction
+        self.current_y = 0.0  #position in y direction
         self.max_X = 100.0     #width of roof
         self.max_Y = 150.0   #length of roof
         self.helper = 0.0     
@@ -37,13 +37,15 @@ class MainNode(Node):
         
         # Publisher
         self.pub_automation = self.create_publisher(Twist, "/automation", QoSProfile(depth=10))
-        self.pub_automation = self.create_publisher(Twist, "/cmd_vel_straight", QoSProfile(depth=10))
+        self.pub_vel_straight = self.create_publisher(Twist, "/cmd_vel_straight", QoSProfile(depth=10))
 
         #Subsciber
-        self.sub_winch = self.create_subscription(Twist, "/winch", self.callback_winch, QoSProfile(depth=10))
+        self.sub_imu_data = self.create_subscription(Float32, "/imu_data", self.callback_imu_data, QoSProfile(depth=10))
         self.sub_cmd_vel_straight = self.create_subscription(Twist, "/cmd_vel_automated", self.callback_vel_automated, QoSProfile(depth=10))
-        self.sub_starter = self.create_subscription(Twist, "/start_automation", self.callback_start, QoSProfile(depth=10))
+        self.subscription_autonomous = self.create_subscription(Bool, 'autonomous', self.autonomous_callback, 10)
         
+
+
         self.thread_main = threading.Thread(target=self.thread_main)
         self.thread_exited = False
         self.rate_control_hz = 25.0
@@ -58,21 +60,21 @@ class MainNode(Node):
                  time.sleep(1/self.rate_control_hz)
 
             else:
-                while self.current_x < self.max_X and self.start:          # while not reached end of x-direction
-                    while self.current_y < self.max_Y and self.start:      #while not reached end of y-direction
-                        self.publish_drive_straight((-1.0)*self.driveSpeed, 0.0)
-                        self.velocity_x = self.straight_x_vel                 #move down the y direction
+                while self.current_x < self.max_X and self.start:                        # while not reached end of x-direction
+                    while self.current_y < self.max_Y and self.start:                    # while not reached end of y-direction
+                        self.publish_drive_straight(self.driveSpeed, 0.0)
+                        self.velocity_x = self.straight_x_vel                            #move down the y direction
                         self.velocity_y = self.straight_y_vel
 
-                        self.current_y = self.current_y + self.movement_factor
+                        self.current_y = self.current_y + self.movement_factor*1.5      #due to him being faster downstairs
 
                         # Publish the automation data
-                        self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
+                        self.publish_automation( self.velocity_x, self.velocity_y)
 
                         time.sleep(1 / self.rate_control_hz)
 
-                    while self.current_y > 0.0 and self.start:               #reached end, we drive back up
-                        self.publish_drive_straight(self.driveSpeed,1.0)
+                    while self.current_y > 0.0 and self.start:                          #reached end, we drive back up
+                        self.publish_drive_straight((-1.0)*self.driveSpeed, 0.0)
                         self.velocity_x = self.straight_x_vel
                         self.velocity_y = self.straight_y_vel
                         self.current_y = self.current_y - self.movement_factor
@@ -81,7 +83,7 @@ class MainNode(Node):
                         self.publish_automation( self.velocity_x, self.velocity_y)
 
                         time.sleep(1 / self.rate_control_hz)
-                    while self.angle > (math.pi * -3/2) and self.start:      #turning by 90 degrees
+                    while self.angle > (-0.5) and self.start:                           #turning by 90 degrees TODO fix angle
                         self.velocity_x = 0.0
                         self.velocity_y = -1.0*self.rotationSpeed
 
@@ -89,16 +91,16 @@ class MainNode(Node):
                         self.publish_automation( self.velocity_x, self.velocity_y)
 
                         time.sleep(1 / self.rate_control_hz)
-                    while self.helper < self.movement_factor*25.0*6.0 and self.start:   #drives in x direction by 30 cm (at least we hope)
+                    while self.helper < self.movement_factor*25.0*12.0 and self.start:   #drives in x direction by 30 cm (at least we hope)
                         self.publish_drive_straight(-1*self.driveSpeed,-0.5)
                         self.velocity_x = self.straight_x_vel
                         self.velocity_y = self.straight_y_vel
                         self.helper = self.helper + self.movement_factor
-                        self.current_x = self.current_x + self.movement_factor  #update current x value
+                        self.current_x = self.current_x + self.movement_factor          #update current x value
                         self.publish_automation( self.velocity_x, self.velocity_y)
                         time.sleep(1 / self.rate_control_hz)
                     self.helper = 0.0
-                    while self.angle < math.pi and self.start:    #turning back by 90 degrees
+                    while self.angle < 0 and self.start:                                #turning back by 90 degrees TODO fix angle
                         self.velocity_x = 0.0
                         self.velocity_y = 1*self.rotationSpeed
 
@@ -122,7 +124,7 @@ class MainNode(Node):
         straight_msg.linear.x = vx
         straight_msg.linear.y = angle
 
-        self.publish_drive_straight(straight_msg)
+        self.pub_vel_straight.publish(straight_msg)
     
 
     def publish_automation(self, vx,vy):
@@ -132,23 +134,18 @@ class MainNode(Node):
         automation_msg.angular.x = 0.0
         automation_msg.angular.y = 0.0
 
-
+        #asdf
         self.pub_automation.publish(automation_msg)
 
     def callback_vel_automated(self, msg):
          self.straight_x_vel = msg.linear.x
          self.straight_y_vel = msg.linear.y
 
-    def callback_winch(self, msg):
-        vel_Left = msg.angular.x    # manual mode left
-        vel_Right = msg.angular.y   # manual mode right
-        tempAngle = (msg.angular.z + 1.0) * math.pi # Angle
+    def callback_imu_data(self, msg):
+        self.angle = msg.data
 
-        self.angle = tempAngle
-
-    def callback_start(self, msg):
-         self.start = msg.linear.x
-
+    def autonomous_callback(self, msg):
+        self.start = msg.data
 
 
 
