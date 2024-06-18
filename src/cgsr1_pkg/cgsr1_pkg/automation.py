@@ -37,7 +37,7 @@ class MainNode(Node):
         
         # Publisher
         self.pub_automation = self.create_publisher(Twist, "/automation", QoSProfile(depth=10))
-        self.pub_automation = self.create_publisher(Twist, "/cmd_vel_straight", QoSProfile(depth=10))
+        self.pub_vel_straight = self.create_publisher(Twist, "/cmd_vel_straight", QoSProfile(depth=10))
 
         #Subsciber
         self.sub_imu_data = self.create_subscription(Float32, "/imu_data", self.callback_imu_data, QoSProfile(depth=10))
@@ -124,7 +124,7 @@ class MainNode(Node):
         straight_msg.linear.x = vx
         straight_msg.linear.y = angle
 
-        self.publish_drive_straight(straight_msg)
+        self.pub_vel_straight(straight_msg)
     
 
     def publish_automation(self, vx,vy):
