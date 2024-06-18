@@ -66,7 +66,7 @@ class MainNode(Node):
                         self.velocity_x = self.straight_x_vel                            #move down the y direction
                         self.velocity_y = self.straight_y_vel
 
-                        self.current_y = self.current_y + self.movement_factor
+                        self.current_y = self.current_y + self.movement_factor*1.5      #due to him being faster downstairs
 
                         # Publish the automation data
                         self.publish_automation( self.velocity_x, self.velocity_y)
@@ -91,7 +91,7 @@ class MainNode(Node):
                         self.publish_automation( self.velocity_x, self.velocity_y)
 
                         time.sleep(1 / self.rate_control_hz)
-                    while self.helper < self.movement_factor*25.0*6.0 and self.start:   #drives in x direction by 30 cm (at least we hope)
+                    while self.helper < self.movement_factor*25.0*12.0 and self.start:   #drives in x direction by 30 cm (at least we hope)
                         self.publish_drive_straight(-1*self.driveSpeed,-0.5)
                         self.velocity_x = self.straight_x_vel
                         self.velocity_y = self.straight_y_vel
