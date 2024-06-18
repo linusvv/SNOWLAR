@@ -95,9 +95,9 @@ class MainNode(Node):
         rotation_factor_right = 1.0
 
         if vy > 0:
-            rotation_factor_left = 1.5 
+            rotation_factor_left = 1.0 
         elif vy < 0:
-            rotation_factor_right = 1.5
+            rotation_factor_right = 1.0
         else:
             rotation_factor_left = 1.0
             rotation_factor_right = 1.0   
