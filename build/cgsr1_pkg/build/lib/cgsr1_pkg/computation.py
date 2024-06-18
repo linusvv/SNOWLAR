@@ -217,8 +217,8 @@ class MyComputationNode(Node):
                     self.angle = (imu_data + 1.0) * math.pi  # Angle
                     print(self.angle, "the imu angle is:  %d")
                     if abs(self.chainLeft + self.chainRight) <= 0.1:  # for now, chainLeft and chain Right should be parallel
-                        winch_msg.linear.x = -1.0 * self.translation_Factor * (math.cos(self.angle) * self.chainLeft + math.sin(self.angle) * self.chainLeft)
-                        winch_msg.linear.y = self.translation_Factor * (math.cos(self.angle) * self.chainLeft + (-1)* math.sin(self.angle) * self.chainLeft)
+                        winch_msg.linear.x = self.translation_Factor * (math.cos(self.angle) * self.chainLeft + math.sin(self.angle) * self.chainLeft)
+                        winch_msg.linear.y = -1* self.translation_Factor * (math.cos(self.angle) * self.chainLeft + (-1)* math.sin(self.angle) * self.chainLeft)
                     else:
                         winch_msg.linear.x = 0.0
                         winch_msg.linear.y = 0.0
