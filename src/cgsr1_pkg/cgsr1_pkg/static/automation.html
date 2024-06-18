@@ -403,6 +403,14 @@
             rectangle.style.display = 'none';
         }
 
+
+        const automation_switch = document.getElementById('toggle')
+        automation_switch.addEventListener('change', () => {
+        
+            sendSwitchData('autonomous', automation_switch.checked);
+        });
+
+
         function sendSwitchData(switchName, value) {
         fetch(`/switch/${switchName}`, {
             method: 'POST',
@@ -416,25 +424,8 @@
         .catch(error => console.error('Error:', error));
         }
 
-        const automation_switch = document.getElementById('toggle')
-        automation_switch.addEventListener('change', () => {
-        
-        sendSwitchData('automation', automation_switch.checked);
-        });
 
-        function sendSwitchData(switchName, value) {
-        // Send a POST request to '/switch/{switchName}' with the switch's value.
-        fetch(`/switch/${switchName}`, {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ value })
-        })
-        .then(response => response.json())
-        .then(data => console.log(data)) // Log the response data to the console.
-        .catch(error => console.error('Error:', error)); // Log any errors to the console.
-        }
+
 
         
 

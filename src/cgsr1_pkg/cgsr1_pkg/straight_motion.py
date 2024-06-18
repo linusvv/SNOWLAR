@@ -42,6 +42,7 @@ class MainNode(Node):
         self.velocity_x = 0.0
         self.velocity_y = 0.0
         self.tolerance = 0.1
+        self.max_velocity = 3.0
 
 
         self.thread_main.start()
@@ -54,7 +55,7 @@ class MainNode(Node):
             self.velocity_y = self.calculate_steering_adjustment()
 
             
-            self.publish_cmd_vel_automated(self.pub_cmd_vel_automated,self.velocity_x, self.velocity_y)
+            self.publish_cmd_vel_automated(self.velocity_x, self.velocity_y)
 
             
             time.sleep(1 / self.rate_control_hz)
@@ -88,10 +89,13 @@ class MainNode(Node):
         vx = vx * self.max_velocity
         self.velocity_x = vx
 
-    def __del__(self):
-        self.thread_exited = True
-        if self.thread_main.is_alive():
-            self.thread_main.join()
+    def publish_cmd_vel_automated(self, vx,vy):
+        msg = Twist()
+        msg.linear.x = vx
+        msg.linear.y = vy
+
+        self.pub_cmd_vel_automated.publish(msg)
+
 
 def main(args=None):
     rclpy.init(args=args)

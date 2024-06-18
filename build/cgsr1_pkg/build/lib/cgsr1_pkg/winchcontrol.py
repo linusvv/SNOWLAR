@@ -47,8 +47,8 @@ class MainNode(Node):
             self.velocity_left = self.low_pass_filter(self.velocity_left, self.target_velocity_left)
             
             # Publish the velocities for each winch motor
-            self.publish_velocity(self.pub_right, self.velocity_right)
-            self.publish_velocity(self.pub_left, self.velocity_left)
+            self.publish_velocity(self.pub_left, -1*self.velocity_right)
+            self.publish_velocity(self.pub_right, -1*self.velocity_left)
             
             time.sleep(1 / self.rate_control_hz)
 

@@ -62,7 +62,7 @@ class MainNode(Node):
             self.publish_velocity(self.pub_rear_left, self.velocity_rear_left)
             #self.publish_velocity(self.pub_mimu, self.velocity_mimu)
 
-            self.publish_base_to_winch(self.base_to_winch, self.velocity_front_left, self.velocity_front_right)
+            self.publish_base_to_winch(self.base_to_wincreate_servicech, self.velocity_front_left, self.velocity_front_right)
             
             time.sleep(1 / self.rate_control_hz)
 
@@ -94,7 +94,7 @@ class MainNode(Node):
         print(f'This is the x velocity: {vx}')
 
         self.target_velocity_front_left = vx - vy
-        self.target_velocity_front_right = -1*(vx+vy)
+        self.target_velocity_front_right = (vx+vy)
         self.target_velocity_rear_left = self.target_velocity_front_left
         self.target_velocity_rear_right = self.target_velocity_front_right
 
