@@ -18,8 +18,6 @@ class MainNode(Node):
         self.pub_rear_left = self.create_publisher(Float32, "/olive/servo/mbl/goal/velocity", QoSProfile(depth=10))
 
         #self.pub_mimu = self.create_publisher(Float32, "/olive/servo/mimu/goal/velocity", QoSProfile(depth=10))
-
-
         self.base_to_winch = self.create_publisher(Twist, "/base_to_winch", QoSProfile(depth=10))
         
         # Subscription to cmd_vel
@@ -62,7 +60,7 @@ class MainNode(Node):
             self.publish_velocity(self.pub_rear_left, self.velocity_rear_left)
             #self.publish_velocity(self.pub_mimu, self.velocity_mimu)
 
-            self.publish_base_to_winch(self.base_to_wincreate_servicech, self.velocity_front_left, self.velocity_front_right)
+            self.publish_base_to_winch(self.base_to_winch, self.velocity_front_left, self.velocity_front_right)
             
             time.sleep(1 / self.rate_control_hz)
 

@@ -38,9 +38,10 @@ class MyComputationNode(Node):
         # Publishers
         self.publisher_gui_status = self.create_publisher(Twist, '/gui_status', 10)
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
+        #self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel_automated', 10) ###added on 18.06.2024 - not implemented
         self.publisher_winch = self.create_publisher(Twist, '/winch', 10)
         self.publisher_start = self.create_publisher(Twist, '/start_automation', 10)
-        self.publisher_brush = self.create_publisher(Twist, 'olive/servo/brush/goal/velocity')
+        self.publisher_brush = self.create_publisher(Float32, 'olive/servo/brush/goal/velocity', QoSProfile(depth=10))
 
         # Subscribers
         self.subscription_manual_control = self.create_subscription(Twist,'/manual_control',self.manual_control_callback,10)
@@ -237,13 +238,13 @@ class MyComputationNode(Node):
     #PUBLISHES BRUSH DIRECTLY TO MOTOR
     def publish_brush(self):
         ##DEFINE BRUSH MAX VELOCITY
-        brush_max_velocity = 3
-        msg = Float32
+        brush_max_velocity = 3.0
+        msg = Float32()
         if brush == True:
-            msg = brush_max_velocity
+            msg.data = float(brush_max_velocity)
         else:
-            msg = 0
-        self.publish_brush.publish(msg)
+            msg.data = float(0)
+        self.publisher_brush.publish(msg)
         
 
 def main(args=None):
