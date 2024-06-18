@@ -29,6 +29,7 @@ autonomous = False
 width = 640
 height = 480
 stop = False
+brush = False
 
 class MyComputationNode(Node):
     def __init__(self):
@@ -39,32 +40,13 @@ class MyComputationNode(Node):
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
         self.publisher_winch = self.create_publisher(Twist, '/winch', 10)
         self.publisher_start = self.create_publisher(Twist, '/start_automation', 10)
+        self.publisher_brush = self.create_publisher(Twist, 'olive/servo/brush/goal/velocity')
 
         # Subscribers
-        self.subscription_manual_control = self.create_subscription(
-            Twist,
-            '/manual_control',
-            self.manual_control_callback,
-            10
-        )
-        self.subscription_edge_distance = self.create_subscription(
-            Twist,
-            '/edge_distance',
-            self.edge_distance_callback,
-            10
-        )
-        self.subscription_imu_data = self.create_subscription(
-            Float32,
-            '/imu_data',
-            self.imu_data_callback,
-            10
-        )
-        self.subscription_winch_position = self.create_subscription(
-            Twist,
-            '/winch_position',
-            self.winch_position_callback,
-            10
-        )
+        self.subscription_manual_control = self.create_subscription(Twist,'/manual_control',self.manual_control_callback,10)
+        self.subscription_edge_distance = self.create_subscription(Twist,'/edge_distance',self.edge_distance_callback,10)
+        self.subscription_imu_data = self.create_subscription(Float32,'/imu_data',self.imu_data_callback,10)
+        self.subscription_winch_position = self.create_subscription(Twist,'/winch_position',self.winch_position_callback,10)
         self.sub_base_to_winch = self.create_subscription(Twist, "/base_to_winch", self.callback_base_to_winch, QoSProfile(depth=10))
         self.sub_automation = self.create_subscription(Twist, "/automation", self.automation_callback, QoSProfile(depth=10))
 
@@ -76,6 +58,7 @@ class MyComputationNode(Node):
         self.subscription_width = self.create_subscription(Int32, 'width', self.width_callback, 10)
         self.subscription_height = self.create_subscription(Int32, 'height', self.height_callback, 10)
         self.subscription_stop = self.create_subscription(Bool, 'stop', self.stop_callback, 10)
+        self.subscription_brush = self.create_subscription(Bool, 'brush', self.brush_callback, 10)
 
         # Variables of Node
         self.chainLeft = 0.0
@@ -122,12 +105,18 @@ class MyComputationNode(Node):
         global stop
         stop = msg.data
         self.get_logger().info(f'Stop updated: {stop}')
+    
+    def brush_callback(self, msg):
+        global brush
+        brush = msg.data
+        self.get_logger().info(f'Stop updated: {brush}')
 
     def manual_control_callback(self, msg):
         global manual_control
         with manual_control_lock:
             manual_control = msg
 
+    # Parameter Callback
     def edge_distance_callback(self, msg):
         global edge_distance
         with edge_distance_lock:
@@ -151,14 +140,20 @@ class MyComputationNode(Node):
         self.chainLeft = msg.linear.x  # Velocity left chain update
         self.chainRight = msg.linear.y  # Velocity right chain update
 
+
+
+    # Loop Function to publish the relevant data
     def publisher_loop(self):
         rate = 25
         while rclpy.ok():
             self.publish_gui_status()
             self.publish_cmd_vel()
             self.publish_winch()
+            self.publish_brush()
             time.sleep(1 / rate)
 
+    ### Publishers ###
+    # Publishes current manual control (no idea why the name is so weird) -- did we replace gui status with something else???
     def publish_gui_status(self):
         gui_status_msg = Twist()
         with manual_control_lock:
@@ -167,6 +162,7 @@ class MyComputationNode(Node):
             gui_status_msg.angular.y = manual_control.angular.y
         self.publisher_gui_status.publish(gui_status_msg)
 
+    # Publishes cmd_vel to base_control
     def publish_cmd_vel(self):
         cmd_vel_msg = Twist()  # The chain-data is transported via the linear part of manual_control
         if not stop:
@@ -184,6 +180,8 @@ class MyComputationNode(Node):
         msg.linear.x = i
         self.publisher_start.publish(msg)
 
+
+    # Publishes the winch data to winch motion. Calculation for winch is included. If that code is stupid. It's not my fault :)
     def publish_winch(self):
         winch_msg = Twist()  # The winch-data is transported via the angular part of manual_control
         with manual_control_lock:
@@ -234,6 +232,19 @@ class MyComputationNode(Node):
                         winch_msg.linear.x = 0.0
                         winch_msg.linear.y = 0.0
         self.publisher_winch.publish(winch_msg)
+
+
+    #PUBLISHES BRUSH DIRECTLY TO MOTOR
+    def publish_brush(self):
+        ##DEFINE BRUSH MAX VELOCITY
+        brush_max_velocity = 3
+        msg = Float32
+        if brush == True:
+            msg = brush_max_velocity
+        else:
+            msg = 0
+        self.publish_brush.publish(msg)
+        
 
 def main(args=None):
     rclpy.init(args=args)
