@@ -29,21 +29,21 @@ class MotorCalibrationNode(Node):
             self.get_logger().info('Calibration started...')
             
             # Rotate to -10 degrees
-            self.publish_motor_position(0.4)
-            time.sleep(3)  # Adjust sleep time as necessary
+            self.publish_motor_position(-0.6*math.pi)
+            time.sleep(2)  # Adjust sleep time as necessary
             
             # Rotate to 190 degrees
-            self.publish_motor_position(-2* math.pi - 0.4)
-            time.sleep(3)  # Adjust sleep time as necessary
+            self.publish_motor_position(0.6* math.pi)
+            time.sleep(2)  # Adjust sleep time as necessary
             
             # Rotate back to zero position
-            self.publish_motor_position(0.0)
-            time.sleep(3)  # Adjust sleep time as necessary
+            self.publish_motor_position(-1/2*math.pi)
+            time.sleep(2)  # Adjust sleep time as necessary
 
             self.get_logger().info('IMU Calibration completed.')
 
             # Calibrate wheels
-            #self.calibrate_wheels()
+            self.calibrate_wheels()
 
             self.get_logger().info('Calibration completed.')
             response.success = True
@@ -68,7 +68,7 @@ class MotorCalibrationNode(Node):
     def calibrate_wheels(self):
         self.get_logger().info('Starting wheel calibration...')
 
-        rate = self.create_rate(50) 
+        rate = self.create_rate(25)  # Set rate to 25 Hz
 
         # Rotate left until IMU data rises
         twist_msg = Twist()

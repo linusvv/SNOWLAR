@@ -147,7 +147,6 @@ class MyComputationNode(Node):
     def publisher_loop(self):
         rate = 25
         while rclpy.ok():
-            self.publish_gui_status()
             self.publish_cmd_vel()
             self.publish_winch()
             self.publish_brush()
@@ -155,13 +154,6 @@ class MyComputationNode(Node):
 
     ### Publishers ###
     # Publishes current manual control (no idea why the name is so weird) -- did we replace gui status with something else???
-    def publish_gui_status(self):
-        gui_status_msg = Twist()
-        with manual_control_lock:
-            gui_status_msg.linear.x = manual_control.linear.x
-            gui_status_msg.linear.y = manual_control.linear.y
-            gui_status_msg.angular.y = manual_control.angular.y
-        self.publisher_gui_status.publish(gui_status_msg)
 
     # Publishes cmd_vel to base_control
     def publish_cmd_vel(self):
