@@ -13,6 +13,7 @@ cgsr1_pkg/automation.py
 cgsr1_pkg/basecontrol.py
 cgsr1_pkg/calibration_node.py
 cgsr1_pkg/computation.py
+cgsr1_pkg/counter_automation.py
 cgsr1_pkg/dummy_publisher.py
 cgsr1_pkg/imucontrol.py
 cgsr1_pkg/imutobase.py
