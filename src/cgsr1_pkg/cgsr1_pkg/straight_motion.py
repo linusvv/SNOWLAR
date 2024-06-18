@@ -41,7 +41,7 @@ class MainNode(Node):
         self.target_imu_angle = 0.0
         self.velocity_x = 0.0
         self.velocity_y = 0.0
-        self.tolerance = 0.1
+        self.tolerance = 0.05
         self.max_velocity = 3.0
 
 
