@@ -124,7 +124,7 @@ class MainNode(Node):
         straight_msg.linear.x = vx
         straight_msg.linear.y = angle
 
-        self.pub_vel_straight(straight_msg)
+        self.pub_vel_straight.publish(straight_msg)
     
 
     def publish_automation(self, vx,vy):
