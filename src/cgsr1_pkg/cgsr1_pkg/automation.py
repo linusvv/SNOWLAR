@@ -69,7 +69,7 @@ class MainNode(Node):
                         self.current_y = self.current_y + self.movement_factor
 
                         # Publish the automation data
-                        self.publish_automation(self.pub_automation, self.velocity_x, self.velocity_y)
+                        self.publish_automation( self.velocity_x, self.velocity_y)
 
                         time.sleep(1 / self.rate_control_hz)
 
