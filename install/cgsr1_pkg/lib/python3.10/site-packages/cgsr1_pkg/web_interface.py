@@ -45,8 +45,8 @@ def joystick():
 
     twist = Twist()
 
-    twist.linear.x = y + 0.000000001
-    twist.linear.y = x + 0.000000001
+    twist.linear.x = x + 0.000000001
+    twist.linear.y = y + 0.000000001
     
     if manual_control_publisher:
         manual_control_publisher.publish(twist)

@@ -6,21 +6,17 @@ from std_msgs.msg import Float32
 from geometry_msgs.msg import Twist
 import threading
 import time
+import math
 
 imu_data_lock = threading.Lock()
 imu_data = 0.0
 
-
-
 class MotorCalibrationNode(Node):
-
-    
     def __init__(self):
         super().__init__('motor_calibration_node')
         self.pub_calib = self.create_publisher(Float32, "/olive/servo/calib/goal/position", QoSProfile(depth=10))
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
-        self.subscription_calibrate = self.create_subscription(Twist, '/calibrate_motor', self.calibrate_motor_callback, QoSProfile(depth=10) )    #statt nächster Zeile
-        #self.srv = self.create_service(SetBool, 'calibrate_motor', self.calibrate_motor_callback)
+        self.srv = self.create_service(SetBool, 'calibrate_motor', self.calibrate_motor_callback)
         self.subscription_imu_data = self.create_subscription(
             Float32,
             '/imu_data',
@@ -28,30 +24,21 @@ class MotorCalibrationNode(Node):
             10
         )
 
-        self.temp = 0
-    def once():
-        if self.temp == 0:
-            return 1
-            self.temp = 1
-        else:
-            return 0
-        
-
-    def calibrate_motor_callback(self, msg):
-        if self.once():
+    def calibrate_motor_callback(self, request, response):
+        if request.data:
             self.get_logger().info('Calibration started...')
             
             # Rotate to -10 degrees
-            self.publish_motor_position(-10.0)
-            time.sleep(1)  # Adjust sleep time as necessary
+            self.publish_motor_position(0.4)
+            time.sleep(3)  # Adjust sleep time as necessary
             
             # Rotate to 190 degrees
-            self.publish_motor_position(190.0)
-            time.sleep(1)  # Adjust sleep time as necessary
+            self.publish_motor_position(-2* math.pi - 0.4)
+            time.sleep(3)  # Adjust sleep time as necessary
             
             # Rotate back to zero position
             self.publish_motor_position(0.0)
-            time.sleep(1)  # Adjust sleep time as necessary
+            time.sleep(3)  # Adjust sleep time as necessary
 
             self.get_logger().info('IMU Calibration completed.')
 
@@ -59,7 +46,14 @@ class MotorCalibrationNode(Node):
             self.calibrate_wheels()
 
             self.get_logger().info('Calibration completed.')
-            
+            response.success = True
+            response.message = 'Calibration successful'
+        else:
+            self.get_logger().info('Calibration not started. Received false request.')
+            response.success = False
+            response.message = 'Calibration not started'
+        return response
+
     def imu_data_callback(self, msg):
         global imu_data
         with imu_data_lock:
@@ -74,11 +68,11 @@ class MotorCalibrationNode(Node):
     def calibrate_wheels(self):
         self.get_logger().info('Starting wheel calibration...')
 
-        rate = self.create_rate(25)  # 25 Hz
+        rate = self.create_rate(50) 
 
         # Rotate left until IMU data rises
         twist_msg = Twist()
-        twist_msg.linear.y = 0.5  # Adjust speed as necessary
+        twist_msg.linear.y = 0.3  # Adjust speed as necessary
 
         with imu_data_lock:
             previous_imu_data = imu_data
@@ -95,7 +89,7 @@ class MotorCalibrationNode(Node):
             rate.sleep()
         
         # Rotate right until IMU data reaches minimum
-        twist_msg.linear.y = -0.5  # Adjust speed as necessary
+        twist_msg.linear.y = -0.3  # Adjust speed as necessary
 
         min_imu_data = current_imu_data
 

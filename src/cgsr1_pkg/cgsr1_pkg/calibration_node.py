@@ -6,6 +6,7 @@ from std_msgs.msg import Float32
 from geometry_msgs.msg import Twist
 import threading
 import time
+import math
 
 imu_data_lock = threading.Lock()
 imu_data = 0.0
@@ -28,16 +29,16 @@ class MotorCalibrationNode(Node):
             self.get_logger().info('Calibration started...')
             
             # Rotate to -10 degrees
-            self.publish_motor_position(-10.0)
-            time.sleep(1)  # Adjust sleep time as necessary
+            self.publish_motor_position(0.4)
+            time.sleep(3)  # Adjust sleep time as necessary
             
             # Rotate to 190 degrees
-            self.publish_motor_position(190.0)
-            time.sleep(1)  # Adjust sleep time as necessary
+            self.publish_motor_position(-2* math.pi - 0.4)
+            time.sleep(3)  # Adjust sleep time as necessary
             
             # Rotate back to zero position
             self.publish_motor_position(0.0)
-            time.sleep(1)  # Adjust sleep time as necessary
+            time.sleep(3)  # Adjust sleep time as necessary
 
             self.get_logger().info('IMU Calibration completed.')
 
@@ -67,11 +68,11 @@ class MotorCalibrationNode(Node):
     def calibrate_wheels(self):
         self.get_logger().info('Starting wheel calibration...')
 
-        rate = self.create_rate(25)  # 25 Hz
+        rate = self.create_rate(50) 
 
         # Rotate left until IMU data rises
         twist_msg = Twist()
-        twist_msg.linear.y = 0.5  # Adjust speed as necessary
+        twist_msg.linear.y = 0.3  # Adjust speed as necessary
 
         with imu_data_lock:
             previous_imu_data = imu_data
@@ -88,7 +89,7 @@ class MotorCalibrationNode(Node):
             rate.sleep()
         
         # Rotate right until IMU data reaches minimum
-        twist_msg.linear.y = -0.5  # Adjust speed as necessary
+        twist_msg.linear.y = -0.3  # Adjust speed as necessary
 
         min_imu_data = current_imu_data
 
