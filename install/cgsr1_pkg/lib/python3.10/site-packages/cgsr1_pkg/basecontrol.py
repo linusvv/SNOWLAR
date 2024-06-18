@@ -91,8 +91,19 @@ class MainNode(Node):
 
         print(f'This is the x velocity: {vx}')
 
-        self.target_velocity_front_left = vx - vy
-        self.target_velocity_front_right = (vx+vy)
+        rotation_factor_left = 1.0
+        rotation_factor_right = 1.0
+
+        if vy > 0:
+            rotation_factor_left = 1.5 
+        elif vy < 0:
+            rotation_factor_right = 1.5
+        else:
+            rotation_factor_left = 1.0
+            rotation_factor_right = 1.0   
+
+        self.target_velocity_front_left = (vx - vy) * rotation_factor_left
+        self.target_velocity_front_right = (vx + vy) * rotation_factor_right
         self.target_velocity_rear_left = self.target_velocity_front_left
         self.target_velocity_rear_right = self.target_velocity_front_right
 
