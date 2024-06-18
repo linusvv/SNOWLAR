@@ -40,7 +40,6 @@ class MyComputationNode(Node):
         self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel', 10)
         #self.publisher_cmd_vel = self.create_publisher(Twist, '/cmd_vel_automated', 10) ###added on 18.06.2024 - not implemented
         self.publisher_winch = self.create_publisher(Twist, '/winch', 10)
-        self.publisher_start = self.create_publisher(Twist, '/start_automation', 10)
         self.publisher_brush = self.create_publisher(Float32, 'olive/servo/brush/goal/velocity', QoSProfile(depth=10))
 
         # Subscribers
@@ -171,15 +170,10 @@ class MyComputationNode(Node):
                 cmd_vel_msg.linear.x = manual_control.linear.x
                 cmd_vel_msg.linear.y = manual_control.linear.y
             if autonomous:
-                self.publish_start(1.0)
                 cmd_vel_msg.linear.x = automation_control.linear.x
                 cmd_vel_msg.linear.y = automation_control.linear.y
         self.publisher_cmd_vel.publish(cmd_vel_msg)
 
-    def publish_start(self, i):
-        msg = Twist()
-        msg.linear.x = i
-        self.publisher_start.publish(msg)
 
 
     # Publishes the winch data to winch motion. Calculation for winch is included. If that code is stupid. It's not my fault :)
@@ -217,8 +211,8 @@ class MyComputationNode(Node):
                     self.angle = (imu_data + 1.0) * math.pi  # Angle
                     print(self.angle, "the imu angle is:  %d")
                     if abs(self.chainLeft + self.chainRight) <= 0.1:  # for now, chainLeft and chain Right should be parallel
-                        winch_msg.linear.x = self.translation_Factor * (math.cos(self.angle) * self.chainLeft + math.sin(self.angle) * self.chainLeft)
-                        winch_msg.linear.y = -1* self.translation_Factor * (math.cos(self.angle) * self.chainLeft + (-1)* math.sin(self.angle) * self.chainLeft)
+                        winch_msg.linear.x = self.translation_Factor * (math.cos(self.angle) * self.chainLeft + (-1)* math.sin(self.angle) * self.chainLeft)
+                        winch_msg.linear.y = -1* self.translation_Factor * (math.cos(self.angle) * self.chainLeft +  math.sin(self.angle) * self.chainLeft)
                     else:
                         winch_msg.linear.x = 0.0
                         winch_msg.linear.y = 0.0
@@ -227,8 +221,8 @@ class MyComputationNode(Node):
                     self.angle = (imu_data + 1.0) * math.pi  # Angle
                     print(self.angle, "the imu angle is:  %d")
                     if abs(self.chainLeft + self.chainRight) <= 0.1:  # for now, chainLeft and chain Right should be parallel
-                        winch_msg.linear.x = -1.0 * self.translation_Factor * (math.cos(self.angle) * self.chainLeft)
-                        winch_msg.linear.y = self.translation_Factor * (math.cos(self.angle) * self.chainLeft)
+                        winch_msg.linear.x = -1.0 * self.translation_Factor * ( math.cos(self.angle) * self.chainLeft + (-1)* math.sin(self.angle) * self.chainLeft)
+                        winch_msg.linear.y = self.translation_Factor * (math.cos(self.angle) * self.chainLeft + math.sin(self.angle) * self.chainLeft)
                     else:
                         winch_msg.linear.x = 0.0
                         winch_msg.linear.y = 0.0
