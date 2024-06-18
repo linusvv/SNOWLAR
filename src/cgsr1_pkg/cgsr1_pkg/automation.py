@@ -19,7 +19,7 @@ class MainNode(Node):
         self.velocity_x = 0.0  #actually means turning 
         self.velocity_y = 0.0  #actuall means driving forward
         self.current_x = 0.0   #position in x direction
-        self.current_y = 0.0  # position in y direction
+        self.current_y = 0.0  #position in y direction
         self.max_X = 100.0     #width of roof
         self.max_Y = 150.0   #length of roof
         self.helper = 0.0     
@@ -60,10 +60,10 @@ class MainNode(Node):
                  time.sleep(1/self.rate_control_hz)
 
             else:
-                while self.current_x < self.max_X and self.start:          # while not reached end of x-direction
-                    while self.current_y < self.max_Y and self.start:      #while not reached end of y-direction
-                        self.publish_drive_straight((-1.0)*self.driveSpeed, 0.0)
-                        self.velocity_x = self.straight_x_vel                 #move down the y direction
+                while self.current_x < self.max_X and self.start:                        # while not reached end of x-direction
+                    while self.current_y < self.max_Y and self.start:                    # while not reached end of y-direction
+                        self.publish_drive_straight(self.driveSpeed, 0.0)
+                        self.velocity_x = self.straight_x_vel                            #move down the y direction
                         self.velocity_y = self.straight_y_vel
 
                         self.current_y = self.current_y + self.movement_factor
@@ -73,8 +73,8 @@ class MainNode(Node):
 
                         time.sleep(1 / self.rate_control_hz)
 
-                    while self.current_y > 0.0 and self.start:               #reached end, we drive back up
-                        self.publish_drive_straight(self.driveSpeed, 0.0)
+                    while self.current_y > 0.0 and self.start:                          #reached end, we drive back up
+                        self.publish_drive_straight((-1.0)*self.driveSpeed, 0.0)
                         self.velocity_x = self.straight_x_vel
                         self.velocity_y = self.straight_y_vel
                         self.current_y = self.current_y - self.movement_factor
@@ -83,7 +83,7 @@ class MainNode(Node):
                         self.publish_automation( self.velocity_x, self.velocity_y)
 
                         time.sleep(1 / self.rate_control_hz)
-                    while self.angle > (-0.5) and self.start:      #turning by 90 degrees TODO fix angle
+                    while self.angle > (-0.5) and self.start:                           #turning by 90 degrees TODO fix angle
                         self.velocity_x = 0.0
                         self.velocity_y = -1.0*self.rotationSpeed
 
@@ -96,11 +96,11 @@ class MainNode(Node):
                         self.velocity_x = self.straight_x_vel
                         self.velocity_y = self.straight_y_vel
                         self.helper = self.helper + self.movement_factor
-                        self.current_x = self.current_x + self.movement_factor  #update current x value
+                        self.current_x = self.current_x + self.movement_factor          #update current x value
                         self.publish_automation( self.velocity_x, self.velocity_y)
                         time.sleep(1 / self.rate_control_hz)
                     self.helper = 0.0
-                    while self.angle < 0 and self.start:    #turning back by 90 degrees TODO fix angle
+                    while self.angle < 0 and self.start:                                #turning back by 90 degrees TODO fix angle
                         self.velocity_x = 0.0
                         self.velocity_y = 1*self.rotationSpeed
 
