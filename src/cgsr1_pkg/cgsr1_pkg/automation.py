@@ -134,7 +134,7 @@ class MainNode(Node):
         automation_msg.angular.x = 0.0
         automation_msg.angular.y = 0.0
 
-
+        #asdf
         self.pub_automation.publish(automation_msg)
 
     def callback_vel_automated(self, msg):
