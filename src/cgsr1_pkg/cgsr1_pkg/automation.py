@@ -74,7 +74,7 @@ class MainNode(Node):
                         time.sleep(1 / self.rate_control_hz)
 
                     while self.current_y > 0.0 and self.start:               #reached end, we drive back up
-                        self.publish_drive_straight(self.driveSpeed,1.0)
+                        self.publish_drive_straight(self.driveSpeed, 0.0)
                         self.velocity_x = self.straight_x_vel
                         self.velocity_y = self.straight_y_vel
                         self.current_y = self.current_y - self.movement_factor
