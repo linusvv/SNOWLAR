@@ -2,10 +2,10 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
+from std_msgs.msg import Bool
 
 # Define the radius of the winches as a global variable (in meters)
 WINCH_DIAMETER = 0.47  # Example radius in meters, change as necessary
-
 # Calculate the circumference of the winches
 DRUM_CIRCUMFERENCE = 3.14159 * WINCH_DIAMETER
 
@@ -25,6 +25,12 @@ class JointStateMotorTurnCounter(Node):
             self.motor2_callback,
             10)
 
+        self.zero_subscription = self.create_subscription(
+            Bool,
+            '/set_winch_zero',
+            self.set_zero_callback,
+            10)
+        
         self.publisher = self.create_publisher(Twist, 'motor_turns', 10)
         
         # Initialize variables to keep track of turns and distance
@@ -70,6 +76,12 @@ class JointStateMotorTurnCounter(Node):
         # Log the number of turns and distance pulled
         self.get_logger().info(f'Motor 1 turns: {self.turns[0]}, Distance pulled: {self.distance_pulled[0]} m')
         self.get_logger().info(f'Motor 2 turns: {self.turns[1]}, Distance pulled: {self.distance_pulled[1]} m')
+
+    def set_zero_callback(self, msg):
+        if msg.data:
+            self.turns = [0.0, 0.0]
+            self.distance_pulled = [0.0, 0.0]
+            self.get_logger().info('Turns and distance pulled have been reset to zero.')
 
 def main(args=None):
     rclpy.init(args=args)

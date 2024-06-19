@@ -1,0 +1,38 @@
+running egg_info
+writing ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/PKG-INFO
+writing dependency_links to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/dependency_links.txt
+writing entry points to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/entry_points.txt
+writing requirements to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/requires.txt
+writing top-level names to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/top_level.txt
+reading manifest file '../../build/cgsr1_pkg/cgsr1_pkg.egg-info/SOURCES.txt'
+writing manifest file '../../build/cgsr1_pkg/cgsr1_pkg.egg-info/SOURCES.txt'
+running build
+running build_py
+copying cgsr1_pkg/winch_feedback.py -> /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg
+copying cgsr1_pkg/brushtest.py -> /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg
+running install
+running install_lib
+copying /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg/winch_feedback.py -> /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg
+copying /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg/brushtest.py -> /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg
+byte-compiling /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/winch_feedback.py to winch_feedback.cpython-310.pyc
+byte-compiling /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/brushtest.py to brushtest.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/cgsr1_pkg/cgsr1_pkg.egg-info to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info
+running install_scripts
+Installing automation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing basecontrol script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing brushtest script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing calibration script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing computation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing counter_automation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing dummy_publisher script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing imucontrol script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing imutobase script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing joytobase script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing straight_motion script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing web_interface script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing winch_feedback script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+Installing winchcontrol script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+writing list of installed files to '/home/snowlar/SNOWLAR/build/cgsr1_pkg/install.log'
