@@ -14,7 +14,7 @@ class MainNode(Node):
 
         #Global varibles:
 
-        self.start = 0.0      #says if automation should start or not
+
 
         self.velocity_x = 0.0  #actually means turning 
         self.velocity_y = 0.0  #actuall means driving forward
