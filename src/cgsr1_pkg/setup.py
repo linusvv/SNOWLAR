@@ -35,7 +35,7 @@ setup(
             'automation = cgsr1_pkg.automation:main',
             'straight_motion = cgsr1_pkg.straight_motion:main',
             'winch_feedback = cgsr1_pkg.winch_feedback:main',
-            'counter_automation = cgsr1_pkg.counter_automation:main',
+            'linus_automation = cgsr1_pkg.linus_automation:main',
             'brushtest = cgsr1_pkg.brushtest:main',
         ],
     },

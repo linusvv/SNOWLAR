@@ -23,7 +23,7 @@ class MainNode(Node):
         self.velocity_brush = 0.0
         self.target_velocity_brush = 0.0
 
-        self.max_velocity = 3.0
+        self.max_velocity = -100.0
         
         self.alpha = 0.1  # Low-pass filter constant (0 < alpha <= 1)
         
@@ -53,13 +53,10 @@ class MainNode(Node):
         publisher.publish(msg)
 
     def callback_cmd_vel(self, msg):
-        vx = msg.linear.x  # Linear velocity in x-direction
-        
-        vx = vx * self.max_velocity
-
-        print(f'This is the x velocity: {vx}')
-
-        self.target_velocity_brush = vx
+        if msg.linear.x > 0.1: # Linear velocity in x-direction
+            self.target_velocity_brush = self.max_velocity
+        elif abs(msg.linear.y) > 0.1:
+            self.target_velocity_brush = self.max_velocity
 
     def __del__(self):
         self.thread_exited = True

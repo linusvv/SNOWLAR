@@ -3,11 +3,12 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool
+import math
 
-# Define the radius of the winches as a global variable (in meters)
-WINCH_DIAMETER = 0.47  # Example radius in meters, change as necessary
+# Define the diameter of the winches as a global variable (in meters)
+WINCH_DIAMETER = 0.047  # Example diameter in meters, change as necessary
 # Calculate the circumference of the winches
-DRUM_CIRCUMFERENCE = 3.14159 * WINCH_DIAMETER
+DRUM_CIRCUMFERENCE = math.pi * WINCH_DIAMETER
 
 class JointStateMotorTurnCounter(Node):
     def __init__(self):
@@ -54,28 +55,27 @@ class JointStateMotorTurnCounter(Node):
             return
         
         diff = current_position - self.last_position[motor_index]
-        if diff > 3.14159:  # If the difference is more than pi, it means it crossed 0
-            diff -= 2 * 3.14159
-        elif diff < -3.14159:
-            diff += 2 * 3.14159
-        self.turns[motor_index] += diff / (2 * 3.14159)
+        if diff > math.pi:  # If the difference is more than pi, it means it crossed 0
+            diff -= 2 * math.pi
+        elif diff < -math.pi:
+            diff += 2 * math.pi
+        self.turns[motor_index] += diff / (2 * math.pi)
         
         self.last_position[motor_index] = current_position
 
         # Calculate distance pulled based on turns
-        self.distance_pulled[motor_index] = self.turns[motor_index] * DRUM_CIRCUMFERENCE
+        self.distance_pulled = (self.turns[0] - self.turns[1])/2
 
         # Create and publish Twist message
         twist = Twist()
-        twist.linear.x = self.turns[0]
+        twist.linear.x = self.turns[0] 
         twist.linear.y = self.turns[1]
-        twist.linear.z = self.distance_pulled[0]  # Distance pulled by motor 1
-        twist.angular.x = self.distance_pulled[1]  # Distance pulled by motor 2
+        twist.linear.z = self.distance_pulled  # Distance pulled by motor 1
         self.publisher.publish(twist)
         
         # Log the number of turns and distance pulled
-        self.get_logger().info(f'Motor 1 turns: {self.turns[0]}, Distance pulled: {self.distance_pulled[0]} m')
-        self.get_logger().info(f'Motor 2 turns: {self.turns[1]}, Distance pulled: {self.distance_pulled[1]} m')
+        self.get_logger().info(f'Motor 1 turns: {self.turns[0]}')
+        self.get_logger().info(f'Motor 2 turns: {self.turns[1]}')
 
     def set_zero_callback(self, msg):
         if msg.data:
