@@ -10,8 +10,8 @@ class MainNode(Node):
     def __init__(self, config_path, node_name):
         super().__init__(node_name)
         
-        # Publisher for the brush motor
-        self.pub_brush = self.create_publisher(Float32, "/olive/servo/brush/goal/velocity", QoSProfile(depth=10))
+        # Publisher for the brush motor PWM
+        self.pub_brush = self.create_publisher(Float32, "/olive/servo/brush/pwm", QoSProfile(depth=10))
         
         # Subscription to cmd_vel
         self.sub_cmd_vel = self.create_subscription(Twist, "cmd_vel", self.callback_cmd_vel, QoSProfile(depth=10))
@@ -20,12 +20,10 @@ class MainNode(Node):
         self.thread_exited = False
         self.rate_control_hz = 40
         
-        self.velocity_brush = 0.0
+        self.duty_cycle_brush = 0.0
         self.target_velocity_brush = 0.0
 
-        self.max_velocity = -100.0
-        
-        self.alpha = 0.1  # Low-pass filter constant (0 < alpha <= 1)
+        self.max_velocity = -20.0
         
         self.thread_main.start()
 
@@ -33,30 +31,28 @@ class MainNode(Node):
         time.sleep(1)
         
         while not self.thread_exited:
-            # Apply low-pass filter to smooth velocity changes
-            self.velocity_brush = self.low_pass_filter(self.velocity_brush, self.target_velocity_brush)
-            
-            # Publish the velocity for the brush motor
-            self.publish_velocity(self.pub_brush, self.velocity_brush)
+            # Publish the duty cycle for the brush motor PWM
+            self.publish_duty_cycle(self.pub_brush, self.duty_cycle_brush)
             
             time.sleep(1 / self.rate_control_hz)
 
-    def low_pass_filter(self, current_velocity, target_velocity):
-        return current_velocity + self.alpha * (target_velocity - current_velocity)
-
-    def publish_velocity(self, publisher, velocity):
+    def publish_duty_cycle(self, publisher, duty_cycle):
         msg = Float32()
-        if abs(velocity) < 0.1:
+        # Convert velocity to duty cycle (assuming linear mapping)
+        if abs(duty_cycle) < 0.1:
             msg.data = 0.0
         else:
-            msg.data = velocity
+            msg.data = duty_cycle
         publisher.publish(msg)
 
     def callback_cmd_vel(self, msg):
-        if msg.linear.x > 0.1: # Linear velocity in x-direction
-            self.target_velocity_brush = self.max_velocity
-        elif abs(msg.linear.y) > 0.1:
-            self.target_velocity_brush = self.max_velocity
+        # Map linear velocity to duty cycle
+        if abs(msg.linear.x) > 0.1:
+            self.duty_cycle_brush = self.max_velocity
+        elif msg.linear.y > 0.1:
+            self.duty_cycle_brush = self.max_velocity
+        else:
+            self.duty_cycle_brush = 0.0
 
     def __del__(self):
         self.thread_exited = True

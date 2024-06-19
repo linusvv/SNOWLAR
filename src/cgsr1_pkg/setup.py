@@ -14,7 +14,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
     ],
-    install_requires=['setuptools'],
+install_requires=['setuptools', 'rclpy', 'sensor_msgs', 'std_msgs', 'apriltag'],
     zip_safe=True,
     maintainer='snowlar',
     maintainer_email='snowlar@todo.todo',
@@ -37,6 +37,7 @@ setup(
             'winch_feedback = cgsr1_pkg.winch_feedback:main',
             'linus_automation = cgsr1_pkg.linus_automation:main',
             'brushtest = cgsr1_pkg.brushtest:main',
+            'cameraapriltag = cgsr1_pkg.cameraapriltag:main'
         ],
     },
 )
