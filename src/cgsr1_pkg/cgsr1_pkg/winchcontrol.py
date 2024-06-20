@@ -34,7 +34,7 @@ class MainNode(Node):
 
         self.max_velocity = 3.0
         
-        self.alpha = 0.1  # Low-pass filter constant (0 < alpha <= 1)
+        self.alpha = 0.9  # Low-pass filter constant (0 < alpha <= 1)
         
         self.thread_main.start()
 

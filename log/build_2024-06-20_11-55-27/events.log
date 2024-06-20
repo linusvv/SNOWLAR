@@ -1,0 +1,53 @@
+[0.000000] (-) TimerEvent: {}
+[0.000330] (cgsr1_pkg) JobQueued: {'identifier': 'cgsr1_pkg', 'dependencies': OrderedDict()}
+[0.000393] (cgsr1_pkg) JobStarted: {'identifier': 'cgsr1_pkg'}
+[0.098865] (-) TimerEvent: {}
+[0.199144] (-) TimerEvent: {}
+[0.299453] (-) TimerEvent: {}
+[0.399764] (-) TimerEvent: {}
+[0.500064] (-) TimerEvent: {}
+[0.600584] (-) TimerEvent: {}
+[0.700887] (-) TimerEvent: {}
+[0.747276] (cgsr1_pkg) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/cgsr1_pkg', 'build', '--build-base', '/home/snowlar/SNOWLAR/build/cgsr1_pkg/build', 'install', '--record', '/home/snowlar/SNOWLAR/build/cgsr1_pkg/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/snowlar/SNOWLAR/src/cgsr1_pkg', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'snowlar', 'LC_TIME': 'de_DE.UTF-8', 'XDG_SESSION_TYPE': 'wayland', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib', 'HOME': '/home/snowlar', 'OLDPWD': '/home/snowlar', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'LC_MONETARY': 'de_DE.UTF-8', 'MANAGERPID': '934', 'SYSTEMD_EXEC_PID': '72004', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'TERMINATOR_DBUS_NAME': 'net.tenshu.Terminator25ef4b219e3b005583550f2b0f9f990c3', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'COLCON_PREFIX_PATH': '/home/snowlar/SNOWLAR/install', 'ROS_DISTRO': 'humble', 'LOGNAME': 'snowlar', 'JOURNAL_STREAM': '8:355719', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'snowlar', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/opt/ros/humble/bin:/home/snowlar/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/snowlar-OptiPlex-7040:@/tmp/.ICE-unix/1086,unix/snowlar-OptiPlex-7040:/tmp/.ICE-unix/1086', 'INVOCATION_ID': '94823799b4144c019dbcda56230f0c36', 'XDG_MENU_PREFIX': 'gnome-', 'LC_ADDRESS': 'de_DE.UTF-8', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'TERMINATOR_DBUS_PATH': '/net/tenshu/Terminator2', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'IBUS_DISABLE_SNOOPER': '1', 'LC_TELEPHONE': 'de_DE.UTF-8', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.58CSP2', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'SSH_AGENT_LAUNCHER': 'gnome-keyring', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/snowlar/SNOWLAR/install/cgsr1_pkg:/opt/ros/humble', 'SHELL': '/bin/bash', 'LC_NAME': 'de_DE.UTF-8', 'TERMINATOR_UUID': 'urn:uuid:46513fe5-71d0-45be-9a7a-171ccb505bd7', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'LC_MEASUREMENT': 'de_DE.UTF-8', 'LC_IDENTIFICATION': 'de_DE.UTF-8', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/snowlar/SNOWLAR/build/cgsr1_pkg', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/snowlar/SNOWLAR/build/cgsr1_pkg/prefix_override:/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages:/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'LC_NUMERIC': 'de_DE.UTF-8', 'LC_PAPER': 'de_DE.UTF-8', 'COLCON': '1', 'VTE_VERSION': '6800'}, 'shell': False}
+[0.801003] (-) TimerEvent: {}
+[0.901283] (-) TimerEvent: {}
+[0.996170] (cgsr1_pkg) StdoutLine: {'line': b'running egg_info\n'}
+[0.996776] (cgsr1_pkg) StdoutLine: {'line': b'writing ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/PKG-INFO\n'}
+[0.996993] (cgsr1_pkg) StdoutLine: {'line': b'writing dependency_links to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/dependency_links.txt\n'}
+[0.997213] (cgsr1_pkg) StdoutLine: {'line': b'writing entry points to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/entry_points.txt\n'}
+[0.997468] (cgsr1_pkg) StdoutLine: {'line': b'writing requirements to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/requires.txt\n'}
+[0.997674] (cgsr1_pkg) StdoutLine: {'line': b'writing top-level names to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/top_level.txt\n'}
+[0.999240] (cgsr1_pkg) StdoutLine: {'line': b"reading manifest file '../../build/cgsr1_pkg/cgsr1_pkg.egg-info/SOURCES.txt'\n"}
+[1.000264] (cgsr1_pkg) StdoutLine: {'line': b"writing manifest file '../../build/cgsr1_pkg/cgsr1_pkg.egg-info/SOURCES.txt'\n"}
+[1.000474] (cgsr1_pkg) StdoutLine: {'line': b'running build\n'}
+[1.000597] (cgsr1_pkg) StdoutLine: {'line': b'running build_py\n'}
+[1.000852] (cgsr1_pkg) StdoutLine: {'line': b'copying cgsr1_pkg/basecontrol.py -> /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg\n'}
+[1.001352] (-) TimerEvent: {}
+[1.001648] (cgsr1_pkg) StdoutLine: {'line': b'running install\n'}
+[1.002005] (cgsr1_pkg) StdoutLine: {'line': b'running install_lib\n'}
+[1.002837] (cgsr1_pkg) StdoutLine: {'line': b'copying /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg/basecontrol.py -> /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg\n'}
+[1.004159] (cgsr1_pkg) StdoutLine: {'line': b'byte-compiling /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/basecontrol.py to basecontrol.cpython-310.pyc\n'}
+[1.005677] (cgsr1_pkg) StdoutLine: {'line': b'running install_data\n'}
+[1.005878] (cgsr1_pkg) StdoutLine: {'line': b'running install_egg_info\n'}
+[1.007413] (cgsr1_pkg) StdoutLine: {'line': b"removing '/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info' (and everything under it)\n"}
+[1.007853] (cgsr1_pkg) StdoutLine: {'line': b'Copying ../../build/cgsr1_pkg/cgsr1_pkg.egg-info to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info\n'}
+[1.008771] (cgsr1_pkg) StdoutLine: {'line': b'running install_scripts\n'}
+[1.029230] (cgsr1_pkg) StdoutLine: {'line': b'Installing automation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.029468] (cgsr1_pkg) StdoutLine: {'line': b'Installing basecontrol script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.029659] (cgsr1_pkg) StdoutLine: {'line': b'Installing brushtest script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.029760] (cgsr1_pkg) StdoutLine: {'line': b'Installing calibration script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.029869] (cgsr1_pkg) StdoutLine: {'line': b'Installing cameraapriltag script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.030056] (cgsr1_pkg) StdoutLine: {'line': b'Installing computation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.030142] (cgsr1_pkg) StdoutLine: {'line': b'Installing dummy_publisher script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.030269] (cgsr1_pkg) StdoutLine: {'line': b'Installing imucontrol script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.030383] (cgsr1_pkg) StdoutLine: {'line': b'Installing imutobase script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.030470] (cgsr1_pkg) StdoutLine: {'line': b'Installing joytobase script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.030552] (cgsr1_pkg) StdoutLine: {'line': b'Installing linus_automation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.030690] (cgsr1_pkg) StdoutLine: {'line': b'Installing straight_motion script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.030848] (cgsr1_pkg) StdoutLine: {'line': b'Installing web_interface script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.030988] (cgsr1_pkg) StdoutLine: {'line': b'Installing winch_feedback script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.031202] (cgsr1_pkg) StdoutLine: {'line': b'Installing winchcontrol script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg\n'}
+[1.031762] (cgsr1_pkg) StdoutLine: {'line': b"writing list of installed files to '/home/snowlar/SNOWLAR/build/cgsr1_pkg/install.log'\n"}
+[1.057457] (cgsr1_pkg) CommandEnded: {'returncode': 0}
+[1.069904] (cgsr1_pkg) JobEnded: {'identifier': 'cgsr1_pkg', 'rc': 0}
+[1.070696] (-) EventReactorShutdown: {}

@@ -7,6 +7,8 @@ import threading
 import time
 import math
 
+imu_data_lock = threading.Lock()
+
 class MainNode(Node):
     def __init__(self, config_path, node_name):
         super().__init__(node_name)
@@ -22,6 +24,13 @@ class MainNode(Node):
         
         # Subscription to cmd_vel
         self.sub_cmd_vel = self.create_subscription(Twist, "cmd_vel", self.callback_cmd_vel, QoSProfile(depth=10))
+
+        self.subscription_imu_data = self.create_subscription(
+            Float32,
+            '/imu_data',
+            self.imu_data_callback,
+            10
+        )
 
         self.thread_main = threading.Thread(target=self.thread_main)
         self.thread_exited = False
@@ -39,10 +48,15 @@ class MainNode(Node):
 
         self.max_velocity = 3.0
 
-        self.tolerance = 0.3       #rotatation speed tolerance
+        self.imu_data = 0
 
-        self.rotation_factor_left = 1.0
-        self.rotation_factor_right = 1.0
+        self.tolerance = 0.9      #rotatation speed tolerance
+
+        self.rotation_factor_left = 1.9
+        self.rotation_factor_right = 1.9
+
+        self.rfr = 1 #don't change
+        self. rfl = 1
         
         self.alpha = 0.1  # Low-pass filter constant (0 < alpha <= 1)
         
@@ -96,22 +110,52 @@ class MainNode(Node):
 
         print(f'This is the x velocity: {vx}')
 
-        
+        if self.imu_data < 0.1:
+            if vx > 0.9:
+                self.rfl = self.rotation_factor_left
+                self.rfr = 1
+                print('add left rotation factor')
+            
+            elif vx < - 0.9:
+                self.rfr = 1
+                self.rfl = self.rotation_factor_left
+                print('add right rotation factor')
 
-        if vy > self.tolerance:         #accelerate left
-            self.rotation_factor_left = 1.3 
-        elif vy < self.tolerance:       #accelerate right
-            self.rotation_factor_right = 1.3
-        else:                           #no rotation -->no change to the speed of the chains
-            self.rotation_factor_left = 1.0
-            self.rotation_factor_right = 1.0   
+            else: 
+                self.rfl = 1.0
+                self.rfr = 1.0
+                print('add none')
+        if self.imu_data > 0.1:
+            if vx > 0.9:
+                self.rfl = 1
+                self.rfr = self.rotation_factor_right
+                print('add left rotation factor')
+            
+            elif vx < - 0.9:
+                self.rfr = self.rotation_factor_right
+                self.rfl = 1
+                print('add right rotation factor')
 
-        self.target_velocity_front_left = (vx - vy) * self.rotation_factor_left
-        self.target_velocity_front_right = (vx + vy) * self.rotation_factor_right
+            else: 
+                self.rfl = 1.0
+                self.rfr = 1.0
+                print('add none')
+
+
+
+
+        self.target_velocity_front_left = (vx - vy) * self.rfl
+        self.target_velocity_front_right = (vx + vy) * self.rfr
         self.target_velocity_rear_left = self.target_velocity_front_left
         self.target_velocity_rear_right = self.target_velocity_front_right
 
         #self.velocity_mimu = msg.angular.x
+
+
+    def imu_data_callback(self, msg):
+        global imu_data
+        with imu_data_lock:
+            imu_data = msg.data
 
     def __del__(self):
         self.thread_exited = True

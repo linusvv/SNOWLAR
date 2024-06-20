@@ -43,7 +43,7 @@ class MotorCalibrationNode(Node):
             self.get_logger().info('IMU Calibration completed.')
 
             # Calibrate wheels
-            self.calibrate_wheels()
+            #self.calibrate_wheels()
 
             self.get_logger().info('Calibration completed.')
             response.success = True
