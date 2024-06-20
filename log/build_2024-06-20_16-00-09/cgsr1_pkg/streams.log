@@ -1,0 +1,38 @@
+[0.650s] Invoking command in '/home/snowlar/SNOWLAR/src/cgsr1_pkg': PYTHONPATH=/home/snowlar/SNOWLAR/build/cgsr1_pkg/prefix_override:/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/cgsr1_pkg build --build-base /home/snowlar/SNOWLAR/build/cgsr1_pkg/build install --record /home/snowlar/SNOWLAR/build/cgsr1_pkg/install.log --single-version-externally-managed install_data
+[0.976s] running egg_info
+[0.976s] writing ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/PKG-INFO
+[0.977s] writing dependency_links to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/dependency_links.txt
+[0.977s] writing entry points to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/entry_points.txt
+[0.977s] writing requirements to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/requires.txt
+[0.977s] writing top-level names to ../../build/cgsr1_pkg/cgsr1_pkg.egg-info/top_level.txt
+[0.979s] reading manifest file '../../build/cgsr1_pkg/cgsr1_pkg.egg-info/SOURCES.txt'
+[0.980s] writing manifest file '../../build/cgsr1_pkg/cgsr1_pkg.egg-info/SOURCES.txt'
+[0.981s] running build
+[0.981s] running build_py
+[0.981s] copying cgsr1_pkg/basecontrol.py -> /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg
+[0.982s] running install
+[0.982s] running install_lib
+[0.983s] copying /home/snowlar/SNOWLAR/build/cgsr1_pkg/build/lib/cgsr1_pkg/basecontrol.py -> /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg
+[0.984s] byte-compiling /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/basecontrol.py to basecontrol.cpython-310.pyc
+[0.986s] running install_data
+[0.986s] running install_egg_info
+[0.988s] removing '/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info' (and everything under it)
+[0.989s] Copying ../../build/cgsr1_pkg/cgsr1_pkg.egg-info to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg-0.0.0-py3.10.egg-info
+[0.990s] running install_scripts
+[1.011s] Installing automation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.011s] Installing basecontrol script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.011s] Installing brushtest script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.011s] Installing calibration script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.011s] Installing cameraapriltag script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.012s] Installing computation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.012s] Installing dummy_publisher script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.012s] Installing imucontrol script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.012s] Installing imutobase script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.012s] Installing joytobase script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.012s] Installing linus_automation script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.012s] Installing straight_motion script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.013s] Installing web_interface script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.013s] Installing winch_feedback script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.013s] Installing winchcontrol script to /home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg
+[1.014s] writing list of installed files to '/home/snowlar/SNOWLAR/build/cgsr1_pkg/install.log'
+[1.041s] Invoked command in '/home/snowlar/SNOWLAR/src/cgsr1_pkg' returned '0': PYTHONPATH=/home/snowlar/SNOWLAR/build/cgsr1_pkg/prefix_override:/home/snowlar/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base ../../build/cgsr1_pkg build --build-base /home/snowlar/SNOWLAR/build/cgsr1_pkg/build install --record /home/snowlar/SNOWLAR/build/cgsr1_pkg/install.log --single-version-externally-managed install_data

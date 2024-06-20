@@ -214,7 +214,11 @@
         .login-box {
         position: relative;
         top: 50%;
-        left: 50%;
+        align-items: center;
+        justify-content: center;
+        justify-self: center;
+        align-self: center;
+        left: 41%;
         width: 420px;
         padding: 20px;
         padding-left: 40px;
@@ -393,6 +397,26 @@
         color: #aaa;
         border-radius: 5px;
         }
+
+        .topic {
+            display: flex;
+            align-items: center;
+            background-color: #dcdcdc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .topic input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: not-allowed;
+            
+        }
+        .topic label {
+            font-size: medium;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
             
     </style>
 </head>
@@ -409,11 +433,8 @@
     </div>
 
     <div id="container">
-        
         <h1>CGSR1- Settings</h1>
-        
         <div class="automation">
-            
             <br>
             <h3>Settings for the Automation of the Rover:</h3>
             <p style="text-align: center;">Please set these parameters before starting the automation</p>
@@ -426,47 +447,82 @@
                             <div class="user-box">
                                 <input required="" name="" type="number" id="widthInput">
                                 <label>width</label>
-                              </div>
-                              <div class="user-box">
+                            </div>
+                            <div class="user-box">
                                 <input required="" name="" type="number" id="heightInput">
                                 <label>height</label>
-                              </div>
+                            </div>
                         </div>
-                      
-
-                      <a href="#" id="submitButton">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        Submit
-                      </a>
+                        <a href="#" id="submitButton">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            Submit
+                        </a>
                     </form>
-                  </div>
-            
+                </div>
+            </div>
 
-
-        </div>
-        <div id="rectangle-container">
-            <div id="rectangle">
-                <div id="dot"></div>
+            <div id="topics-container">
+                <!-- Checkboxes for topics will be dynamically added here -->
             </div>
         </div>
-        <div id="result"></div>
     </div>
 
-    
     <script>
-    document.getElementById('submitButton').addEventListener('click', () => {
-        const width = parseInt(document.getElementById('widthInput').value);
-        const height = parseInt(document.getElementById('heightInput').value);
-        console.log(`Width: ${width}, Height: ${height}`);
+        document.getElementById('submitButton').addEventListener('click', () => {
+            const width = parseInt(document.getElementById('widthInput').value);
+            const height = parseInt(document.getElementById('heightInput').value);
+            console.log(`Width: ${width}, Height: ${height}`);
 
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/update_settings');
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify({ width, height }));
-    });
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/update_settings');
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({ width, height }));
+        });
+
+        // Fetch topics and their statuses
+        async function fetchTopics() {
+            const response = await fetch('/get_topics');
+            const topics = await response.json();
+            const topicsDiv = document.getElementById('topics');
+
+            topics.forEach(topic => {
+                const topicDiv = document.createElement('div');
+                topicDiv.className = 'topic';
+
+                const name = document.createElement('span');
+                name.className = 'name';
+                name.textContent = topic.name;
+
+                const status = document.createElement('span');
+                status.className = 'status';
+                status.textContent = topic.active ? 'Active' : 'Inactive';
+
+                topicDiv.appendChild(name);
+                topicDiv.appendChild(status);
+
+                topicsDiv.appendChild(topicDiv);
+            });
+        }
+        // Update topic status
+        function updateTopicStatus(topicName, status) {
+            fetch('/set_topic_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ topic_name: topicName, status: status })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+            });
+        }
+
+        // Fetch topics on page load
+        window.onload = fetchTopics;
     </script>
 </body>
 </html>

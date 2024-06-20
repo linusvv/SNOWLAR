@@ -185,20 +185,22 @@ class MyComputationNode(Node):
 
             if not stop:
                 if manual_mode:
-                    winch_msg.linear.x = manual_control.angular.x
-                    winch_msg.linear.y = manual_control.angular.y
-                elif sync_winch:
-                    right_left = manual_control.angular.x
-                    up_down = manual_control.angular.y
-                    if abs(right_left) > 0.01:
-                        winch_msg.linear.x = -1.0 * right_left
-                        winch_msg.linear.y = 1.0 * right_left
-                    elif abs(up_down) > 0.01:
-                        winch_msg.linear.x = 1.0 * up_down
-                        winch_msg.linear.y = 1.0 * up_down
+
+                    if sync_winch:
+                        right_left = manual_control.angular.x
+                        up_down = manual_control.angular.y
+                        if abs(right_left) > 0.01:
+                            winch_msg.linear.x = -1.0 * right_left *2.5
+                            winch_msg.linear.y = 1.0 * right_left *2.5
+                        elif abs(up_down) > 0.01:
+                            winch_msg.linear.x = 1.0 * up_down *2.5
+                            winch_msg.linear.y = 1.0 * up_down *2.5
+                        else:
+                            winch_msg.linear.x = 0.0
+                            winch_msg.linear.y = 0.0
                     else:
-                        winch_msg.linear.x = 0.0
-                        winch_msg.linear.y = 0.0
+                        winch_msg.linear.x = manual_control.angular.x *2.5
+                        winch_msg.linear.y = manual_control.angular.y *2.5
                 elif semi_autonomous:
                     self.angle = -1.0*(imu_data + 1.0) * math.pi  # Angle
                     print(self.angle, "the imu angle is:  %d")

@@ -152,6 +152,21 @@ def start_automation():
 
     return jsonify({"status": "success", "automation_status": automation_status})
 
+
+@app.route('/get_topics', methods=['GET'])
+def get_topics():
+    topics = gui_controller_instance.get_topics()
+    return jsonify(topics)
+
+@app.route('/set_topic_status', methods=['POST'])
+def set_topic_status():
+    data = request.json
+    topic_name = data['topic_name']
+    status = data['status']
+    gui_controller_instance.set_topic_status(topic_name, status)
+    return jsonify({'message': 'Status updated'})
+
+
 class GUIController(Node):
     def __init__(self):
         super().__init__('gui_controller')
@@ -188,6 +203,13 @@ class GUIController(Node):
         self.client = self.create_client(SetBool, 'calibrate_motor')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
+
+        # Things to monitor topics
+        self.declare_parameter('topics', ['/cmd_vel', '/'])  # Add your topics here
+        self.topics = self.get_parameter('topics').get_parameter_value().string_array_value
+        self.topics_status = [{'name': topic, 'active': False} for topic in self.topics]
+    
+    
 
 
 
@@ -241,6 +263,24 @@ class GUIController(Node):
     def position_callback(self, msg):
         self.dot_x, self.dot_y = msg.data
         self.get_logger().info(f'Received position: dot_x={self.dot_x}, dot_y={self.dot_y}')
+
+
+    #Get Topics
+    def get_topics(self):
+        # Update the active status of the topics
+        topic_names_and_types = self.get_topic_names_and_types()
+        active_topics = set(topic for topic, _ in topic_names_and_types)
+        
+        for topic_status in self.topics_status:
+            topic_status['active'] = topic_status['name'] in active_topics
+        
+        return self.topics_status
+    
+    def set_topic_status(self, topic_name, status):
+        for topic in self.topics_status:
+            if topic['name'] == topic_name:
+                topic['active'] = status
+                break
 
 def ros_thread(gui_controller_instance):
     rclpy.spin(gui_controller_instance)

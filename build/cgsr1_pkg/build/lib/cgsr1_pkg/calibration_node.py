@@ -68,7 +68,7 @@ class MotorCalibrationNode(Node):
     def calibrate_wheels(self):
         self.get_logger().info('Starting wheel calibration...')
 
-        rate = self.create_rate(25)  # Set rate to 25 Hz
+        rate = self.create_rate(50)  # Set rate to 25 Hz
 
         # Rotate left until IMU data rises
         twist_msg = Twist()
