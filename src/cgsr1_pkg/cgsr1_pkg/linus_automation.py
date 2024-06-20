@@ -90,7 +90,7 @@ class RoverController(Node):
         elif self.state == 'TURN_RIGHT':
             self.get_logger().info('Turning right until facing across')
             self.publish_turn(self.turn_speed)
-            if abs(self.imu_angle - (- 0.5)) < 0.0:  # Allowable error in the angle
+            if abs(self.imu_angle - (- 0.5)) < 0.05:  # Allowable error in the angle
                 self.state = 'CROSS'
                 self.cross_timer = self.create_timer(3.0, self.cross_timer_callback)  # Start a 3-second timer
 
@@ -101,7 +101,7 @@ class RoverController(Node):
         elif self.state == 'TURN_LEFT':
             self.get_logger().info('Turning left until facing down')
             self.publish_turn(-self.turn_speed)
-            if abs(self.imu_angle - 0.0) < 0.0:
+            if abs(self.imu_angle - 0.0) < 0.05:
                 self.state = 'DOWN'
                 self.get_logger().info('%d' % self.current_y)
                 self.target_y = 0.7
@@ -109,7 +109,7 @@ class RoverController(Node):
         elif self.state == 'APRILTAG_LEFT':
             self.get_logger().info('State apriltag reached')
             self.publish_turn(self.turn_speed)
-            if abs(self.imu_angle - (-0.5)) < 0.0:
+            if abs(self.imu_angle - (-0.5)) < 0.05:
                 self.state = 'DOWN_AGAIN'
                 self.target_y = 0.7
 
@@ -142,7 +142,7 @@ class RoverController(Node):
 
         elif self.state == 'APRILTAG_RIGHT':
             self.publish_turn(self.turn_speed)
-            if abs(self.imu_angle - 0.0) < 0.0:
+            if abs(self.imu_angle - 0.0) < 0.05:
                 self.state = 'STOP'
 
 
