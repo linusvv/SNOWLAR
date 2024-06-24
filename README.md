@@ -7,21 +7,44 @@
 <br>
 
 ## Code Repository for the SNOWLAR CGSR1 P5
-The Project is based on ROS2, written in Python. Here are the current working nodes:
-- **tank_motion** - basecontrol.py
-- **joy_steering** - joytobase.py
-- **imu_steering** - imutobase.py
-- **web_interface** - web_interface.py
+The Project is based on ROS2, written in Python. 
 
-And the current test files:
-- **test_flask.py**
-- **dummy_publisher** - dummy_publisher.py
+### Current executable Nodes:
+For manual driving with the Web Interface:
+- basecontrol.py
+- winchcontrol.py
+- imucontrol.py
+- calibration_node.py
+- computation.py
+- web_interface.py
 
-Web Interface Folder: ../static/
-- index.html (old simple Joystick with mouse, touch and arrow-control
-- index_debug.html (gui with controls)
-- index_debug_alt.html (gui with controls and map)
-- ... tbc
+> [!CAUTION]  
+> Before moving the rover please make sure it is upright and calibrated.
+
+Automation:
+- cameraapriltag.py
+- linus_automation.py
+- winch_feedback
+
+Brush:
+- brushtest.py
+
+
+### Current Test Files:
+- imutobase.py
+- joytobase.py
+- test_flask-py
+
+### Current HTML-Pages
+- automation.html
+- index_debug_alt_alt.html (used for joystick controls)
+- settings.html (setting the size of the area is currently not possible, topic logging is also still under development)
+
+> [!IMPORTANT]  
+> Make sure you change the static file adresses of the HTML-Files in web_interface.py
+
+> [!TIP]
+> Guide to install the necessary Dependencies: [Installation].
 
 ### Run the project:
 Initialize Project:
@@ -33,10 +56,6 @@ Initialize Project:
 Execute Code
 7. Open the project folder in a terminal. Source ROS with `source snowlar/install/setup.bash`
 8. Run the individual ROS2 nodes using `ros2 run <package_name> <node_name>`
-
-
-TODO: 
-- pot. enable slow breaking
 9. List active topics `ros2 topic list`
 10. Echo topics: `ros2 topic echo <topic_name>`
 11. Start the web interface by creating a hotspot. Then connect from any other device to the hotspot and call the IP followed by the port (default: IP:8080). Alternatively, start it locally with `localhost:8080`
