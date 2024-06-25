@@ -61,5 +61,7 @@
 
 
 
-  * All marked Tools are not absolutely necessary but recommended for debugging and visualization. 
+
+    
+All marked (*) Tools are not absolutely necessary but recommended for debugging and visualization. 
     
