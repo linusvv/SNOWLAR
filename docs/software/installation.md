@@ -45,17 +45,23 @@
 
 ### 4. Install further tools and dependencies:
 - Git*:
--       sudo apt git-all
+
+      sudo apt git-all
 - rig_reconfigure*:
--       sudo apt install ros-humble-rig-reconfigure
+
+      sudo apt install ros-humble-rig-reconfigure
 - rqt*:
--       sudo apt-get install ros-humble-rqt ros-groovy-rqt-humble-plugins
+
+      sudo apt-get install ros-humble-rqt ros-groovy-rqt-humble-plugins
 - python3:
--       sudo apt install python3
+
+       sudo apt install python3
 - apriltag-msgs:
--       sudo apt install ros-humble-apriltag-msgs
+
+       sudo apt install ros-humble-apriltag-msgs
 - flask:
--       pip install flask
+
+       pip install flask
 
 
 
