@@ -83,6 +83,7 @@
             justify-content: space-around;
             width: auto;
             background-color: #dcdcdc;
+            margin-top: 50px;
             padding: 10px;
             border-radius: 5px;
         }
@@ -218,7 +219,7 @@
         justify-content: center;
         justify-self: center;
         align-self: center;
-        left: 41%;
+        left: calc(100% - 210px);
         width: 420px;
         padding: 20px;
         padding-left: 40px;
@@ -462,15 +463,26 @@
                         </a>
                     </form>
                 </div>
+
             </div>
 
-            <div id="topics-container">
+
+            <div id=""> <!--Replace with topic-container for fun-->
+                <ul id="topics"></ul>
                 <!-- Checkboxes for topics will be dynamically added here -->
             </div>
         </div>
     </div>
 
     <script>
+
+        // Create a new EventSource instance and connect to the /get_topics endpoint
+        const eventSource = new EventSource('/get_topics');
+
+        // Get the topics list element
+        const topicsList = document.getElementById('topics');
+
+
         document.getElementById('submitButton').addEventListener('click', () => {
             const width = parseInt(document.getElementById('widthInput').value);
             const height = parseInt(document.getElementById('heightInput').value);
@@ -486,27 +498,28 @@
         async function fetchTopics() {
             const response = await fetch('/get_topics');
             const topics = await response.json();
-            const topicsDiv = document.getElementById('topics');
+            const topicsContainer = document.getElementById('topics-container');
 
             topics.forEach(topic => {
                 const topicDiv = document.createElement('div');
                 topicDiv.className = 'topic';
 
-                const name = document.createElement('span');
-                name.className = 'name';
-                name.textContent = topic.name;
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = topic.name;
 
-                const status = document.createElement('span');
-                status.className = 'status';
-                status.textContent = topic.active ? 'Active' : 'Inactive';
+                const statusSpan = document.createElement('span');
+                statusSpan.textContent = topic.active ? 'Active' : 'Inactive';
 
-                topicDiv.appendChild(name);
-                topicDiv.appendChild(status);
+                topicDiv.appendChild(nameSpan);
+                topicDiv.appendChild(statusSpan);
 
-                topicsDiv.appendChild(topicDiv);
+                if (topic.active) {
+                    topicsContainer.appendChild(topicDiv); // Only append if active
+                }
             });
         }
-        // Update topic status
+
+        // Function to update topic status
         function updateTopicStatus(topicName, status) {
             fetch('/set_topic_status', {
                 method: 'POST',
@@ -520,6 +533,35 @@
                 console.log(data.message);
             });
         }
+
+            // Function to update the topics list in the DOM
+            function updateTopics(topics) {
+            // Clear the current list
+            topicsList.innerHTML = '';
+
+            // Populate the list with the new topics
+            topics.forEach(topic => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${topic.name} - ${topic.active ? 'Active' : 'Inactive'}`;
+                topicsList.appendChild(listItem);
+            });
+        }
+
+        // Listen for messages from the server
+        eventSource.onmessage = function(event) {
+            // Parse the JSON data
+            const data = JSON.parse(event.data);
+            // Update the topics list
+            updateTopics(data);
+        };
+
+        // Handle any errors
+        eventSource.onerror = function(error) {
+            console.error('EventSource failed:', error);
+            eventSource.close();
+        };
+
+
 
         // Fetch topics on page load
         window.onload = fetchTopics;

@@ -6,9 +6,30 @@ from launch_ros.actions import Node
 def generate_launch_description():
     return LaunchDescription([
         Node(
-            package='your_package_name',
-            executable='motor_turn_counter',
-            name='motor_turn_counter',
+            package='cgsr1_pkg',
+            executable='web_interface',
+            name='web_interface',
+            output='screen',
+        ),
+        
+        Node(
+            package='cgsr1_pkg',
+            executable='calibration',
+            name='calibration',
+            output='screen',
+        ),
+        
+        Node(
+            package='cgsr1_pkg',
+            executable='nodecontroller',
+            name='nodecontroller',
+            output='screen',
+        ),
+        
+        Node(
+            package='cgsr1_pkg',
+            executable='nodemanager',
+            name='nodemanager',
             output='screen',
         ),
     ])

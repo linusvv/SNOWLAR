@@ -327,20 +327,18 @@
                 <input type="checkbox" id="switch1" class="cm-toggle">
                 <label for="switch1">Semi-Automation</label>
             </div>
-            <div class="switch" id="switch2_container">
-                <input type="checkbox" id="switch2" class="cm-toggle">
-                <label for="switch2">Sync Winches</label>
-            </div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <form action="/calibrate" method="post" class="button">
                 <button type="submit" name="start_calibration" value="true">Start Calibration</button>
             </form>
-            <form action="/stop" method="post" class="button">
-                <button type="submit" name="stop" value="true" id="stop">Emergency Stop</button>
+            <form action="/start_nodes" method="post" class="button">
+                <button type="submit" name="activate_nodes" value="true">Activate Nodes</button>
             </form>
         </div>
-        <div id="result"></div>
+        <form action="/stop" method="post" class="button" style="margin-top: 0 !important;">
+            <button type="submit" name="stop" value="true" id="stop">Emergency Stop</button>
+        </form>
     </div>
 
     
