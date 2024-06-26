@@ -37,7 +37,9 @@ install_requires=['setuptools', 'rclpy', 'sensor_msgs', 'std_msgs', 'apriltag'],
             'winch_feedback = cgsr1_pkg.winch_feedback:main',
             'linus_automation = cgsr1_pkg.linus_automation:main',
             'brushtest = cgsr1_pkg.brushtest:main',
-            'cameraapriltag = cgsr1_pkg.cameraapriltag:main'
+            'cameraapriltag = cgsr1_pkg.cameraapriltag:main',
+            'nodecontroller = cgsr1_pkg.nodecontroller:main',
+            'nodemanager = cgsr1_pkg.nodemanager:main'
         ],
     },
 )
