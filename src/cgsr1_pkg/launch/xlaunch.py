@@ -6,9 +6,9 @@ from launch_ros.actions import Node
 def generate_launch_description():
     return LaunchDescription([
         Node(
-            package='your_package_name',
-            executable='motor_turn_counter',
-            name='motor_turn_counter',
+            package='cgsr1_pkg',
+            executable='linus_automation',
+            name='linus_automation',
             output='screen',
         ),
     ])
