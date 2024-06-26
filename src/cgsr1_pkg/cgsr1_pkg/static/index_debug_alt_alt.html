@@ -329,17 +329,19 @@
             </div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <form action="/calibrate" method="post" class="button">
+            <form id="calibrate-form" action="/calibrate" method="post" class="button">
                 <button type="submit" name="start_calibration" value="true">Start Calibration</button>
             </form>
-            <form action="/start_nodes" method="post" class="button">
+            <form id="activate-nodes-form" action="/start_nodes" method="post" class="button">
                 <button type="submit" name="activate_nodes" value="true">Activate Nodes</button>
             </form>
         </div>
-        <form action="/stop" method="post" class="button" style="margin-top: 0 !important;">
+        <form id="stop-form" action="/stop" method="post" class="button" style="margin-top: 0 !important;">
             <button type="submit" name="stop" value="true" id="stop">Emergency Stop</button>
         </form>
     </div>
+
+    <div id="result"></div>
 
     
     <script>
@@ -506,24 +508,37 @@
         // When the form is submitted, prevent the default form submission behavior
         // and send a POST request to '/calibrate' with the form data.
         // Then, display an alert with the response message.
-        document.querySelector('form').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const response = await fetch('/calibrate', {
-            method: 'POST',
-            body: formData
-        });
-        const result = await response.json();
-        alert(result.message);
-        return false;
+        document.getElementById('calibrate-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch('/calibrate', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            alert(result.message);
         });
 
-        document.getElementById('stop').addEventListener('click', function(event) {
-                    event.preventDefault();
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/stop', true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.send('stop=true');
+        document.getElementById('activate-nodes-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch('/start_nodes', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            alert(result.message);
+        });
+
+        document.getElementById('stop-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const response = await fetch('/stop', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            alert(result.message);
         });
 
 

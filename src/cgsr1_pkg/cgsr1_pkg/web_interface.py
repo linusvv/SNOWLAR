@@ -9,16 +9,17 @@ from std_msgs.msg import Bool, Int32, Float32MultiArray, Int32MultiArray
 import time
 import json
 
-MANUAL_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt_alt.html")
-HOME_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/automation.html")
-SETTINGS_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/settings.html")
+MANUAL_FILE_PATH = os.path.expanduser("~/Desktop/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt_alt.html")
+HOME_FILE_PATH = os.path.expanduser("~/Desktop/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/automation.html")
+SETTINGS_FILE_PATH = os.path.expanduser("~/Desktop/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/settings.html")
 
 app = Flask(__name__)
 node = None
 manual_control_publisher = None
 gui_controller_instance = None
 
-nodes_status = False
+stop_status = False
+node_status = False
 
 @app.route('/')
 def index():
@@ -113,8 +114,12 @@ def calibrate():
 @app.route('/stop', methods=['POST'])
 def stop():
     stop_val = request.form.get('stop', 'true').lower() == 'true'
-    gui_controller_instance.publish_stop(not gui_controller_instance.publisher_stop if stop_val else False)
-    return jsonify({"status": "success", "stop": stop_val})
+    if stop_status:
+        gui_controller_instance.publish_start_nodes(stop_status)
+    else:
+        gui_controller_instance.publish_start_nodes(stop_status)
+    response = {'success': True, 'message': 'Nodes activated' if stop_val else 'Nodes deactivated'}
+    return jsonify(response)
 
 @app.route('/rectangle-data')
 def rectangle_data():
@@ -158,12 +163,14 @@ def start_automation():
 
 @app.route('/start_nodes', methods=['POST'])
 def start_nodes():
-    if nodes_status:
-        gui_controller_instance.publish_start_nodes(nodes_status)
-        return jsonify({"status": "success", "nodes_status": nodes_status})
+    activate_nodes = request.form.get('activate_nodes', 'true').lower() == 'true'
+    if node_status:
+        gui_controller_instance.publish_start_nodes(node_status)
     else:
-        gui_controller_instance.publish_start_nodes(nodes_status)
-        return jsonify({"status": "success", "nodes_status": nodes_status})
+        gui_controller_instance.publish_start_nodes(node_status)
+    response = {'success': True, 'message': 'Nodes activated' if activate_nodes else 'Nodes deactivated'}
+    return jsonify(response)
+
 
 @app.route('/get_topics', methods=['GET'])
 def get_topics():
