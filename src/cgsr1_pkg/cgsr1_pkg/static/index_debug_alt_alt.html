@@ -508,38 +508,24 @@
         // When the form is submitted, prevent the default form submission behavior
         // and send a POST request to '/calibrate' with the form data.
         // Then, display an alert with the response message.
-        document.getElementById('calibrate-form').addEventListener('submit', async function(event) {
+        async function handleFormSubmission(event, endpoint) {
             event.preventDefault();
             const formData = new FormData(event.target);
-            const response = await fetch('/calibrate', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            alert(result.message);
-        });
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
 
-        document.getElementById('activate-nodes-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const response = await fetch('/start_nodes', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            alert(result.message);
-        });
-
-        document.getElementById('stop-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const response = await fetch('/stop', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            alert(result.message);
-        });
+        document.getElementById('calibrate-form').addEventListener('submit', (event) => handleFormSubmission(event, '/calibrate'));
+        document.getElementById('activate-nodes-form').addEventListener('submit', (event) => handleFormSubmission(event, '/start_nodes'));
+        document.getElementById('stop-form').addEventListener('submit', (event) => handleFormSubmission(event, '/stop'));
 
 
         function sendSwitchData(switchName, value) {

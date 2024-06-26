@@ -228,6 +228,7 @@ class GUIController(Node):
             self.get_logger().info('service not available, waiting again...')
 
         self.topics_status = []
+        self.future = None  # Initialize future to None
 
         self.update_topics_thread = threading.Thread(target=self.update_topics)
         self.update_topics_thread.start()
@@ -235,6 +236,8 @@ class GUIController(Node):
     def send_request(self, start_calibration):
         req = SetBool.Request()
         req.data = start_calibration
+        
+        # Handle the future response properly
         self.future = self.client.call_async(req)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
