@@ -19,8 +19,6 @@ cgsr1_pkg/computation.py
 cgsr1_pkg/dummy_publisher.py
 cgsr1_pkg/imucontrol.py
 cgsr1_pkg/linus_automation.py
-cgsr1_pkg/nodecontroller.py
-cgsr1_pkg/nodemanager.py
 cgsr1_pkg/straight_motion.py
 cgsr1_pkg/web_interface.py
 cgsr1_pkg/winch_feedback.py
