@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32
+from std_srvs.srv import Trigger
 import math
 
 class IMUDirectionNode(Node):
@@ -18,19 +19,28 @@ class IMUDirectionNode(Node):
         self.publisher_ = self.create_publisher(Float32, 'imu_data', 10)
         self.max_pitch = None  # Initialize the max_pitch as None
         self.min_pitch = None  # Initialize the min_pitch as None
+
+        self.locked = False
         
+        self.reset_service = self.create_service(Trigger, 'reset_imu_data', self.reset_imu_data_callback)
+        self.lock_service = self.create_service(Trigger, 'lock_imu_data', self.lock_imu_data_callback)
+        self.unlock_service = self.create_service(Trigger, 'unlock_imu_data', self.unlock_imu_data_callback)
+
         self.get_logger().info('IMU Direction Node has been started.')
 
     def imu_callback(self, msg):
+
+        
         # Extract the orientation quaternion from the IMU message
         orientation = msg.orientation
         roll, pitch, yaw = self.quaternion_to_euler(orientation)
 
         # Update the maximum and minimum pitch observed
-        if self.max_pitch is None or pitch > self.max_pitch:
-            self.max_pitch = pitch
-        if self.min_pitch is None or pitch < self.min_pitch:
-            self.min_pitch = pitch
+        if not self.locked:
+            if self.max_pitch is None or pitch > self.max_pitch:
+                self.max_pitch = pitch
+            if self.min_pitch is None or pitch < self.min_pitch:
+                self.min_pitch = pitch
 
         # Normalize pitch based on the current maximum and minimum pitch
         if self.max_pitch != self.min_pitch:  # Avoid division by zero
@@ -51,34 +61,51 @@ class IMUDirectionNode(Node):
         driving_direction.data = signed_normalized_pitch
         self.publisher_.publish(driving_direction)
 
-    def quaternion_to_euler(self, orientation):
+    def reset_imu_data_callback(self, request, response):
+        self.max_pitch = None  # Reset the max_pitch
+        self.min_pitch = None  # Reset the min_pitch
+        response.success = True
+        self.locked = False
+        response.message = "IMU data has been reset."
+        self.get_logger().info(response.message)
+        return response
+
+    def lock_imu_data_callback(self, request, response):
+        self.locked = True
+        response.success = True
+        response.message = "IMU data has been locked."
+        self.get_logger().info(response.message)
+        return response
+
+    def unlock_imu_data_callback(self, request, response):
+        self.locked = False
+        response.success = True
+        response.message = "IMU data has been unlocked."
+        self.get_logger().info(response.message)
+        return response
+
+    def quaternion_to_euler(self, q):
         # Convert quaternion to Euler angles
-        qx = orientation.x
-        qy = orientation.y
-        qz = orientation.z
-        qw = orientation.w
+        x, y, z, w = q.x, q.y, q.z, q.w
+        t0 = +2.0 * (w * x + y * z)
+        t1 = +1.0 - 2.0 * (x * x + y * y)
+        roll_x = math.atan2(t0, t1)
 
-        # Roll (x-axis rotation)
-        sinr_cosp = 2 * (qw * qx + qy * qz)
-        cosr_cosp = 1 - 2 * (qx * qx + qy * qy)
-        roll = math.atan2(sinr_cosp, cosr_cosp)
+        t2 = +2.0 * (w * y - z * x)
+        t2 = +1.0 if t2 > +1.0 else t2
+        t2 = -1.0 if t2 < -1.0 else t2
+        pitch_y = math.asin(t2)
 
-        # Pitch (y-axis rotation)
-        sinp = 2 * (qw * qy - qz * qx)
-        pitch = math.asin(sinp) if abs(sinp) <= 1 else math.copysign(math.pi / 2, sinp)
+        t3 = +2.0 * (w * z + x * y)
+        t4 = +1.0 - 2.0 * (y * y + z * z)
+        yaw_z = math.atan2(t3, t4)
 
-        # Yaw (z-axis rotation)
-        siny_cosp = 2 * (qw * qz + qx * qy)
-        cosy_cosp = 1 - 2 * (qy * qy + qz * qz)
-        yaw = math.atan2(siny_cosp, cosy_cosp)
-
-        return roll, pitch, yaw
+        return roll_x, pitch_y, yaw_z
 
 def main(args=None):
     rclpy.init(args=args)
     node = IMUDirectionNode()
     rclpy.spin(node)
-    node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':

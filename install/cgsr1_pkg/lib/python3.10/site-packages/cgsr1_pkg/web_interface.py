@@ -7,9 +7,9 @@ import threading
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool, Int32, Float32MultiArray, Int32MultiArray
 
-MANUAL_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt_alt.html")
-HOME_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/automation.html")
-SETTINGS_FILE_PATH = os.path.expanduser("~/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/settings.html")
+MANUAL_FILE_PATH = os.path.expanduser("~/Desktop/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt_alt.html")
+HOME_FILE_PATH = os.path.expanduser("~/Desktop/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/automation.html")
+SETTINGS_FILE_PATH = os.path.expanduser("~/Desktop/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/settings.html")
 
 app = Flask(__name__)
 node = None

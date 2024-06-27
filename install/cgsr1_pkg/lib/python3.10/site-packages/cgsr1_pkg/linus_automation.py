@@ -16,7 +16,7 @@ class RoverController(Node):
 
         # State variables
         self.current_y = 0.0
-        self.target_y = 0.7
+        self.target_y = 1.3
         self.imu_angle = 0.0
         self.stop = False
         self.automation_active = False
@@ -77,8 +77,9 @@ class RoverController(Node):
             self.get_logger().info('Driving down')
             self.publish_straigth(self.down_speed, 0.0)
             if self.current_y >= self.target_y:
+                self.target_y = 0.0 
                 self.state = 'UP'
-                self.target_y = 0 
+                
 
         elif self.state == 'UP':
             self.get_logger().info('Driving up')
@@ -90,9 +91,9 @@ class RoverController(Node):
         elif self.state == 'TURN_RIGHT':
             self.get_logger().info('Turning right until facing across')
             self.publish_turn(self.turn_speed)
-            if abs(self.imu_angle - (- 0.5)) < 0.0:  # Allowable error in the angle
+            if abs(self.imu_angle - (- 0.5)) < 0.05:  # Allowable error in the angle
                 self.state = 'CROSS'
-                self.cross_timer = self.create_timer(3.0, self.cross_timer_callback)  # Start a 3-second timer
+                self.cross_timer = self.create_timer(3.8, self.cross_timer_callback)  # Start a 3-second timer
 
         elif self.state == 'CROSS':
             self.get_logger().info('Moving across in one direction')
@@ -101,53 +102,53 @@ class RoverController(Node):
         elif self.state == 'TURN_LEFT':
             self.get_logger().info('Turning left until facing down')
             self.publish_turn(-self.turn_speed)
-            if abs(self.imu_angle - 0.0) < 0.0:
+            if self.imu_angle  > 0.02:
                 self.state = 'DOWN'
                 self.get_logger().info('%d' % self.current_y)
-                self.target_y = 0.7
+                self.target_y = 1.3
 
         elif self.state == 'APRILTAG_LEFT':
             self.get_logger().info('State apriltag reached')
-            self.publish_turn(self.turn_speed)
-            if abs(self.imu_angle - (-0.5)) < 0.0:
+            self.publish_turn(-self.turn_speed)
+            if self.imu_angle > 0.02:
                 self.state = 'DOWN_AGAIN'
-                self.target_y = 0.7
+                self.target_y = 1.3
 
         elif self.state == 'DOWN_AGAIN':
             self.get_logger().info('Last time down')
             self.publish_straigth(self.down_speed, 0.0)
             if self.current_y >= self.target_y:
                 self.state = 'UP_AGAIN'
-                self.target_y = 0
+                self.target_y = 0.0
 
         elif self.state == 'UP_AGAIN':
             self.get_logger().info('Last time up')
             self.publish_straigth(self.up_speed, 0.0)
             if self.current_y < 0.0:
-                self.state = 'TURN_LEFT_AGAIN'
+                self.state = 'TURN_LEF_AGAIN'
 
-        elif self.state == 'TURN_LEFT_AGAIN':
-            self.get_logger().info('Turning left until facing across')
+        elif self.state == 'TURN_LEF_AGAIN':
+            self.get_logger().info('Turning left until facing across for backing up')
             self.publish_turn(-self.turn_speed)
-            if abs(self.imu_angle - 0.5) < 0.05:
-                self.get_logger().info('%d' % self.current_y)
-                self.state == 'CROSS_BACK'
-                self.cross_timer = self.create_timer(20.0, self.cross_timer_callback)  # Start a 3-second timer
+            if abs(self.imu_angle - (+ 0.5)) < 0.05: 
+                self.state = 'CROSSX_BACK'
+                self.cross_back_timer = self.create_timer(100.0, self.cross_back_timer_callback)  # Start a 3-second timer
 
 
-        elif self.state == 'CROSS_BACK':
+        elif self.state == 'CROSSX_BACK':
             self.get_logger().info('Driving back across')
             self.publish_straigth(self.cross_speed, 0.5)
             # Assuming you want to cross back to the original y position
 
         elif self.state == 'APRILTAG_RIGHT':
+            self.get_logger().info('Turning right until facing home')
             self.publish_turn(self.turn_speed)
-            if abs(self.imu_angle - 0.0) < 0.0:
+            if self.imu_angle  < 0.0:
                 self.state = 'STOP'
 
 
         elif self.state == 'STOP':
-            self.publish_turn(0.0, 0.0)
+            self.publish_turn(-self.turn_speed)
             self.automation_active = False
             # Wait until new /autonomous true is sent
 
@@ -164,8 +165,8 @@ class RoverController(Node):
         if not self.automation_active:
             return
         error = target_angle - self.imu_angle
-        if abs(error) > 0.0:  # Allowable error in the angle
-            twist.linear.x = -self.turn_speed if error > 0.0 else self.turn_speed
+        if abs(error) > 0.1:  # Allowable error in the angle
+            twist.linear.x = -self.turn_speed if error < 0.0 else self.turn_speed
         else:
             twist.linear.x = 0.0
         twist.linear.y = linear_y

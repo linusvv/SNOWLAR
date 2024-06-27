@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
-from std_srvs.srv import SetBool
+from std_srvs.srv import SetBool, Trigger
 from std_msgs.msg import Float32
 from geometry_msgs.msg import Twist
 import threading
@@ -24,26 +24,37 @@ class MotorCalibrationNode(Node):
             10
         )
 
+        self.imu_reset_client = self.create_client(Trigger, 'reset_imu_data')
+        self.imu_lock_client = self.create_client(Trigger, 'lock_imu_data')
+        self.imu_unlock_client = self.create_client(Trigger, 'unlock_imu_data')
+
     def calibrate_motor_callback(self, request, response):
         if request.data:
             self.get_logger().info('Calibration started...')
-            
+
+            # Unlock IMU data
+            self.reset_imu_data()
+            time.sleep(1)
             # Rotate to -10 degrees
-            self.publish_motor_position(-0.6*math.pi)
+            self.publish_motor_position(-0.6 * math.pi)
             time.sleep(2)  # Adjust sleep time as necessary
             
             # Rotate to 190 degrees
-            self.publish_motor_position(0.6* math.pi)
+            self.publish_motor_position(0.6 * math.pi)
             time.sleep(2)  # Adjust sleep time as necessary
             
             # Rotate back to zero position
-            self.publish_motor_position(-1/2*math.pi)
+            self.publish_motor_position(-0.5 * math.pi)
             time.sleep(2)  # Adjust sleep time as necessary
 
             self.get_logger().info('IMU Calibration completed.')
 
             # Calibrate wheels
-            #self.calibrate_wheels()
+            # self.calibrate_wheels()
+
+            # Lock IMU data
+            time.sleep(1)
+            self.lock_imu_data()
 
             self.get_logger().info('Calibration completed.')
             response.success = True
@@ -65,10 +76,64 @@ class MotorCalibrationNode(Node):
         self.pub_calib.publish(msg)
         self.get_logger().info(f'Motor position set to: {position}')
 
+    def reset_imu_data(self):
+        while not self.imu_reset_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Waiting for IMU reset service...')
+        
+        request = Trigger.Request()
+        future = self.imu_reset_client.call_async(request)
+        future.add_done_callback(self.reset_imu_data_response)
+
+    def reset_imu_data_response(self, future):
+        try:
+            response = future.result()
+            if response.success:
+                self.get_logger().info('IMU data reset successfully.')
+            else:
+                self.get_logger().warn('Failed to reset IMU data.')
+        except Exception as e:
+            self.get_logger().error(f'Service call failed: {e}')
+
+    def lock_imu_data(self):
+        while not self.imu_lock_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Waiting for IMU lock service...')
+        
+        request = Trigger.Request()
+        future = self.imu_lock_client.call_async(request)
+        future.add_done_callback(self.lock_imu_data_response)
+
+    def lock_imu_data_response(self, future):
+        try:
+            response = future.result()
+            if response.success:
+                self.get_logger().info('IMU data locked successfully.')
+            else:
+                self.get_logger().warn('Failed to lock IMU data.')
+        except Exception as e:
+            self.get_logger().error(f'Service call failed: {e}')
+
+    def unlock_imu_data(self):
+        while not self.imu_unlock_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Waiting for IMU unlock service...')
+        
+        request = Trigger.Request()
+        future = self.imu_unlock_client.call_async(request)
+        future.add_done_callback(self.unlock_imu_data_response)
+
+    def unlock_imu_data_response(self, future):
+        try:
+            response = future.result()
+            if response.success:
+                self.get_logger().info('IMU data unlocked successfully.')
+            else:
+                self.get_logger().warn('Failed to unlock IMU data.')
+        except Exception as e:
+            self.get_logger().error(f'Service call failed: {e}')
+
     def calibrate_wheels(self):
         self.get_logger().info('Starting wheel calibration...')
 
-        rate = self.create_rate(50)  # Set rate to 25 Hz
+        rate = self.create_rate(50)  # Set rate to 50 Hz
 
         # Rotate left until IMU data rises
         twist_msg = Twist()
