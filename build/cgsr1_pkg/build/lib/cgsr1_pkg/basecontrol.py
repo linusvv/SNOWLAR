@@ -52,8 +52,8 @@ class MainNode(Node):
 
         self.tolerance = 0.9      #rotatation speed tolerance
 
-        self.rotation_factor_left = 1.6
-        self.rotation_factor_right = 1.6
+        self.rotation_factor_left = 1.9
+        self.rotation_factor_right = 1.9
 
         self.rfr = 1 #don't change
         self.rfl = 1

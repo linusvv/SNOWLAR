@@ -64,7 +64,7 @@ class JointStateMotorTurnCounter(Node):
         self.last_position[motor_index] = current_position
 
         # Calculate distance pulled based on turns
-        self.distance_pulled = abs(self.turns[0]* WINCH_DIAMETER * math.pi - self.turns[1]* WINCH_DIAMETER * math.pi)
+        self.distance_pulled = -(self.turns[0]* WINCH_DIAMETER * math.pi - self.turns[1]* WINCH_DIAMETER * math.pi)
 
         # Create and publish Twist message
         twist = Twist()
