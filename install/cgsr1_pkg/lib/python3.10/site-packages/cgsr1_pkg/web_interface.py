@@ -1,11 +1,13 @@
 import os
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, Response, stream_with_context
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import SetBool
 import threading
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool, Int32, Float32MultiArray, Int32MultiArray
+import time
+import json
 
 MANUAL_FILE_PATH = os.path.expanduser("~/Desktop/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/index_debug_alt_alt.html")
 HOME_FILE_PATH = os.path.expanduser("~/Desktop/SNOWLAR/src/cgsr1_pkg/cgsr1_pkg/static/automation.html")
@@ -15,6 +17,9 @@ app = Flask(__name__)
 node = None
 manual_control_publisher = None
 gui_controller_instance = None
+
+stop_status = False
+node_status = False
 
 @app.route('/')
 def index():
@@ -84,7 +89,7 @@ def switch(switch_name):
 
     if switch_name == 'manual_mode':
         print('recieved manual mode')
-        gui_controller_instance.publish_manual_mode( value)
+        gui_controller_instance.publish_manual_mode(value)
     elif switch_name == 'sync_mode':
         print('recieved sync mode')
         gui_controller_instance.publish_sync_winch(value)
@@ -98,19 +103,39 @@ def switch(switch_name):
         return jsonify({"status": "error", "message": "Invalid switch name"}), 400
 
     return jsonify({"status": "success", "switch": switch_name, "value": value})
-
+    
 @app.route('/calibrate', methods=['POST'])
 def calibrate():
-    start_calibration = request.form.get('start_calibration', 'true').lower() == 'true'
-    response = gui_controller_instance.send_request(start_calibration)
-    result = {'success': response.success, 'message': response.message}
+    try:
+        response = gui_controller_instance.send_request(True)
+        result = {'success': response.success, 'message': 'Calibration started' if response.success else 'Failed to start calibration'}
+    except Exception as e:
+        result = {'success': False, 'message': str(e)}
     return jsonify(result)
 
 @app.route('/stop', methods=['POST'])
 def stop():
-    stop_val = request.form.get('stop', 'true').lower() == 'true'
-    gui_controller_instance.publish_stop(not gui_controller_instance.publisher_stop if stop_val else False)
-    return jsonify({"status": "success", "stop": stop_val})
+    global stop_status
+    try:
+        stop_val = request.form.get('stop', 'true').lower() == 'true'
+        stop_status = stop_val
+        gui_controller_instance.publish_stop(stop_val)
+        response = {'success': True, 'message': 'Emergency stop activated' if stop_val else 'Emergency stop deactivated'}
+    except Exception as e:
+        response = {'success': False, 'message': str(e)}
+    return jsonify(response)
+
+@app.route('/start_nodes', methods=['POST'])
+def start_nodes():
+    global node_status
+    try:
+        activate_nodes = request.form.get('activate_nodes', 'true').lower() == 'true'
+        node_status = activate_nodes
+        gui_controller_instance.publish_start_nodes(activate_nodes)
+        response = {'success': True, 'message': 'Nodes activated' if activate_nodes else 'Nodes deactivated'}
+    except Exception as e:
+        response = {'success': False, 'message': str(e)}
+    return jsonify(response)
 
 @app.route('/rectangle-data')
 def rectangle_data():
@@ -155,8 +180,13 @@ def start_automation():
 
 @app.route('/get_topics', methods=['GET'])
 def get_topics():
-    topics = gui_controller_instance.get_topics()
-    return jsonify(topics)
+    def generate():
+        while True:
+            topics = gui_controller_instance.get_topics()
+            yield f"data: {json.dumps(topics)}\n\n"
+            time.sleep(1)  # Adjust the interval as needed for real-time updates
+
+    return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
 @app.route('/set_topic_status', methods=['POST'])
 def set_topic_status():
@@ -165,7 +195,6 @@ def set_topic_status():
     status = data['status']
     gui_controller_instance.set_topic_status(topic_name, status)
     return jsonify({'message': 'Status updated'})
-
 
 class GUIController(Node):
     def __init__(self):
@@ -198,20 +227,16 @@ class GUIController(Node):
         self.publisher_stop = self.create_publisher(Bool, 'stop', 10)
         self.publisher_width = self.create_publisher(Int32, 'width', 10)
         self.publisher_height = self.create_publisher(Int32, 'height', 10)
-
+        self.publisher_start_nodes = self.create_publisher(Bool, 'start_nodes', 10)
 
         self.client = self.create_client(SetBool, 'calibrate_motor')
         while not self.client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
 
-        # Things to monitor topics
-        self.declare_parameter('topics', ['/cmd_vel', '/'])  # Add your topics here
-        self.topics = self.get_parameter('topics').get_parameter_value().string_array_value
-        self.topics_status = [{'name': topic, 'active': False} for topic in self.topics]
-    
-    
+        self.topics_status = []
 
-
+        self.update_topics_thread = threading.Thread(target=self.update_topics)
+        self.update_topics_thread.start()
 
     def send_request(self, start_calibration):
         req = SetBool.Request()
@@ -223,7 +248,6 @@ class GUIController(Node):
     def publish_manual_mode(self, value):
         msg = Bool()
         msg.data = value
-        print('publishing manual_mode')
         self.publisher_manual_mode.publish(msg)
 
     def publish_sync_winch(self, value):
@@ -240,6 +264,11 @@ class GUIController(Node):
         msg = Bool()
         msg.data = value
         self.publisher_autonomous.publish(msg)
+
+    def publish_start_nodes(self, value):
+        msg = Bool()
+        msg.data = value
+        self.publisher_start_nodes.publish(msg)
 
     def publish_stop(self, value):
         msg = Bool()
@@ -264,16 +293,7 @@ class GUIController(Node):
         self.dot_x, self.dot_y = msg.data
         self.get_logger().info(f'Received position: dot_x={self.dot_x}, dot_y={self.dot_y}')
 
-
-    #Get Topics
     def get_topics(self):
-        # Update the active status of the topics
-        topic_names_and_types = self.get_topic_names_and_types()
-        active_topics = set(topic for topic, _ in topic_names_and_types)
-        
-        for topic_status in self.topics_status:
-            topic_status['active'] = topic_status['name'] in active_topics
-        
         return self.topics_status
     
     def set_topic_status(self, topic_name, status):
@@ -281,6 +301,14 @@ class GUIController(Node):
             if topic['name'] == topic_name:
                 topic['active'] = status
                 break
+
+    def update_topics(self):
+        while True:
+            topic_names_and_types = self.get_topic_names_and_types()
+            active_topics = set(topic for topic, _ in topic_names_and_types)
+            
+            self.topics_status = [{'name': topic, 'active': topic in active_topics} for topic in active_topics]
+            time.sleep(1)  # Update interval
 
 def ros_thread(gui_controller_instance):
     rclpy.spin(gui_controller_instance)

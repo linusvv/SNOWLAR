@@ -103,22 +103,38 @@ def switch(switch_name):
         return jsonify({"status": "error", "message": "Invalid switch name"}), 400
 
     return jsonify({"status": "success", "switch": switch_name, "value": value})
-
+    
 @app.route('/calibrate', methods=['POST'])
 def calibrate():
-    start_calibration = request.form.get('start_calibration', 'true').lower() == 'true'
-    response = gui_controller_instance.send_request(start_calibration)
-    result = {'success': response.success, 'message': response.message}
+    try:
+        response = gui_controller_instance.send_request(True)
+        result = {'success': response.success, 'message': 'Calibration started' if response.success else 'Failed to start calibration'}
+    except Exception as e:
+        result = {'success': False, 'message': str(e)}
     return jsonify(result)
 
 @app.route('/stop', methods=['POST'])
 def stop():
-    stop_val = request.form.get('stop', 'true').lower() == 'true'
-    if stop_status:
-        gui_controller_instance.publish_start_nodes(stop_status)
-    else:
-        gui_controller_instance.publish_start_nodes(stop_status)
-    response = {'success': True, 'message': 'Nodes activated' if stop_val else 'Nodes deactivated'}
+    global stop_status
+    try:
+        stop_val = request.form.get('stop', 'true').lower() == 'true'
+        stop_status = stop_val
+        gui_controller_instance.publish_stop(stop_val)
+        response = {'success': True, 'message': 'Emergency stop activated' if stop_val else 'Emergency stop deactivated'}
+    except Exception as e:
+        response = {'success': False, 'message': str(e)}
+    return jsonify(response)
+
+@app.route('/start_nodes', methods=['POST'])
+def start_nodes():
+    global node_status
+    try:
+        activate_nodes = request.form.get('activate_nodes', 'true').lower() == 'true'
+        node_status = activate_nodes
+        gui_controller_instance.publish_start_nodes(activate_nodes)
+        response = {'success': True, 'message': 'Nodes activated' if activate_nodes else 'Nodes deactivated'}
+    except Exception as e:
+        response = {'success': False, 'message': str(e)}
     return jsonify(response)
 
 @app.route('/rectangle-data')
@@ -160,16 +176,6 @@ def start_automation():
     gui_controller_instance.publish_autonomous(automation_status)
 
     return jsonify({"status": "success", "automation_status": automation_status})
-
-@app.route('/start_nodes', methods=['POST'])
-def start_nodes():
-    activate_nodes = request.form.get('activate_nodes', 'true').lower() == 'true'
-    if node_status:
-        gui_controller_instance.publish_start_nodes(node_status)
-    else:
-        gui_controller_instance.publish_start_nodes(node_status)
-    response = {'success': True, 'message': 'Nodes activated' if activate_nodes else 'Nodes deactivated'}
-    return jsonify(response)
 
 
 @app.route('/get_topics', methods=['GET'])

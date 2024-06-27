@@ -329,15 +329,15 @@
             </div>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <form id="calibrate-form" action="/calibrate" method="post" class="button">
-                <button type="submit" name="start_calibration" value="true">Start Calibration</button>
+            <form id="calibrate-form" class="button">
+                <button type="button" id="calibrate-button">Start Calibration</button>
             </form>
-            <form id="activate-nodes-form" action="/start_nodes" method="post" class="button">
-                <button type="submit" name="activate_nodes" value="true">Activate Nodes</button>
+            <form id="activate-nodes-form" class="button">
+                <button type="button" id="activate-nodes-button">Activate Nodes</button>
             </form>
         </div>
-        <form id="stop-form" action="/stop" method="post" class="button" style="margin-top: 0 !important;">
-            <button type="submit" name="stop" value="true" id="stop">Emergency Stop</button>
+        <form id="stop-form" class="button" style="margin-top: 0 !important;">
+            <button type="button" id="stop-button">Emergency Stop</button>
         </form>
     </div>
 
@@ -508,37 +508,37 @@
         // When the form is submitted, prevent the default form submission behavior
         // and send a POST request to '/calibrate' with the form data.
         // Then, display an alert with the response message.
-        document.getElementById('calibrate-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
+        document.getElementById('calibrate-button').addEventListener('click', async function() {
             const response = await fetch('/calibrate', {
                 method: 'POST',
-                body: formData
+                body: new URLSearchParams({ start_calibration: true })
             });
             const result = await response.json();
             alert(result.message);
         });
 
-        document.getElementById('activate-nodes-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
+        document.getElementById('activate-nodes-button').addEventListener('click', async function() {
+            const button = this;
+            const activate = button.innerText === 'Activate Nodes';
             const response = await fetch('/start_nodes', {
                 method: 'POST',
-                body: formData
+                body: new URLSearchParams({ activate_nodes: activate })
             });
             const result = await response.json();
             alert(result.message);
+            button.innerText = activate ? 'Deactivate Nodes' : 'Activate Nodes';
         });
 
-        document.getElementById('stop-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
+        document.getElementById('stop-button').addEventListener('click', async function() {
+            const button = this;
+            const stop = button.innerText === 'Emergency Stop';
             const response = await fetch('/stop', {
                 method: 'POST',
-                body: formData
+                body: new URLSearchParams({ stop: stop })
             });
             const result = await response.json();
             alert(result.message);
+            button.innerText = stop ? 'Cancel Stop' : 'Emergency Stop';
         });
 
 

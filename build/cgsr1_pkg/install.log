@@ -2,6 +2,7 @@
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/linus_automation.py
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/basecontrol.py
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/winchcontrol.py
+/home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/nodecontroller.py
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/straight_motion.py
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/apriltest.py
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/web_interface.py
@@ -13,10 +14,12 @@
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/automation.py
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/imucontrol.py
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/dummy_publisher.py
+/home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/nodemanager.py
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/calibration_node.cpython-310.pyc
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/linus_automation.cpython-310.pyc
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/basecontrol.cpython-310.pyc
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/winchcontrol.cpython-310.pyc
+/home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/nodecontroller.cpython-310.pyc
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/straight_motion.cpython-310.pyc
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/apriltest.cpython-310.pyc
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/web_interface.cpython-310.pyc
@@ -28,6 +31,7 @@
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/automation.cpython-310.pyc
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/imucontrol.cpython-310.pyc
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/dummy_publisher.cpython-310.pyc
+/home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/__pycache__/nodemanager.cpython-310.pyc
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/share/ament_index/resource_index/packages/cgsr1_pkg
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/share/cgsr1_pkg/package.xml
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/share/cgsr1_pkg/launch/xlaunch.py
@@ -49,6 +53,8 @@
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg/imutobase
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg/joytobase
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg/linus_automation
+/home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg/nodecontroller
+/home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg/nodemanager
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg/straight_motion
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg/web_interface
 /home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/cgsr1_pkg/winch_feedback

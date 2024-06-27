@@ -32,4 +32,10 @@ def generate_launch_description():
             name='nodemanager',
             output='screen',
         ),
+        Node(
+            package='cgsr1_pkg',
+            executable='calibration',
+            name='calibration',
+            output='screen',
+        ),
     ])

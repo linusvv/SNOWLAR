@@ -29,18 +29,18 @@ class IMUDirectionNode(Node):
         self.get_logger().info('IMU Direction Node has been started.')
 
     def imu_callback(self, msg):
-        if self.locked:
-            return
+
         
         # Extract the orientation quaternion from the IMU message
         orientation = msg.orientation
         roll, pitch, yaw = self.quaternion_to_euler(orientation)
 
         # Update the maximum and minimum pitch observed
-        if self.max_pitch is None or pitch > self.max_pitch:
-            self.max_pitch = pitch
-        if self.min_pitch is None or pitch < self.min_pitch:
-            self.min_pitch = pitch
+        if not self.locked:
+            if self.max_pitch is None or pitch > self.max_pitch:
+                self.max_pitch = pitch
+            if self.min_pitch is None or pitch < self.min_pitch:
+                self.min_pitch = pitch
 
         # Normalize pitch based on the current maximum and minimum pitch
         if self.max_pitch != self.min_pitch:  # Avoid division by zero
@@ -65,6 +65,7 @@ class IMUDirectionNode(Node):
         self.max_pitch = None  # Reset the max_pitch
         self.min_pitch = None  # Reset the min_pitch
         response.success = True
+        self.locked = False
         response.message = "IMU data has been reset."
         self.get_logger().info(response.message)
         return response

@@ -7,8 +7,35 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='cgsr1_pkg',
-            executable='linus_automation',
-            name='linus_automation',
+            executable='web_interface',
+            name='web_interface',
+            output='screen',
+        ),
+        
+        Node(
+            package='cgsr1_pkg',
+            executable='calibration',
+            name='calibration',
+            output='screen',
+        ),
+        
+        Node(
+            package='cgsr1_pkg',
+            executable='nodecontroller',
+            name='nodecontroller',
+            output='screen',
+        ),
+        
+        Node(
+            package='cgsr1_pkg',
+            executable='nodemanager',
+            name='nodemanager',
+            output='screen',
+        ),
+        Node(
+            package='cgsr1_pkg',
+            executable='calibration',
+            name='calibration',
             output='screen',
         ),
     ])

@@ -33,8 +33,8 @@ class MotorCalibrationNode(Node):
             self.get_logger().info('Calibration started...')
 
             # Unlock IMU data
-            self.unlock_imu_data()
-
+            self.reset_imu_data()
+            time.sleep(1)
             # Rotate to -10 degrees
             self.publish_motor_position(-0.6 * math.pi)
             time.sleep(2)  # Adjust sleep time as necessary
@@ -53,6 +53,7 @@ class MotorCalibrationNode(Node):
             # self.calibrate_wheels()
 
             # Lock IMU data
+            time.sleep(1)
             self.lock_imu_data()
 
             self.get_logger().info('Calibration completed.')

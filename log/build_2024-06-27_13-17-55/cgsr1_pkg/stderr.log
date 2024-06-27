@@ -1,0 +1,5 @@
+  File "/home/snowlar/Desktop/SNOWLAR/install/cgsr1_pkg/lib/python3.10/site-packages/cgsr1_pkg/web_interface.py", line 107
+    @def calibrate():
+     ^^^
+SyntaxError: invalid syntax
+
