@@ -78,7 +78,7 @@ class RoverController(Node):
             self.publish_straigth(self.down_speed, 0.0)
             if self.current_y >= self.target_y:
                 self.state = 'UP'
-                self.target_y = 0 
+                self.target_y = 0.0
 
         elif self.state == 'UP':
             self.get_logger().info('Driving up')
@@ -118,7 +118,7 @@ class RoverController(Node):
             self.publish_straigth(self.down_speed, 0.0)
             if self.current_y >= self.target_y:
                 self.state = 'UP_AGAIN'
-                self.target_y = 0
+                self.target_y = 0.0
 
         elif self.state == 'UP_AGAIN':
             self.get_logger().info('Last time up')
@@ -164,8 +164,8 @@ class RoverController(Node):
         if not self.automation_active:
             return
         error = target_angle - self.imu_angle
-        if abs(error) > 0.0:  # Allowable error in the angle
-            twist.linear.x = -self.turn_speed if error > 0.0 else self.turn_speed
+        if abs(error) > 0.1:  # Allowable error in the angle
+            twist.linear.x = -self.turn_speed if error < 0.0 else self.turn_speed
         else:
             twist.linear.x = 0.0
         twist.linear.y = linear_y
